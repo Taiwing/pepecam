@@ -20,8 +20,23 @@ fn logout() -> &'static str {
 	"logout\n"
 }
 
+#[get("/reset-token")]
+fn reset_token() -> &'static str {
+	"reset-token\n"
+}
+
+#[put("/reset-password")]
+fn reset_password() -> &'static str {
+	"reset-password\n"
+}
+
 #[launch]
 fn rocket() -> _ {
 	rocket::build()
-		.mount("/user", routes![register, confirm, login, logout])
+		.mount("/user", routes![register])
+		.mount("/user", routes![confirm])
+		.mount("/user", routes![login])
+		.mount("/user", routes![logout])
+		.mount("/user", routes![reset_token])
+		.mount("/user", routes![reset_password])
 }

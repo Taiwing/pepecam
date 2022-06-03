@@ -12,8 +12,8 @@ desktop and on phones and small resolutions.
 git clone https://github.com/Taiwing/camagru
 # build
 docker-compose up
-# go to localhost in your browser
 ```
+Click [here](localhost:8080) to test it.
 
 ## How it works
 

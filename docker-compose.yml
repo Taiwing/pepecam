@@ -12,7 +12,7 @@ services:
       - ROCKET_PORT=3000
 
   db:
-    image: postgres:14.3
+    build: ./db/
     expose:
       - 5432
     restart: always

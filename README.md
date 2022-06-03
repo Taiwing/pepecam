@@ -32,4 +32,5 @@ A Postgresql database storing all the website user related data.
 
 ### front
 
-A simple apache server running on `localhost:8080`.
+This is the user interface. A simple apache server running on `localhost:8080`
+and serving html/CSS/Javascript files.

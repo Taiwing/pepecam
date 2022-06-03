@@ -18,7 +18,7 @@ docker-compose up
 ## How it works
 
 This application is bundled with docker-compose. Each part is a service in the
-docker-compose.yaml file at the root of the repository.
+docker-compose.yml file at the root of the repository.
 
 ### api
 
@@ -32,4 +32,4 @@ A Postgresql database storing all the website user related data.
 
 ### front
 
-A simple apache server running on `localhost:80`.
+A simple apache server running on `localhost:8080`.

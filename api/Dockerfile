@@ -1,7 +1,10 @@
 FROM rust:1.61 as builder
-WORKDIR /app
-COPY . .
-RUN cargo install --path .
+RUN cargo new api
+COPY Cargo.toml Cargo.lock /api/
+WORKDIR /api/
+RUN --mount=type=cache,target=/usr/local/cargo/registry cargo build --release
+COPY src/* /api/src/
+RUN --mount=type=cache,target=/usr/local/cargo/registry cargo install --path .
 
 FROM debian:buster-slim
 RUN apt update && rm -rf /var/lib/apt/lists/*

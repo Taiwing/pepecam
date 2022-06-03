@@ -34,3 +34,12 @@ A Postgresql database storing all the website user related data.
 
 This is the user interface. A simple apache server running on `localhost:8080`
 and serving html/CSS/Javascript files.
+
+## Development
+
+Use the dev.bash startup script to build in dev mode.
+
+## TODO
+
+When this app is done, remove or rename api/Dockerfile and use
+api/Dockerfile.release instead.

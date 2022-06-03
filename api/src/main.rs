@@ -1,34 +1,27 @@
 #[macro_use] extern crate rocket;
 
-#[get("/")]
-fn index() -> &'static str {
-	"Hello, web!\n"
+#[post("/register")]
+fn register() -> &'static str {
+	"register\n"
 }
 
-#[get("/hello/<name>")]
-fn hello(name: &str) -> String {
-	format!("Hello, {}!\n", name)
+#[post("/confirm/<confirmation_token>")]
+fn confirm(confirmation_token: u128) -> String {
+	format!("confirm {}\n", confirmation_token)
 }
 
-#[get("/")]
-fn mdr() -> &'static str {
-	"MDRRRRR\n"
+#[put("/login")]
+fn login() -> &'static str {
+	"login\n"
 }
 
-#[get("/lol")]
-fn lol() -> &'static str {
-	"LOOOOOOOOOOOOOOOL\n"
-}
-
-#[get("/xd")]
-fn xd () -> &'static str {
-	"XDDD\n"
+#[put("/logout")]
+fn logout() -> &'static str {
+	"logout\n"
 }
 
 #[launch]
 fn rocket() -> _ {
 	rocket::build()
-		.mount("/", routes![index])
-		.mount("/", routes![hello])
-		.mount("/mdr", routes![mdr, lol, xd])
+		.mount("/user", routes![register, confirm, login, logout])
 }

@@ -13,7 +13,7 @@ git clone https://github.com/Taiwing/camagru
 # build
 docker-compose up
 ```
-Click [here](localhost:8080) to test it.
+Click [here](http://localhost:8080) to test it.
 
 ## How it works
 

@@ -24,7 +24,7 @@ docker-compose.yml file at the root of the repository.
 
 This is the backend api which handles every user request regarding their session
 or data. It is a simple HTTP server implemented in Rust with the Rocket library.
-It can be accessed on `localhost:4242`.
+It can be accessed on `localhost:3000`.
 
 ### db
 

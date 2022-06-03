@@ -2,12 +2,12 @@ services:
   api:
     build: ./api/
     expose:
-      - 4242
+      - 3000
     ports:
-      - 4242:4242
+      - 3000:3000
     environment:
       - ROCKET_ADDRESS=0.0.0.0
-      - ROCKET_PORT=4242
+      - ROCKET_PORT=3000
 
   db:
     image: postgres
@@ -18,8 +18,6 @@ services:
       - POSTGRES_PASSWORD=Trustno1
 
   front:
-    image: httpd
+    build: ./front/
     ports:
-      - 80:8080
-    volumes:
-      - ./front/:/usr/local/apache2/htdocs/
+      - 8080:80

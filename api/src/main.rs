@@ -7,7 +7,7 @@ fn register() -> &'static str {
 
 #[post("/confirm/<confirmation_token>")]
 fn confirm(confirmation_token: u128) -> String {
-	format!("confirm {}\n", confirmation_token)
+	format!("confirm your email with: {}\n", confirmation_token)
 }
 
 #[put("/login")]
@@ -22,12 +22,17 @@ fn logout() -> &'static str {
 
 #[get("/reset-token")]
 fn reset_token() -> &'static str {
-	"reset-token\n"
+	"reset-token: request reset token\n"
 }
 
-#[put("/reset-password")]
-fn reset_password() -> &'static str {
-	"reset-password\n"
+#[put("/password")]
+fn password() -> &'static str {
+	"password: use reset-token to reset password\n"
+}
+
+#[put("/")]
+fn put_user() -> &'static str {
+	"PUT user/: change username, password and/or email\n"
 }
 
 #[launch]
@@ -38,5 +43,6 @@ fn rocket() -> _ {
 		.mount("/user", routes![login])
 		.mount("/user", routes![logout])
 		.mount("/user", routes![reset_token])
-		.mount("/user", routes![reset_password])
+		.mount("/user", routes![password])
+		.mount("/user", routes![put_user])
 }

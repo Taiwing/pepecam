@@ -1,6 +1,14 @@
 version: "3.9"
 
 services:
+  db:
+    build: ./db/
+    expose:
+      - 5432
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=Trustno1
+
   api:
     build: ./api/
     expose:
@@ -10,16 +18,12 @@ services:
     environment:
       - ROCKET_ADDRESS=0.0.0.0
       - ROCKET_PORT=3000
-
-  db:
-    build: ./db/
-    expose:
-      - 5432
-    restart: always
-    environment:
-      - POSTGRES_PASSWORD=Trustno1
+    depends_on:
+      - db
 
   front:
     build: ./front/
     ports:
       - 8080:80
+    depends_on:
+      - api

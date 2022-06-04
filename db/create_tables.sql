@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 CREATE TABLE IF NOT EXISTS pictures (
 	picture_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	account_id UUID NOT NULL,
-	creation_ts DATE NOT NULL DEFAULT CURRENT_DATE,
-	picture_path VARCHAR(256) NOT NULL
+	creation_ts DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 ALTER TABLE pictures ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id);

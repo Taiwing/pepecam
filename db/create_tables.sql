@@ -2,8 +2,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS accounts (
 	account_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-	email VARCHAR(256) NOT NULL,
-	username VARCHAR(64) NOT NULL,
+	email VARCHAR(256) NOT NULL UNIQUE,
+	username VARCHAR(64) NOT NULL UNIQUE,
 	password_hash VARCHAR NOT NULL,
 	email_notifications BOOLEAN NOT NULL DEFAULT TRUE
 );

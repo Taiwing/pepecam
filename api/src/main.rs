@@ -32,7 +32,27 @@ fn password() -> &'static str {
 
 #[put("/")]
 fn put_user() -> &'static str {
-	"PUT user/: change username, password and/or email\n"
+	"PUT user/: change username, password and/or email settings\n"
+}
+
+#[get("/")]
+fn get_pictures() -> &'static str {
+	"GET the pictures list\n"
+}
+
+#[get("/<username>")]
+fn get_user_pictures(username: &str) -> String {
+	format!("GET all the pictures for user {}\n", username)
+}
+
+#[put("/like/<picture_id>")]
+fn like(picture_id: &str) -> String {
+	format!("PUT toggle like on picture {}\n", picture_id)
+}
+
+#[put("/comment/<picture_id>", data = "<content>")]
+fn comment(picture_id: &str, content: &str) -> String {
+	format!("PUT comment '{}' on picture {}\n", content, picture_id)
 }
 
 #[launch]
@@ -45,4 +65,8 @@ fn rocket() -> _ {
 		.mount("/user", routes![reset_token])
 		.mount("/user", routes![password])
 		.mount("/user", routes![put_user])
+		.mount("/pictures", routes![get_pictures])
+		.mount("/pictures", routes![get_user_pictures])
+		.mount("/pictures", routes![like])
+		.mount("/pictures", routes![comment])
 }

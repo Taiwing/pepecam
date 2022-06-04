@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS accounts (
 	account_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	email VARCHAR(256) NOT NULL,
 	username VARCHAR(64) NOT NULL,
-	password_hash VARCHAR NOT NULL
+	password_hash VARCHAR NOT NULL,
+	email_notifications BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS pictures (

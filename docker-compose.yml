@@ -18,6 +18,7 @@ services:
     environment:
       - ROCKET_ADDRESS=0.0.0.0
       - ROCKET_PORT=3000
+      - ROCKET_SECRET_KEY=17tu+oEIpQy3OwTKhEDUIhr1HFWyKcb92xzPpLS3t3Y=
     depends_on:
       - db
 

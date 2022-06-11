@@ -1,7 +1,6 @@
 -- Set params
 SET SESSION test.n_accounts = '50';
-SET SESSION test.n_pictures_min = '0';
-SET SESSION test.n_pictures_min = '15';
+SET SESSION test.n_pictures = '500';
 SET SESSION test.n_likes_min = '0';
 SET SESSION test.n_likes_max = '50';
 SET SESSION test.n_comments_min = '0';
@@ -18,3 +17,21 @@ SELECT uuid_generate_v4(),
 	CURRENT_SETTING('test.password_hash'),
 	true
 FROM GENERATE_SERIES(1, CURRENT_SETTING('test.n_accounts')::int) as id;
+
+-- Random User function
+CREATE FUNCTION random_user()
+	RETURNS UUID
+	LANGUAGE PLPGSQL
+AS
+$$
+	DECLARE account UUID;
+	BEGIN
+		SELECT account_id INTO account FROM accounts ORDER BY RANDOM() LIMIT 1;
+		RETURN account;
+	END
+$$;
+
+-- Generate Pictures
+INSERT INTO pictures
+SELECT uuid_generate_v4(), random_user()
+FROM GENERATE_SERIES(1, CURRENT_SETTING('test.n_pictures')::int);

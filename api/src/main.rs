@@ -1,44 +1,10 @@
 #[macro_use] extern crate rocket;
 
-use rocket::http::Status;
-use rocket::request::{Outcome, Request, FromRequest};
-
-struct Session {
-	account_id: String,
-}
-
-#[derive(Debug)]
-enum SessionError {
-	LoggedIn,
-	NotLoggedIn,
-	InvalidSession,
-}
-
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for Session {
-	type Error = SessionError;
-
-	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-		fn is_valid(account_id: &str) -> bool {
-			account_id == "valid_account_id" //TODO: check in db
-		}
-
-		match request.cookies().get_private("account_id") {
-			None => Outcome::Failure(
-				(Status::BadRequest, SessionError::NotLoggedIn)
-			),
-			Some(cookie) if is_valid(cookie.value()) => Outcome::Success(
-				Session { account_id: cookie.value().to_string() }
-			),
-			Some(_) => Outcome::Failure(
-				(Status::BadRequest, SessionError::InvalidSession)
-			),
-		}
-	}
-}
+mod session;
+use session::*;
 
 #[post("/register")]
-fn register() -> &'static str {
+fn register(session: UnconnectedSession) -> &'static str {
 	"register\n"
 	//TODO: generate confirmation_token and send it through an email
 }
@@ -52,7 +18,7 @@ fn confirm(confirmation_token: u128) -> String {
 }
 
 #[put("/login")]
-fn login() -> &'static str {
+fn login(session: UnconnectedSession) -> &'static str {
 	"login\n"
 }
 
@@ -72,7 +38,7 @@ fn password(reset_token: &str) -> String {
 }
 
 #[put("/")]
-fn put_user(session: Session) -> String {
+fn put_user(session: ConnectedSession) -> String {
 	format!("PUT user ({}): change username, password and/or email settings\n",
 		session.account_id)
 }
@@ -88,12 +54,12 @@ fn get_user_pictures(username: &str) -> String {
 }
 
 #[put("/like/<picture_id>")]
-fn like(picture_id: &str, session: Session) -> String {
+fn like(picture_id: &str, session: ConnectedSession) -> String {
 	format!("PUT toggle like on picture {}\n", picture_id)
 }
 
 #[put("/comment/<picture_id>", data = "<content>")]
-fn comment(picture_id: &str, content: &str, session: Session) -> String {
+fn comment(picture_id: &str, content: &str, session: ConnectedSession) -> String {
 	format!("PUT comment '{}' on picture {}\n", content, picture_id)
 }
 

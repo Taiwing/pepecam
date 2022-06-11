@@ -1,14 +1,14 @@
 use rocket::http::Status;
 use rocket::request::{Outcome, Request, FromRequest};
 
-pub struct UnconnectedSession {}
+pub struct Unconnected {}
 
-pub struct ConnectedSession {
+pub struct Connected {
 	pub account_id: String,
 }
 
 #[derive(Debug)]
-pub enum SessionError {
+pub enum Error {
 	LoggedIn,
 	NotLoggedIn,
 	InvalidSession,
@@ -19,38 +19,38 @@ fn is_valid_account(account_id: &str) -> bool {
 }
 
 #[rocket::async_trait]
-impl<'r> FromRequest<'r> for UnconnectedSession {
-	type Error = SessionError;
+impl<'r> FromRequest<'r> for Unconnected {
+	type Error = Error;
 
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
 		match request.cookies().get_private("account_id") {
 			None => Outcome::Success(
-				UnconnectedSession {}
+				Unconnected {}
 			),
 			Some(cookie) if is_valid_account(cookie.value()) => Outcome::Failure(
-				(Status::BadRequest, SessionError::LoggedIn)
+				(Status::BadRequest, Error::LoggedIn)
 			),
 			Some(_) => Outcome::Failure(
-				(Status::BadRequest, SessionError::InvalidSession)
+				(Status::BadRequest, Error::InvalidSession)
 			),
 		}
 	}
 }
 
 #[rocket::async_trait]
-impl<'r> FromRequest<'r> for ConnectedSession {
-	type Error = SessionError;
+impl<'r> FromRequest<'r> for Connected {
+	type Error = Error;
 
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
 		match request.cookies().get_private("account_id") {
 			None => Outcome::Failure(
-				(Status::BadRequest, SessionError::NotLoggedIn)
+				(Status::BadRequest, Error::NotLoggedIn)
 			),
 			Some(cookie) if is_valid_account(cookie.value()) => Outcome::Success(
-				ConnectedSession { account_id: cookie.value().to_string() }
+				Connected { account_id: cookie.value().to_string() }
 			),
 			Some(_) => Outcome::Failure(
-				(Status::BadRequest, SessionError::InvalidSession)
+				(Status::BadRequest, Error::InvalidSession)
 			),
 		}
 	}

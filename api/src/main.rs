@@ -1,10 +1,9 @@
 #[macro_use] extern crate rocket;
 
 mod session;
-use session::*;
 
 #[post("/register")]
-fn register(session: UnconnectedSession) -> &'static str {
+fn register(_sess: session::Unconnected) -> &'static str {
 	"register\n"
 	//TODO: generate confirmation_token and send it through an email
 }
@@ -18,7 +17,7 @@ fn confirm(confirmation_token: u128) -> String {
 }
 
 #[put("/login")]
-fn login(session: UnconnectedSession) -> &'static str {
+fn login(_sess: session::Unconnected) -> &'static str {
 	"login\n"
 }
 
@@ -38,9 +37,9 @@ fn password(reset_token: &str) -> String {
 }
 
 #[put("/")]
-fn put_user(session: ConnectedSession) -> String {
+fn put_user(sess: session::Connected) -> String {
 	format!("PUT user ({}): change username, password and/or email settings\n",
-		session.account_id)
+		sess.account_id)
 }
 
 #[get("/")]
@@ -54,12 +53,12 @@ fn get_user_pictures(username: &str) -> String {
 }
 
 #[put("/like/<picture_id>")]
-fn like(picture_id: &str, session: ConnectedSession) -> String {
+fn like(picture_id: &str, sess: session::Connected) -> String {
 	format!("PUT toggle like on picture {}\n", picture_id)
 }
 
 #[put("/comment/<picture_id>", data = "<content>")]
-fn comment(picture_id: &str, content: &str, session: ConnectedSession) -> String {
+fn comment(picture_id: &str, content: &str, sess: session::Connected) -> String {
 	format!("PUT comment '{}' on picture {}\n", content, picture_id)
 }
 

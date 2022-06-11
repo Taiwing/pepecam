@@ -31,7 +31,27 @@ $$
 	END
 $$;
 
+-- Random Date function
+CREATE FUNCTION random_date(start_date VARCHAR, end_date VARCHAR)
+	RETURNS DATE
+	LANGUAGE PLPGSQL
+AS
+$$
+	DECLARE rand_date TIMESTAMP;
+	BEGIN
+		SELECT
+			TO_TIMESTAMP(start_date, 'YYYY-MM-DD HH24:MI:SS') +
+			random() * (TO_TIMESTAMP(end_date, 'YYYY-MM-DD HH24:MI:SS') 
+			- TO_TIMESTAMP(start_date, 'YYYY-MM-DD HH24:MI:SS'))
+		INTO rand_date;
+		RETURN rand_date::DATE;
+	END
+$$;
+
 -- Generate Pictures
 INSERT INTO pictures
-SELECT uuid_generate_v4(), random_user()
+SELECT
+	uuid_generate_v4(),
+	random_user(),
+	random_date(CURRENT_SETTING('test.date_min'), CURRENT_SETTING('test.date_max'))
 FROM GENERATE_SERIES(1, CURRENT_SETTING('test.n_pictures')::int);

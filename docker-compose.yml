@@ -1,10 +1,12 @@
-version: "3.9"
+version: "3.7"
 
 services:
   db:
     build: ./db/
     expose:
       - 5432
+    ports:
+      - 5432:5432
     restart: always
     environment:
       - POSTGRES_PASSWORD=Trustno1
@@ -16,6 +18,7 @@ services:
     ports:
       - 3000:3000
     environment:
+      - RUST_BACKTRACE=1
       - ROCKET_ADDRESS=0.0.0.0
       - ROCKET_PORT=3000
       - ROCKET_SECRET_KEY=17tu+oEIpQy3OwTKhEDUIhr1HFWyKcb92xzPpLS3t3Y=

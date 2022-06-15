@@ -1,5 +1,14 @@
 #[macro_use] extern crate rocket;
 
+use rocket_db_pools::{sqlx, Database, Connection};
+use crate::rocket::futures::TryStreamExt;
+use rocket_db_pools::sqlx::Row;
+//use uuid::Uuid;
+
+#[derive(Database)]
+#[database("postgres")]
+struct PostgresDb(sqlx::PgPool);
+
 mod session;
 
 #[post("/register")]
@@ -43,8 +52,15 @@ fn put_user(sess: session::Connected) -> String {
 }
 
 #[get("/")]
-fn get_pictures() -> &'static str {
-	"GET the pictures list\n"
+async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<String> {
+	let mut rows = sqlx::query("SELECT picture_id::TEXT FROM pictures;")
+		.fetch(&mut *db);
+	let mut pictures: Vec<String> = vec![];
+	while let Some(row) = rows.try_next().await.ok()? {
+		let picture_id: String = row.try_get(0).ok()?;
+		pictures.push(picture_id);
+	}
+	Some(format!("{:?}", pictures))
 }
 
 #[get("/<username>")]
@@ -65,6 +81,7 @@ fn comment(picture_id: &str, content: &str, sess: session::Connected) -> String 
 #[launch]
 fn rocket() -> _ {
 	rocket::build()
+		.attach(PostgresDb::init())
 		.mount("/user", routes![register])
 		.mount("/user", routes![confirm])
 		.mount("/user", routes![login])

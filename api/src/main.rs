@@ -3,7 +3,6 @@
 use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
 use rocket_db_pools::sqlx::Row;
-//use uuid::Uuid;
 
 #[derive(Database)]
 #[database("postgres")]

@@ -4,6 +4,8 @@ use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
 use rocket_db_pools::sqlx::Row;
 
+//TODO: find a way to remove the "postgres" string or to use the environment
+//instead (something like 'std::env!("DATABASE_NAME")' if possible).
 #[derive(Database)]
 #[database("postgres")]
 struct PostgresDb(sqlx::PgPool);

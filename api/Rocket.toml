@@ -1,2 +1,0 @@
-[default.databases.postgres]
-url = "postgres://postgres:Trustno1@db:5432/postgres"

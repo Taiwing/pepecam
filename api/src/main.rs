@@ -2,9 +2,8 @@
 
 use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
-use rocket::serde::json::Json;
-use sqlx::types::Uuid;
-use sqlx::Row;
+use rocket::serde::{Serialize, json::Json};
+use sqlx::{Row, types::Uuid};
 
 //TODO: find a way to remove the "postgres" string or to use the environment
 //instead (something like 'std::env!("DATABASE_NAME")' if possible).
@@ -12,6 +11,7 @@ use sqlx::Row;
 #[database("postgres")]
 struct PostgresDb(sqlx::PgPool);
 
+mod error;
 mod session;
 
 #[post("/register")]
@@ -38,9 +38,15 @@ fn logout() -> &'static str {
 	"logout\n"
 }
 
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct ResetToken {
+	reset_token: String, // Find a way to use Uuid here
+}
+
 #[get("/reset-token")]
-fn reset_token() -> &'static str {
-	"reset-token: request reset token\n"
+fn reset_token() -> Option<Json<ResetToken>> {
+	None
 }
 
 #[put("/password", data = "<reset_token>")]
@@ -96,4 +102,5 @@ fn rocket() -> _ {
 		.mount("/pictures", routes![get_user_pictures])
 		.mount("/pictures", routes![like])
 		.mount("/pictures", routes![comment])
+		.register("/", catchers![error::not_found])
 }

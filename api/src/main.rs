@@ -2,7 +2,8 @@
 
 use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
-use rocket_db_pools::sqlx::Row;
+use sqlx::types::Uuid;
+use sqlx::Row;
 
 //TODO: find a way to remove the "postgres" string or to use the environment
 //instead (something like 'std::env!("DATABASE_NAME")' if possible).
@@ -54,12 +55,12 @@ fn put_user(sess: session::Connected) -> String {
 
 #[get("/")]
 async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<String> {
-	let mut rows = sqlx::query("SELECT picture_id::TEXT FROM pictures;")
+	let mut rows = sqlx::query("SELECT picture_id FROM pictures;")
 		.fetch(&mut *db);
 	let mut pictures: Vec<String> = vec![];
 	while let Some(row) = rows.try_next().await.ok()? {
-		let picture_id: String = row.try_get(0).ok()?;
-		pictures.push(picture_id);
+		let picture_id: Uuid = row.try_get(0).ok()?;
+		pictures.push(picture_id.to_hyphenated().to_string());
 	}
 	Some(format!("{:?}", pictures))
 }

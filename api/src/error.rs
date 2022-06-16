@@ -1,4 +1,4 @@
-use rocket::{Request, http::Method};
+use rocket::{Request, http::Method, http::Status};
 use rocket::serde::{Serialize, json::Json};
 
 #[derive(Serialize)]
@@ -13,9 +13,10 @@ pub struct ApiError {
 
 #[catch(404)]
 pub fn not_found(req: &Request) -> Json<ApiError> {
+	let status = Status::NotFound;
 	Json(ApiError {
-		status: 404,
-		error: String::from("Not Found"),
+		status: status.code,
+		error: String::from(status.reason_lossy()),
 		message: String::from("Requested resource does not exist"),
 		method: req.method(),
 		path: req.uri().path().to_string(),

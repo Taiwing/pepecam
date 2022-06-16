@@ -28,7 +28,7 @@ impl<'r> FromRequest<'r> for Unconnected {
 				Unconnected {}
 			),
 			Some(cookie) if is_valid_account(cookie.value()) => Outcome::Failure(
-				(Status::BadRequest, Error::LoggedIn)
+				(Status::Forbidden, Error::LoggedIn)
 			),
 			Some(_) => Outcome::Failure(
 				(Status::BadRequest, Error::InvalidSession)
@@ -44,7 +44,7 @@ impl<'r> FromRequest<'r> for Connected {
 	async fn from_request(request: &'r Request<'_>) -> Outcome<Self, Self::Error> {
 		match request.cookies().get_private("account_id") {
 			None => Outcome::Failure(
-				(Status::BadRequest, Error::NotLoggedIn)
+				(Status::Unauthorized, Error::NotLoggedIn)
 			),
 			Some(cookie) if is_valid_account(cookie.value()) => Outcome::Success(
 				Connected { account_id: cookie.value().to_string() }

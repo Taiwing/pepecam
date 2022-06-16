@@ -3,7 +3,9 @@
 use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
 use rocket::serde::{Serialize, json::Json};
-use sqlx::{Row, types::Uuid};
+use rocket::serde::uuid::Uuid as SerdeUuid;
+use sqlx::types::Uuid as SqlxUuid;
+use sqlx::Row;
 
 //TODO: find a way to remove the "postgres" string or to use the environment
 //instead (something like 'std::env!("DATABASE_NAME")' if possible).
@@ -41,7 +43,7 @@ fn logout() -> &'static str {
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 struct ResetToken {
-	reset_token: String, // Find a way to use Uuid here
+	reset_token: SerdeUuid,
 }
 
 #[get("/reset-token")]
@@ -66,7 +68,7 @@ async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<Json<Vec<String>
 		.fetch(&mut *db);
 	let mut pictures: Vec<String> = vec![];
 	while let Some(row) = rows.try_next().await.ok()? {
-		let picture_id: Uuid = row.try_get(0).ok()?;
+		let picture_id: SqlxUuid = row.try_get(0).ok()?;
 		pictures.push(picture_id.to_hyphenated().to_string());
 	}
 	Some(Json(pictures))
@@ -78,12 +80,12 @@ fn get_user_pictures(username: &str) -> String {
 }
 
 #[put("/like/<picture_id>")]
-fn like(picture_id: &str, sess: session::Connected) -> String {
+fn like(picture_id: SerdeUuid, sess: session::Connected) -> String {
 	format!("PUT toggle like on picture {}\n", picture_id)
 }
 
 #[put("/comment/<picture_id>", data = "<content>")]
-fn comment(picture_id: &str, content: &str, sess: session::Connected) -> String {
+fn comment(picture_id: SerdeUuid, content: &str, sess: session::Connected) -> String {
 	format!("PUT comment '{}' on picture {}\n", content, picture_id)
 }
 

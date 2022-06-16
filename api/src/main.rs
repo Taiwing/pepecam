@@ -2,6 +2,7 @@
 
 use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
+use rocket::serde::json::Json;
 use sqlx::types::Uuid;
 use sqlx::Row;
 
@@ -54,7 +55,7 @@ fn put_user(sess: session::Connected) -> String {
 }
 
 #[get("/")]
-async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<String> {
+async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
 	let mut rows = sqlx::query("SELECT picture_id FROM pictures;")
 		.fetch(&mut *db);
 	let mut pictures: Vec<String> = vec![];
@@ -62,7 +63,7 @@ async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<String> {
 		let picture_id: Uuid = row.try_get(0).ok()?;
 		pictures.push(picture_id.to_hyphenated().to_string());
 	}
-	Some(format!("{:?}", pictures))
+	Some(Json(pictures))
 }
 
 #[get("/<username>")]

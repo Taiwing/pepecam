@@ -13,12 +13,14 @@ use sqlx::Row;
 #[database("postgres")]
 struct PostgresDb(sqlx::PgPool);
 
-mod error;
+mod result;
 mod session;
 
+use result::ApiResult;
+
 #[post("/register")]
-fn register(_sess: session::Unconnected) -> &'static str {
-	"register\n"
+fn register(_sess: session::Unconnected) -> ApiResult<&'static str> {
+	Ok(Json("register\n"))
 	//TODO: generate confirmation_token and send it through an email
 }
 
@@ -75,8 +77,18 @@ async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<Json<Vec<String>
 }
 
 #[get("/<username>")]
-fn get_user_pictures(username: &str) -> String {
-	format!("GET all the pictures for user {}\n", username)
+async fn get_user_pictures(username: &str, mut db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
+	let mut rows = sqlx::query("
+		SELECT picture_id
+		FROM pictures JOIN accounts ON accounts.username = $1
+		WHERE accounts.account_id = pictures.account_id;
+	").bind(username).fetch(&mut *db);
+	let mut pictures: Vec<String> = vec![];
+	while let Some(row) = rows.try_next().await.ok()? {
+		let picture_id: SqlxUuid = row.try_get(0).ok()?;
+		pictures.push(picture_id.to_hyphenated().to_string());
+	}
+	Some(Json(pictures))
 }
 
 #[put("/like/<picture_id>")]
@@ -104,5 +116,5 @@ fn rocket() -> _ {
 		.mount("/pictures", routes![get_user_pictures])
 		.mount("/pictures", routes![like])
 		.mount("/pictures", routes![comment])
-		.register("/", catchers![error::not_found])
+		.register("/", catchers![result::not_found])
 }

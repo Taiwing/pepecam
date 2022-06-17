@@ -11,12 +11,13 @@ pub struct ApiError {
 	path: String,
 }
 
+pub type ApiResult<T> = Result<Json<T>, Json<ApiError>>;
+
 #[catch(404)]
 pub fn not_found(req: &Request) -> Json<ApiError> {
-	let status = Status::NotFound;
 	Json(ApiError {
-		status: status.code,
-		error: String::from(status.reason_lossy()),
+		status: Status::NotFound.code,
+		error: String::from(Status::NotFound.reason_lossy()),
 		message: String::from("Requested resource does not exist"),
 		method: req.method(),
 		path: req.uri().path().to_string(),

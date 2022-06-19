@@ -1,8 +1,9 @@
 #[macro_use] extern crate rocket;
+extern crate rand;
 
 use rocket_db_pools::{sqlx, Database, Connection};
 use crate::rocket::futures::TryStreamExt;
-use rocket::serde::{Serialize, json::Json};
+use rocket::serde::{Serialize, Deserialize, json::Json};
 use rocket::serde::uuid::Uuid as SerdeUuid;
 use sqlx::types::Uuid as SqlxUuid;
 use sqlx::Row;
@@ -18,10 +19,28 @@ mod session;
 
 use result::ApiResult;
 
-#[post("/register")]
-fn register(_sess: session::Unconnected) -> ApiResult<&'static str> {
-	Ok(Json("register\n"))
-	//TODO: generate confirmation_token and send it through an email
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+struct Token {
+	token: String,
+}
+
+#[derive(Debug)]
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct NewUser {
+	username: String,
+	password: String,
+	confirmation: String,
+	email: String,
+}
+
+#[post("/register", data = "<new_user>", format = "json")]
+fn register(new_user: Json<NewUser>, _sess: session::Unconnected) -> ApiResult<Token> {
+	println!("{:?}", new_user.into_inner());
+	let rand_token: u128 = rand::random();
+	//TODO: generate confirmation_token and send it through an email instead of this
+	Ok(Json(Token { token: format!("{:x}", rand_token) }))
 }
 
 #[post("/confirm/<confirmation_token>")]

@@ -32,7 +32,7 @@ struct NewUser {
 async fn register(
     new_user: Json<NewUser>,
     _sess: session::Unconnected,
-    mut db: Connection<PostgresDb>,
+    db: Connection<PostgresDb>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
     if query::username_exists(&user.username, db).await {
@@ -98,9 +98,7 @@ fn put_user(sess: session::Connected) -> String {
 }
 
 #[get("/")]
-async fn get_pictures(
-    mut db: Connection<PostgresDb>,
-) -> Option<Json<Vec<String>>> {
+async fn get_pictures(db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
     match query::pictures(db).await {
         None => None,
         Some(pictures) => Some(Json(pictures)),
@@ -110,7 +108,7 @@ async fn get_pictures(
 #[get("/<username>")]
 async fn get_user_pictures(
     username: &str,
-    mut db: Connection<PostgresDb>,
+    db: Connection<PostgresDb>,
 ) -> Option<Json<Vec<String>>> {
     match query::user_pictures(db, username).await {
         None => None,

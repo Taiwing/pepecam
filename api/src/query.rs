@@ -8,17 +8,17 @@ use sqlx::{PgPool, Row, types::Uuid};
 #[database("postgres")]
 pub struct PostgresDb(PgPool);
 
-/*
-async fn username_exists(username: &str, mut db Connection<PostgresDb>) -> bool {
+pub async fn username_exists(username: &str, mut db: Connection<PostgresDb>) -> bool {
 	let mut row = sqlx::query("SELECT * FROM accounts WHERE username = $1")
 		.bind(username)
-		.fetch_optional(&mut *db);
+		.fetch_optional(&mut *db)
+		.await
+		.unwrap();
 	match row {
 		None => false,
 		Some(_) => true,
 	}
 }
-*/
 
 pub async fn pictures(mut db: Connection<PostgresDb>) -> Option<Vec<String>> {
 	let mut rows = sqlx::query("SELECT picture_id FROM pictures;")

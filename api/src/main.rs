@@ -2,6 +2,7 @@
 extern crate rand;
 
 use rocket::serde::{Serialize, Deserialize, json::Json, uuid::Uuid};
+use rocket::http::{Status, Method};
 use rocket_db_pools::{Database, Connection};
 use regex::Regex;
 
@@ -28,8 +29,17 @@ struct NewUser {
 }
 
 #[post("/register", data = "<new_user>", format = "json")]
-fn register(new_user: Json<NewUser>, _sess: session::Unconnected) -> ApiResult<Token> {
-	println!("{:?}", new_user.into_inner());
+async fn register(new_user: Json<NewUser>, _sess: session::Unconnected, mut db: Connection<PostgresDb>) -> ApiResult<Token> {
+	let user = new_user.into_inner();
+	if query::username_exists(&user.username, db).await {
+		return Err(Json(ApiError {
+			status: Status::Conflict.code,
+			error: String::from(Status::Conflict.reason_lossy()),
+			message: format!("username '{}' is already taken", &user.username),
+			method: Method::Post,
+			path: String::from("/register"),
+		}))
+	}
 	let rand_token: u128 = rand::random();
 	//TODO: generate confirmation_token and send it through an email instead of this
 	Ok(Json(Token { token: format!("{:x}", rand_token) }))

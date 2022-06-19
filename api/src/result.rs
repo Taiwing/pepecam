@@ -4,11 +4,11 @@ use rocket::serde::{Serialize, json::Json};
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct ApiError {
-	status: u16,
-	error: String,
-	message: String,
-	method: Method,
-	path: String,
+	pub status: u16,
+	pub error: String,
+	pub message: String,
+	pub method: Method,
+	pub path: String,
 }
 
 pub type ApiResult<T> = Result<Json<T>, Json<ApiError>>;

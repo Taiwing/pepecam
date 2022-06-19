@@ -3,7 +3,7 @@ extern crate rocket;
 extern crate rand;
 
 use regex::Regex;
-use rocket::http::{Method, Status};
+use rocket::http::Status;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
 use rocket_db_pools::{Connection, Database};
 
@@ -12,7 +12,7 @@ mod result;
 mod session;
 
 use query::PostgresDb;
-use result::{ApiError, ApiResult};
+use result::ApiResult;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -43,7 +43,7 @@ async fn register(
     }
     let rand_token: u128 = rand::random();
     //TODO: generate confirmation_token and send it through an email
-	//instead of this
+    //instead of this
     ApiResult::Success {
         status: Status::Ok,
         payload: Token {
@@ -120,7 +120,10 @@ async fn get_user_pictures(
 
 #[put("/like/<picture_id>")]
 fn like(picture_id: Uuid, sess: session::Connected) -> String {
-    format!("PUT toggle like on picture {}\n", picture_id)
+    format!(
+        "PUT toggle like on picture {} as {}\n",
+        picture_id, sess.account_id
+    )
 }
 
 #[put("/comment/<picture_id>", data = "<content>")]
@@ -129,7 +132,10 @@ fn comment(
     content: &str,
     sess: session::Connected,
 ) -> String {
-    format!("PUT comment '{}' on picture {}\n", content, picture_id)
+    format!(
+        "PUT comment '{}' on picture {} as {}\n",
+        content, picture_id, sess.account_id
+    )
 }
 
 #[launch]

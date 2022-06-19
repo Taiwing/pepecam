@@ -12,7 +12,7 @@ pub async fn username_exists(
     username: &str,
     mut db: Connection<PostgresDb>,
 ) -> bool {
-    let mut row = sqlx::query("SELECT * FROM accounts WHERE username = $1")
+    let row = sqlx::query("SELECT * FROM accounts WHERE username = $1")
         .bind(username)
         .fetch_optional(&mut *db)
         .await

@@ -8,13 +8,15 @@ use sqlx::{types::Uuid, PgPool, Row};
 #[database("postgres")]
 pub struct PostgresDb(PgPool);
 
-pub async fn username_exists(
-    username: &str,
-    mut db: Connection<PostgresDb>,
+pub async fn is_taken(
+    field: &str,
+    value: &str,
+    db: &mut Connection<PostgresDb>,
 ) -> bool {
-    let row = sqlx::query("SELECT * FROM accounts WHERE username = $1")
-        .bind(username)
-        .fetch_optional(&mut *db)
+    let query = format!("SELECT {} FROM accounts WHERE {} = $1", field, field);
+    let row = sqlx::query(&query)
+        .bind(value)
+        .fetch_optional(&mut **db)
         .await
         .unwrap();
     match row {

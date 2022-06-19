@@ -7,6 +7,14 @@ use rocket::http::Status;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
 use rocket_db_pools::{Connection, Database};
 
+//TODO: Use this to create a BackgroundJob structure and manage a redis-like
+//LocalCache for temporary data. The background job would be used to enforce
+//expiries on said data (like for confirmation/reset tokens for example).
+/*
+use rocket::fairing::AdHoc;
+use rocket::tokio::time::{sleep, Duration};
+*/
+
 mod query;
 mod result;
 mod session;
@@ -32,16 +40,26 @@ struct NewUser {
 async fn register(
     new_user: Json<NewUser>,
     _sess: session::Unconnected,
-    db: Connection<PostgresDb>,
+    mut db: Connection<PostgresDb>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
-    if query::username_exists(&user.username, db).await {
+
+    if query::is_taken("username", &user.username, &mut db).await {
         return ApiResult::Failure {
             status: Status::Conflict,
             message: format!("username '{}' is already taken", &user.username),
         };
     }
+
+    if query::is_taken("email", &user.email, &mut db).await {
+        return ApiResult::Failure {
+            status: Status::Conflict,
+            message: format!("email '{}' is already taken", &user.email),
+        };
+    }
+
     let rand_token: u128 = rand::random();
+
     //TODO: generate confirmation_token and send it through an email
     //instead of this
     ApiResult::Success {
@@ -140,6 +158,19 @@ fn comment(
 fn rocket() -> _ {
     rocket::build()
         .attach(PostgresDb::init())
+        /*
+        .attach(AdHoc::try_on_ignite("Background Job", |rocket| async {
+            rocket::tokio::task::spawn(async {
+                let mut iter: u128 = 0;
+                loop {
+                    iter = iter + 1;
+                    println!("iter: {}", iter);
+                    sleep(Duration::from_secs(5)).await;
+                }
+            });
+            Ok(rocket)
+        }))
+        */
         .mount("/user", routes![register])
         .mount("/user", routes![confirm])
         .mount("/user", routes![login])

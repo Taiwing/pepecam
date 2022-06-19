@@ -1,23 +1,16 @@
 #[macro_use] extern crate rocket;
 extern crate rand;
 
-use rocket_db_pools::{sqlx, Database, Connection};
-use crate::rocket::futures::TryStreamExt;
-use rocket::serde::{Serialize, Deserialize, json::Json};
-use rocket::serde::uuid::Uuid as SerdeUuid;
-use sqlx::types::Uuid as SqlxUuid;
-use sqlx::Row;
+use rocket::serde::{Serialize, Deserialize, json::Json, uuid::Uuid};
+use rocket_db_pools::{Database, Connection};
+use regex::Regex;
 
-//TODO: find a way to remove the "postgres" string or to use the environment
-//instead (something like 'std::env!("DATABASE_NAME")' if possible).
-#[derive(Database)]
-#[database("postgres")]
-struct PostgresDb(sqlx::PgPool);
-
+mod query;
 mod result;
 mod session;
 
-use result::ApiResult;
+use query::{PostgresDb};
+use result::{ApiError, ApiResult};
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -31,7 +24,6 @@ struct Token {
 struct NewUser {
 	username: String,
 	password: String,
-	confirmation: String,
 	email: String,
 }
 
@@ -64,7 +56,7 @@ fn logout() -> &'static str {
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 struct ResetToken {
-	reset_token: SerdeUuid,
+	reset_token: Uuid,
 }
 
 #[get("/reset-token")]
@@ -85,38 +77,27 @@ fn put_user(sess: session::Connected) -> String {
 
 #[get("/")]
 async fn get_pictures(mut db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
-	let mut rows = sqlx::query("SELECT picture_id FROM pictures;")
-		.fetch(&mut *db);
-	let mut pictures: Vec<String> = vec![];
-	while let Some(row) = rows.try_next().await.ok()? {
-		let picture_id: SqlxUuid = row.try_get(0).ok()?;
-		pictures.push(picture_id.to_hyphenated().to_string());
+	match query::pictures(db).await {
+		None => None,
+		Some(pictures) => Some(Json(pictures)),
 	}
-	Some(Json(pictures))
 }
 
 #[get("/<username>")]
 async fn get_user_pictures(username: &str, mut db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
-	let mut rows = sqlx::query("
-		SELECT picture_id
-		FROM pictures JOIN accounts ON accounts.username = $1
-		WHERE accounts.account_id = pictures.account_id;
-	").bind(username).fetch(&mut *db);
-	let mut pictures: Vec<String> = vec![];
-	while let Some(row) = rows.try_next().await.ok()? {
-		let picture_id: SqlxUuid = row.try_get(0).ok()?;
-		pictures.push(picture_id.to_hyphenated().to_string());
+	match query::user_pictures(db, username).await {
+		None => None,
+		Some(pictures) => Some(Json(pictures)),
 	}
-	Some(Json(pictures))
 }
 
 #[put("/like/<picture_id>")]
-fn like(picture_id: SerdeUuid, sess: session::Connected) -> String {
+fn like(picture_id: Uuid, sess: session::Connected) -> String {
 	format!("PUT toggle like on picture {}\n", picture_id)
 }
 
 #[put("/comment/<picture_id>", data = "<content>")]
-fn comment(picture_id: SerdeUuid, content: &str, sess: session::Connected) -> String {
+fn comment(picture_id: Uuid, content: &str, sess: session::Connected) -> String {
 	format!("PUT comment '{}' on picture {}\n", content, picture_id)
 }
 

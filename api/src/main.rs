@@ -32,17 +32,17 @@ struct NewUser {
 async fn register(new_user: Json<NewUser>, _sess: session::Unconnected, mut db: Connection<PostgresDb>) -> ApiResult<Token> {
 	let user = new_user.into_inner();
 	if query::username_exists(&user.username, db).await {
-		return Err(Json(ApiError {
-			status: Status::Conflict.code,
-			error: String::from(Status::Conflict.reason_lossy()),
+		return ApiResult::Failure {
+			status: Status::Conflict,
 			message: format!("username '{}' is already taken", &user.username),
-			method: Method::Post,
-			path: String::from("/register"),
-		}))
+		}
 	}
 	let rand_token: u128 = rand::random();
 	//TODO: generate confirmation_token and send it through an email instead of this
-	Ok(Json(Token { token: format!("{:x}", rand_token) }))
+	ApiResult::Success {
+		status: Status::Ok,
+		payload: Token { token: format!("{:x}", rand_token) },
+	}
 }
 
 #[post("/confirm/<confirmation_token>")]

@@ -12,27 +12,29 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USER}
 
-  api:
-    build: ./api/
-    expose:
-      - ${API_PORT}
-    ports:
-      - "${API_PORT}:${API_PORT}"
-    environment:
-      RUST_BACKTRACE: 1
-      ROCKET_ADDRESS: 0.0.0.0
-      ROCKET_PORT: ${API_PORT}
-      ROCKET_SECRET_KEY: 17tu+oEIpQy3OwTKhEDUIhr1HFWyKcb92xzPpLS3t3Y=
-      ROCKET_DATABASES: >
-        {${DB_USER}={
-          url=postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_USER}
-        }}
-    depends_on:
-      - db
+# TODO: uncomment this when the project is finished
+#  api:
+#    build: ./api/
+#    expose:
+#      - ${API_PORT}
+#    ports:
+#      - "${API_PORT}:${API_PORT}"
+#    environment:
+#      RUST_BACKTRACE: 1
+#      ROCKET_ADDRESS: 0.0.0.0
+#      ROCKET_PORT: ${API_PORT}
+#      ROCKET_SECRET_KEY: 17tu+oEIpQy3OwTKhEDUIhr1HFWyKcb92xzPpLS3t3Y=
+#      ROCKET_DATABASES: >
+#        {${DB_USER}={
+#          url=postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_USER}
+#        }}
+#    depends_on:
+#      - db
 
   front:
     build: ./front/
     ports:
       - "${FRONT_PORT}:80"
     depends_on:
-      - api
+      #- api
+      - db # TEMP (only for dev purposes)

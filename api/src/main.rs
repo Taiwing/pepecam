@@ -20,14 +20,6 @@ mod session;
 
 use query::PostgresDb;
 
-#[put("/")]
-fn put_user(sess: session::Connected) -> String {
-    format!(
-        "PUT user ({}): change username, password and/or email settings\n",
-        sess.account_id
-    )
-}
-
 #[get("/")]
 async fn get_pictures(db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
     match query::pictures(db).await {
@@ -111,7 +103,7 @@ fn rocket() -> _ {
         .mount("/user", routes![routes::user::logout::put])
         .mount("/user", routes![routes::user::reset::get])
         .mount("/user", routes![routes::user::reset::put])
-        .mount("/user", routes![put_user])
+        .mount("/user", routes![routes::user::put])
         .mount("/pictures", routes![get_pictures])
         .mount("/pictures", routes![get_user_pictures])
         .mount("/pictures", routes![like])

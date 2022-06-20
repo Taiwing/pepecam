@@ -1,3 +1,5 @@
+//TODO: use data instead of url parameter and return json
+//and a return RouteResponse instance
 #[post("/confirm/<confirmation_token>")]
 pub fn post(confirmation_token: u128) -> String {
     format!("confirm your email with: {}\n", confirmation_token)

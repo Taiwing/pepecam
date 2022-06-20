@@ -20,14 +20,6 @@ mod session;
 
 use query::PostgresDb;
 
-#[get("/")]
-async fn get_pictures(db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
-    match query::pictures(db).await {
-        None => None,
-        Some(pictures) => Some(Json(pictures)),
-    }
-}
-
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 struct User {
@@ -104,7 +96,7 @@ fn rocket() -> _ {
         .mount("/user", routes![routes::user::reset::get])
         .mount("/user", routes![routes::user::reset::put])
         .mount("/user", routes![routes::user::put])
-        .mount("/pictures", routes![get_pictures])
+        .mount("/pictures", routes![routes::pictures::get])
         .mount("/pictures", routes![get_user_pictures])
         .mount("/pictures", routes![like])
         .mount("/pictures", routes![comment])

@@ -69,7 +69,7 @@ async fn register(
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
-	//TODO: maybe use lazy_static macro crate to optimize this
+    //TODO: maybe use lazy_static macro crate to optimize this
     let re = Regex::new(USERNAME_REGEX).unwrap();
     if re.is_match(&user.username) == false {
         return ApiResult::Failure {
@@ -180,34 +180,55 @@ async fn get_pictures(db: Connection<PostgresDb>) -> Option<Json<Vec<String>>> {
     }
 }
 
-#[get("/<username>")]
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct User {
+    username: String,
+}
+
+#[get("/user", data = "<user>", format = "json")]
 async fn get_user_pictures(
-    username: &str,
+    user: Json<User>,
     db: Connection<PostgresDb>,
 ) -> Option<Json<Vec<String>>> {
+    let username: &str = &user.into_inner().username;
     match query::user_pictures(db, username).await {
         None => None,
         Some(pictures) => Some(Json(pictures)),
     }
 }
 
-#[put("/like/<picture_id>")]
-fn like(picture_id: Uuid, sess: session::Connected) -> String {
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct Picture {
+    picture_id: Uuid,
+}
+
+#[put("/like", data = "<picture>", format = "json")]
+fn like(picture: Json<Picture>, sess: session::Connected) -> String {
+    let picture_id = &picture.into_inner().picture_id;
     format!(
         "PUT toggle like on picture {} as {}\n",
         picture_id, sess.account_id
     )
 }
 
-#[put("/comment/<picture_id>", data = "<content>")]
-fn comment(
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct PictureComment {
     picture_id: Uuid,
-    content: &str,
+    comment: String,
+}
+
+#[put("/comment", data = "<picture_comment>", format = "json")]
+fn comment(
+    picture_comment: Json<PictureComment>,
     sess: session::Connected,
 ) -> String {
+    let picture_comment = picture_comment.into_inner();
     format!(
         "PUT comment '{}' on picture {} as {}\n",
-        content, picture_id, sess.account_id
+        &picture_comment.comment, picture_comment.picture_id, sess.account_id
     )
 }
 

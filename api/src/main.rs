@@ -46,5 +46,11 @@ fn rocket() -> _ {
         .mount("/pictures", routes![routes::pictures::like::put])
         .mount("/pictures", routes![routes::pictures::comment::put])
         .mount("/pictures", routes![routes::pictures::get])
+        .register("/", catchers![result::default])
+        .register("/", catchers![result::bad_request])
+        .register("/", catchers![result::unauthorized])
+        .register("/", catchers![result::forbidden])
         .register("/", catchers![result::not_found])
+        .register("/", catchers![result::unprocessable_entity])
+        .register("/", catchers![result::internal_error])
 }

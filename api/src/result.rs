@@ -32,13 +32,71 @@ pub enum ApiResult<T: Serialize> {
     Failure { status: Status, message: String },
 }
 
-//TODO: handler other error codes and set default handler (so that we dont have
-//annoying html responses anymore): 400, 401, 403, 500, default
+#[catch(default)]
+pub fn default(status: Status, req: &Request) -> Json<ApiError> {
+    Json(ApiError::new(
+        status,
+        "unexepected error",
+        req.method(),
+        &req.uri().path().to_string(),
+    ))
+}
+
+#[catch(400)]
+pub fn bad_request(req: &Request) -> Json<ApiError> {
+    Json(ApiError::new(
+        Status::BadRequest,
+        "invalid request",
+        req.method(),
+        &req.uri().path().to_string(),
+    ))
+}
+
+#[catch(401)]
+pub fn unauthorized(req: &Request) -> Json<ApiError> {
+    Json(ApiError::new(
+        Status::Unauthorized,
+        "user must be logged in to execute this request",
+        req.method(),
+        &req.uri().path().to_string(),
+    ))
+}
+
+#[catch(403)]
+pub fn forbidden(req: &Request) -> Json<ApiError> {
+    Json(ApiError::new(
+        Status::Forbidden,
+        "this request is not allowed",
+        req.method(),
+        &req.uri().path().to_string(),
+    ))
+}
+
 #[catch(404)]
 pub fn not_found(req: &Request) -> Json<ApiError> {
     Json(ApiError::new(
         Status::NotFound,
-        "Requested resource does not exist",
+        "requested resource does not exist",
+        req.method(),
+        &req.uri().path().to_string(),
+    ))
+}
+
+#[catch(422)]
+pub fn unprocessable_entity(req: &Request) -> Json<ApiError> {
+    Json(ApiError::new(
+        Status::UnprocessableEntity,
+        "the request cannot be processed because the payload is ill-formed",
+        req.method(),
+        &req.uri().path().to_string(),
+    ))
+}
+
+#[catch(500)]
+pub fn internal_error(req: &Request) -> Json<ApiError> {
+    Json(ApiError::new(
+        Status::InternalServerError,
+        "Ooooooops.... Looks like we messed up, sorry :)",
         req.method(),
         &req.uri().path().to_string(),
     ))

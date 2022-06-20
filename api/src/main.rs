@@ -2,7 +2,7 @@
 extern crate rocket;
 extern crate rand;
 
-use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
+use rocket::serde::{json::Json, uuid::Uuid, Deserialize};
 use rocket_db_pools::{Connection, Database};
 
 //TODO: Use this to create a BackgroundJob structure and manage a redis-like
@@ -19,43 +19,6 @@ mod routes;
 mod session;
 
 use query::PostgresDb;
-
-#[post("/confirm/<confirmation_token>")]
-fn confirm(confirmation_token: u128) -> String {
-    format!("confirm your email with: {}\n", confirmation_token)
-    //TODO: check confirmation token
-    //add new user to database and log user if the token is valid
-    //return an error otherwise
-}
-
-#[put("/login")]
-fn login(_sess: session::Unconnected) -> &'static str {
-    "login\n"
-}
-
-#[put("/logout")]
-fn logout() -> &'static str {
-    "logout\n"
-}
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct ResetToken {
-    reset_token: Uuid,
-}
-
-#[get("/reset-token")]
-fn reset_token() -> Option<Json<ResetToken>> {
-    None
-}
-
-#[put("/password", data = "<reset_token>")]
-fn password(reset_token: &str) -> String {
-    format!(
-        "password: use reset-token '{}' to reset password\n",
-        reset_token
-    )
-}
 
 #[put("/")]
 fn put_user(sess: session::Connected) -> String {
@@ -142,12 +105,12 @@ fn rocket() -> _ {
             Ok(rocket)
         }))
         */
-        .mount("/user", routes![routes::user::register::handler])
-        .mount("/user", routes![confirm])
-        .mount("/user", routes![login])
-        .mount("/user", routes![logout])
-        .mount("/user", routes![reset_token])
-        .mount("/user", routes![password])
+        .mount("/user", routes![routes::user::register::post])
+        .mount("/user", routes![routes::user::confirm::post])
+        .mount("/user", routes![routes::user::login::put])
+        .mount("/user", routes![routes::user::logout::put])
+        .mount("/user", routes![routes::user::reset::get])
+        .mount("/user", routes![routes::user::reset::put])
         .mount("/user", routes![put_user])
         .mount("/pictures", routes![get_pictures])
         .mount("/pictures", routes![get_user_pictures])

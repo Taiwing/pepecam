@@ -48,7 +48,7 @@ const EMAIL_REGEX: &str =
 
 /// Register a new user account.
 #[post("/register", data = "<new_user>", format = "json")]
-pub async fn handler(
+pub async fn post(
     new_user: Json<NewUser>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,

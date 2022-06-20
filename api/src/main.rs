@@ -2,7 +2,7 @@
 extern crate rocket;
 extern crate rand;
 
-use regex::Regex;
+use regex::{Regex, RegexSet};
 use rocket::http::Status;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
 use rocket_db_pools::{Connection, Database};
@@ -36,6 +36,25 @@ struct NewUser {
     email: String,
 }
 
+// Username is simply a string of six to sixty-four word characters.
+const USERNAME_REGEX: &str = r"^\w{6,64}$";
+
+const PASSWORD_REGEX_COUNT: usize = 5;
+
+// Password must contain one lowercase letter, one uppercase letter, a digit, a
+// special character and must be at least 8 characters long.
+const PASSWORD_REGEX: [&'static str; PASSWORD_REGEX_COUNT] =
+    [r"[a-z]+", r"[A-Z]+", r"\d+", r"\W+", r".{8,}"];
+
+const PASSWORD_REGEX_ERRORS: [&'static str; PASSWORD_REGEX_COUNT] = [
+    "password must contain at least one lower case letter",
+    "password must contain at least one upper case letter",
+    "password must contain at least one digit",
+    "password must contain at least one special character",
+    "password must be at least eight characters long",
+];
+
+/// Register a new User account.
 #[post("/register", data = "<new_user>", format = "json")]
 async fn register(
     new_user: Json<NewUser>,
@@ -43,6 +62,29 @@ async fn register(
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
+
+    let re = Regex::new(USERNAME_REGEX).unwrap();
+    if re.is_match(&user.username) == false {
+        return ApiResult::Failure {
+            status: Status::BadRequest,
+            message: String::from(
+                "username must be a word of 6 to 64 characters long",
+            ),
+        };
+    }
+
+    let set = RegexSet::new(&PASSWORD_REGEX).unwrap();
+    let matches: Vec<_> = set.matches(&user.password).into_iter().collect();
+    if matches.len() != PASSWORD_REGEX_COUNT {
+        for first_error in 0..PASSWORD_REGEX_COUNT {
+            if !matches.contains(&first_error) {
+                return ApiResult::Failure {
+                    status: Status::BadRequest,
+                    message: String::from(PASSWORD_REGEX_ERRORS[first_error]),
+                };
+            }
+        }
+    }
 
     if query::is_taken("username", &user.username, &mut db).await {
         return ApiResult::Failure {

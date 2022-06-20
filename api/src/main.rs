@@ -54,6 +54,12 @@ const PASSWORD_REGEX_ERRORS: [&'static str; PASSWORD_REGEX_COUNT] = [
     "password must be at least eight characters long",
 ];
 
+// HTML5 email regex. The email addres must only contain alphanumeric and non
+// whitespace special characters for the first part. An '@' symbol and a domain
+// name with a least a '.' in it.
+const EMAIL_REGEX: &str =
+    r"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
+
 /// Register a new User account.
 #[post("/register", data = "<new_user>", format = "json")]
 async fn register(
@@ -63,6 +69,7 @@ async fn register(
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
+	//TODO: maybe use lazy_static macro crate to optimize this
     let re = Regex::new(USERNAME_REGEX).unwrap();
     if re.is_match(&user.username) == false {
         return ApiResult::Failure {
@@ -84,6 +91,14 @@ async fn register(
                 };
             }
         }
+    }
+
+    let re = Regex::new(EMAIL_REGEX).unwrap();
+    if re.is_match(&user.email) == false || user.email.len() > 256 {
+        return ApiResult::Failure {
+            status: Status::BadRequest,
+            message: String::from("invalid email format"),
+        };
     }
 
     if query::is_taken("username", &user.username, &mut db).await {

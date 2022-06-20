@@ -32,6 +32,8 @@ pub enum ApiResult<T: Serialize> {
     Failure { status: Status, message: String },
 }
 
+//TODO: handler other error codes and set default handler (so that we dont have
+//annoying html responses anymore): 400, 401, 403, 500, default
 #[catch(404)]
 pub fn not_found(req: &Request) -> Json<ApiError> {
     Json(ApiError::new(

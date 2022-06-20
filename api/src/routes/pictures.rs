@@ -1,3 +1,7 @@
+pub mod comment;
+pub mod like;
+pub mod user;
+
 use crate::query::{self, PostgresDb};
 use rocket::serde::json::Json;
 use rocket_db_pools::Connection;

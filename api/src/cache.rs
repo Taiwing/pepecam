@@ -97,4 +97,11 @@ impl Cache {
             None => None,
         }
     }
+
+	/// Check if a given key exists in the cache.
+	pub fn exists(&self, key: &str) -> bool {
+        let safe = Arc::clone(&self.safe);
+        let map = safe.lock().unwrap();
+		map.contains_key(key)
+	}
 }

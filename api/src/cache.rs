@@ -4,14 +4,14 @@ use std::time::{Duration, Instant};
 
 /// Cache item. Stores a string for a certain time.
 struct CacheItem {
-    pub value: String,
+    value: String,
     creation: Instant,
     lifetime: Duration,
 }
 
 impl CacheItem {
     /// Create a new cache item.
-    pub fn new(value: &str, lifetime: Duration) -> Self {
+    fn new(value: &str, lifetime: Duration) -> Self {
         CacheItem {
             value: value.to_string(),
             creation: Instant::now(),
@@ -20,7 +20,7 @@ impl CacheItem {
     }
 
     /// Is the item expired or not.
-    pub fn is_expired(&self) -> bool {
+    fn is_expired(&self) -> bool {
         self.creation.elapsed() > self.lifetime
     }
 }

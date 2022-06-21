@@ -1,12 +1,14 @@
 use crate::result::ApiResult;
 use crate::{
+    cache::Cache,
     query::{self, PostgresDb},
     session,
 };
 use regex::{Regex, RegexSet};
-use rocket::http::Status;
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::{http::Status, State};
 use rocket_db_pools::Connection;
+use std::time::Duration;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -52,6 +54,7 @@ pub async fn post(
     new_user: Json<NewUser>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,
+    cache: &State<Cache>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
@@ -102,6 +105,15 @@ pub async fn post(
     }
 
     let rand_token: u128 = rand::random();
+
+    //TEST
+    let last_item = cache.set(
+        "token",
+        &format!("{:x}", rand_token),
+        Duration::from_secs(10),
+    );
+    println!("last_item: {:?}", last_item);
+    //TEST
 
     //TODO: generate confirmation_token and send it through an email
     //instead of this

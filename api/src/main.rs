@@ -2,11 +2,13 @@
 extern crate rocket;
 extern crate rand;
 
+mod cache;
 mod query;
 mod result;
 mod routes;
 mod session;
 
+use cache::Cache;
 use query::PostgresDb;
 use rocket_db_pools::Database;
 
@@ -22,6 +24,7 @@ use rocket::tokio::time::{sleep, Duration};
 fn rocket() -> _ {
     rocket::build()
         .attach(PostgresDb::init())
+        .manage(Cache::new())
         /*
         .attach(AdHoc::try_on_ignite("Background Job", |rocket| async {
             rocket::tokio::task::spawn(async {

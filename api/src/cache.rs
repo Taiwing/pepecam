@@ -99,4 +99,11 @@ impl<T: Clone> Cache<T> {
         let map = safe.lock().unwrap();
         map.contains_key(key)
     }
+
+    /// Cleanup the cache by removing expired items.
+    pub fn cleanup(&self) {
+        let safe = Arc::clone(&self.safe);
+        let mut map = safe.lock().unwrap();
+        map.retain(|_, item| item.is_expired() == false);
+    }
 }

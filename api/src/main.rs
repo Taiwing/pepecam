@@ -14,8 +14,12 @@ use rocket::fairing::AdHoc;
 use rocket::tokio::time::{sleep, Duration};
 use rocket_db_pools::Database;
 
+// Interval in seconds for cleanup of expired values from the caches
+const CACHE_CLEANUP_INTERVAL: u64 = 5;
+
 #[launch]
 fn rocket() -> _ {
+    // Remember to add the Cache cleanup call here when creating a managed Cache
     let cleanup_job =
         AdHoc::try_on_ignite("Cache Cleanup Job", |rocket| async {
             let cache_string = rocket.state::<Cache<String>>().unwrap().clone();
@@ -24,7 +28,7 @@ fn rocket() -> _ {
                 loop {
                     cache_string.cleanup();
                     cache_u128.cleanup();
-                    sleep(Duration::from_secs(5)).await;
+                    sleep(Duration::from_secs(CACHE_CLEANUP_INTERVAL)).await;
                 }
             });
             Ok(rocket)

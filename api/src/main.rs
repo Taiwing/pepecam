@@ -15,10 +15,8 @@ use rocket_db_pools::Database;
 //TODO: Use this to create a BackgroundJob structure and manage a redis-like
 //LocalCache for temporary data. The background job would be used to enforce
 //expiries on said data (like for confirmation/reset tokens for example).
-/*
 use rocket::fairing::AdHoc;
 use rocket::tokio::time::{sleep, Duration};
-*/
 
 #[launch]
 fn rocket() -> _ {
@@ -26,19 +24,19 @@ fn rocket() -> _ {
         .attach(PostgresDb::init())
         .manage(Cache::<String>::new())
         .manage(Cache::<u128>::new())
-        /*
-        .attach(AdHoc::try_on_ignite("Background Job", |rocket| async {
-            rocket::tokio::task::spawn(async {
-                let mut iter: u128 = 0;
+        .attach(AdHoc::try_on_ignite("Cache Cleanup Job", |rocket| async {
+            let cache_string = rocket.state::<Cache<String>>().unwrap().clone();
+            let cache_u128 = rocket.state::<Cache<u128>>().unwrap().clone();
+            rocket::tokio::task::spawn(async move {
                 loop {
-                    iter = iter + 1;
-                    println!("iter: {}", iter);
+                    cache_string.cleanup();
+                    cache_u128.cleanup();
+                    println!("Caches are clean!");
                     sleep(Duration::from_secs(5)).await;
                 }
             });
             Ok(rocket)
         }))
-        */
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])
         .mount("/user", routes![routes::user::login::put])

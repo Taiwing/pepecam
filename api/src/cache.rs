@@ -27,6 +27,7 @@ impl<T: Clone> CacheItem<T> {
 
 /// Cache. Thread safe local cache system. This is an equivalent of Redis but
 /// without Redis.
+#[derive(Clone)]
 pub struct Cache<T: Clone> {
     safe: Arc<Mutex<HashMap<String, CacheItem<T>>>>,
 }

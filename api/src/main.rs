@@ -24,7 +24,8 @@ use rocket::tokio::time::{sleep, Duration};
 fn rocket() -> _ {
     rocket::build()
         .attach(PostgresDb::init())
-        .manage(Cache::new())
+        .manage(Cache::<String>::new())
+        .manage(Cache::<u128>::new())
         /*
         .attach(AdHoc::try_on_ignite("Background Job", |rocket| async {
             rocket::tokio::task::spawn(async {

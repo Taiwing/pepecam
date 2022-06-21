@@ -54,7 +54,8 @@ pub async fn post(
     new_user: Json<NewUser>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,
-    cache: &State<Cache>,
+    cache: &State<Cache<String>>,
+    other_cache: &State<Cache<u128>>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
@@ -112,6 +113,12 @@ pub async fn post(
         &format!("{:x}", rand_token),
         Duration::from_secs(10),
     );
+    println!("last_item: {:?}", last_item);
+    //TEST
+
+    //TEST
+    let last_item =
+        other_cache.set("token", &rand_token, Duration::from_secs(10));
     println!("last_item: {:?}", last_item);
     //TEST
 

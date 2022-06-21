@@ -2,18 +2,18 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
-/// Cache item. Stores a string for a certain time.
-struct CacheItem {
-    value: String,
+/// Cache item. Stores a value for a certain time.
+struct CacheItem<T: Clone> {
+    value: T,
     creation: Instant,
     lifetime: Duration,
 }
 
-impl CacheItem {
+impl<T: Clone> CacheItem<T> {
     /// Create a new cache item.
-    fn new(value: &str, lifetime: Duration) -> Self {
+    fn new(value: &T, lifetime: Duration) -> Self {
         CacheItem {
-            value: value.to_string(),
+            value: value.clone(),
             creation: Instant::now(),
             lifetime,
         }
@@ -27,11 +27,11 @@ impl CacheItem {
 
 /// Cache. Thread safe local cache system. This is an equivalent of Redis but
 /// without Redis.
-pub struct Cache {
-    safe: Arc<Mutex<HashMap<String, CacheItem>>>,
+pub struct Cache<T: Clone> {
+    safe: Arc<Mutex<HashMap<String, CacheItem<T>>>>,
 }
 
-impl Cache {
+impl<T: Clone> Cache<T> {
     /// Create a new instance of the Cache structure.
     pub fn new() -> Self {
         Cache {
@@ -42,12 +42,7 @@ impl Cache {
     /// Set a key-value pair in the cache. Returns the old value if a value
     /// already existed for the given key. The lifetime is the duration of
     /// storage inside the Cache. Passed it the data will be deleted.
-    pub fn set(
-        &self,
-        key: &str,
-        value: &str,
-        lifetime: Duration,
-    ) -> Option<String> {
+    pub fn set(&self, key: &str, value: &T, lifetime: Duration) -> Option<T> {
         let safe = Arc::clone(&self.safe);
         let mut map = safe.lock().unwrap();
         let old_item =
@@ -65,7 +60,7 @@ impl Cache {
     }
 
     /// Get a value from the Cache.
-    pub fn get(&self, key: &str) -> Option<String> {
+    pub fn get(&self, key: &str) -> Option<T> {
         let safe = Arc::clone(&self.safe);
         let mut map = safe.lock().unwrap();
         match map.get(key) {
@@ -74,7 +69,7 @@ impl Cache {
                     map.remove(key);
                     None
                 } else {
-                    Some(item.value.to_string())
+                    Some(item.value.clone())
                 }
             }
             None => None,
@@ -83,7 +78,7 @@ impl Cache {
 
     /// Delete a value from the Cache. Returns the old value if it was still
     /// valid. So this method can basically be used as a 'pop' function.
-    pub fn del(&self, key: &str) -> Option<String> {
+    pub fn del(&self, key: &str) -> Option<T> {
         let safe = Arc::clone(&self.safe);
         let mut map = safe.lock().unwrap();
         match map.remove(key) {
@@ -98,10 +93,10 @@ impl Cache {
         }
     }
 
-	/// Check if a given key exists in the cache.
-	pub fn exists(&self, key: &str) -> bool {
+    /// Check if a given key exists in the cache.
+    pub fn exists(&self, key: &str) -> bool {
         let safe = Arc::clone(&self.safe);
         let map = safe.lock().unwrap();
-		map.contains_key(key)
-	}
+        map.contains_key(key)
+    }
 }

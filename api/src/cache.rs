@@ -44,8 +44,7 @@ impl<T: Clone> Cache<T> {
     /// already existed for the given key. The lifetime is the duration of
     /// storage inside the Cache. Passed it the data will be deleted.
     pub fn set(&self, key: &str, value: &T, lifetime: Duration) -> Option<T> {
-        let safe = Arc::clone(&self.safe);
-        let mut map = safe.lock().unwrap();
+        let mut map = self.safe.lock().unwrap();
         let old_item =
             map.insert(key.to_string(), CacheItem::new(value, lifetime));
         match old_item {
@@ -62,8 +61,7 @@ impl<T: Clone> Cache<T> {
 
     /// Get a value from the Cache.
     pub fn get(&self, key: &str) -> Option<T> {
-        let safe = Arc::clone(&self.safe);
-        let mut map = safe.lock().unwrap();
+        let mut map = self.safe.lock().unwrap();
         match map.get(key) {
             Some(item) => {
                 if item.is_expired() {
@@ -80,8 +78,7 @@ impl<T: Clone> Cache<T> {
     /// Delete a value from the Cache. Returns the old value if it was still
     /// valid. So this method can basically be used as a 'pop' function.
     pub fn del(&self, key: &str) -> Option<T> {
-        let safe = Arc::clone(&self.safe);
-        let mut map = safe.lock().unwrap();
+        let mut map = self.safe.lock().unwrap();
         match map.remove(key) {
             Some(item) => {
                 if item.is_expired() {
@@ -96,15 +93,13 @@ impl<T: Clone> Cache<T> {
 
     /// Check if a given key exists in the cache.
     pub fn exists(&self, key: &str) -> bool {
-        let safe = Arc::clone(&self.safe);
-        let map = safe.lock().unwrap();
+        let map = self.safe.lock().unwrap();
         map.contains_key(key)
     }
 
     /// Cleanup the cache by removing expired items.
     pub fn cleanup(&self) {
-        let safe = Arc::clone(&self.safe);
-        let mut map = safe.lock().unwrap();
+        let mut map = self.safe.lock().unwrap();
         map.retain(|_, item| item.is_expired() == false);
     }
 }

@@ -26,5 +26,13 @@ pub fn post(
     };
     println!("{:?}", new_user);
     //TODO: add new user to database and log user
-    todo!()
+    ApiResult::Success {
+        status: Status::Created,
+        payload: DefaultResponse {
+            response: format!(
+                "'{}' user account has been successfully created!",
+                new_user.username
+            ),
+        },
+    }
 }

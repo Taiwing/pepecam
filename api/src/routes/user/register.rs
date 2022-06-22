@@ -109,7 +109,7 @@ pub async fn post(
 
     //TODO: send token through an email instead of this
     ApiResult::Success {
-        status: Status::Ok,
+        status: Status::Created,
         payload: token,
     }
 }

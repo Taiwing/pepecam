@@ -1,3 +1,5 @@
+//! Api crate for 42's Camagru web project.
+
 #[macro_use]
 extern crate rocket;
 extern crate rand;

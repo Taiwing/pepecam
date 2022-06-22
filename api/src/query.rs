@@ -1,3 +1,5 @@
+//! Handle every sql query for the api.
+
 use crate::rocket::futures::TryStreamExt;
 use rocket_db_pools::{sqlx, Connection, Database};
 use sqlx::{types::Uuid, PgPool, Row};
@@ -8,6 +10,7 @@ use sqlx::{types::Uuid, PgPool, Row};
 #[database("postgres")]
 pub struct PostgresDb(PgPool);
 
+/// Check if the given field value is already present in the accounts table.
 pub async fn is_taken(
     field: &str,
     value: &str,
@@ -25,6 +28,7 @@ pub async fn is_taken(
     }
 }
 
+/// Get a list of ids for every picture in the database.
 pub async fn pictures(mut db: Connection<PostgresDb>) -> Option<Vec<String>> {
     let mut rows =
         sqlx::query("SELECT picture_id FROM pictures;").fetch(&mut *db);
@@ -39,6 +43,7 @@ pub async fn pictures(mut db: Connection<PostgresDb>) -> Option<Vec<String>> {
     }
 }
 
+/// Get a list of pictures uploaded by a given user.
 pub async fn user_pictures(
     mut db: Connection<PostgresDb>,
     username: &str,

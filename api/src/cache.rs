@@ -1,3 +1,15 @@
+//! Cache structure for the api.
+//!
+//! This is used to store arbitrary data in the api for a limited amount of
+//! time. This has to be managed with rocket's `manage` method to be accessed as
+//! a rocket `State` by the routes' handlers. It is key-value pair system with
+//! setter, getter and remove functions.
+//!
+//! When creating a Cache for a given type and managing it with rocket, do not
+//! forget to add it in the cleanup job of the `main` module. Otherwise the
+//! expired values would not necessarily be deleted which could cause a memory
+//! leak.
+
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};

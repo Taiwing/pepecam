@@ -1,8 +1,12 @@
+//! Manage user sessions with private cookies.
+
 use rocket::http::Status;
 use rocket::request::{FromRequest, Outcome, Request};
 
+/// The user must not be logged in to use the given route.
 pub struct Unconnected {}
 
+/// The user must be logged in to use the given route.
 pub struct Connected {
     pub account_id: String,
 }
@@ -14,6 +18,7 @@ pub enum Error {
     InvalidSession,
 }
 
+/// Check if the user account exists.
 fn is_valid_account(account_id: &str) -> bool {
     account_id == "valid_account_id" //TODO: check in db
 }

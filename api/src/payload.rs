@@ -1,3 +1,5 @@
+//! Re-usable payloads for the routes' incoming or outgoing json data.
+
 use rocket::serde::{uuid::Uuid, Deserialize, Serialize};
 use std::fmt;
 

@@ -102,11 +102,6 @@ pub async fn post(
         Duration::from_secs(REGISTRATION_TOKEN_LIFETIME),
     );
 
-    //TEST
-    let added_user = cache.get(&token_name);
-    println!("added_user ({}): {:?}", token_name, added_user);
-    //TEST
-
     //TODO: send token through an email instead of this
     ApiResult::Success {
         status: Status::Created,

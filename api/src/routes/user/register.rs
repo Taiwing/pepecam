@@ -35,8 +35,8 @@ const PASSWORD_REGEX_ERRORS: [&'static str; PASSWORD_REGEX_COUNT] = [
 const EMAIL_REGEX: &str =
     r"^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$";
 
-// Time during which the register_token can be used in seconds.
-const REGISTER_TOKEN_LIFETIME: u64 = 300; // 5 minutes
+// Time during which the registration_token can be used in seconds.
+const REGISTRATION_TOKEN_LIFETIME: u64 = 300; // 5 minutes
 
 /// Register a new user account.
 #[post("/register", data = "<new_user>", format = "json")]
@@ -95,11 +95,11 @@ pub async fn post(
     }
 
     let token = Token::new();
-    let token_name = format!("register_token:{}", token);
+    let token_name = format!("registration_token:{}", token);
     cache.set(
         &token_name,
         &user,
-        Duration::from_secs(REGISTER_TOKEN_LIFETIME),
+        Duration::from_secs(REGISTRATION_TOKEN_LIFETIME),
     );
 
     //TEST

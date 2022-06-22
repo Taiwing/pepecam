@@ -23,11 +23,9 @@ fn rocket() -> _ {
     let cleanup_job =
         AdHoc::try_on_ignite("Cache Cleanup Job", |rocket| async {
             let cache_string = rocket.state::<Cache<String>>().unwrap().clone();
-            let cache_u128 = rocket.state::<Cache<u128>>().unwrap().clone();
             rocket::tokio::task::spawn(async move {
                 loop {
                     cache_string.cleanup();
-                    cache_u128.cleanup();
                     sleep(Duration::from_secs(CACHE_CLEANUP_INTERVAL)).await;
                 }
             });
@@ -37,7 +35,6 @@ fn rocket() -> _ {
     rocket::build()
         .attach(PostgresDb::init())
         .manage(Cache::<String>::new())
-        .manage(Cache::<u128>::new())
         .attach(cleanup_job)
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])

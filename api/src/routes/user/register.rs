@@ -5,23 +5,37 @@ use crate::{
     session,
 };
 use regex::{Regex, RegexSet};
-use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
 use rocket::{http::Status, State};
 use rocket_db_pools::Connection;
-use std::time::Duration;
+use std::{fmt, time::Duration};
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Token {
-    token: String,
+    token: Uuid,
+}
+
+impl Token {
+    pub fn new() -> Self {
+        Token {
+            token: Uuid::new_v4(),
+        }
+    }
+}
+
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.token)
+    }
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(crate = "rocket::serde")]
-pub struct NewUser {
-    username: String,
-    password: String,
-    email: String,
+pub struct NewUser<'r> {
+    username: &'r str,
+    password: &'r str,
+    email: &'r str,
 }
 
 // Username is simply a string of six to sixty-four word characters.
@@ -51,17 +65,16 @@ const EMAIL_REGEX: &str =
 /// Register a new user account.
 #[post("/register", data = "<new_user>", format = "json")]
 pub async fn post(
-    new_user: Json<NewUser>,
+    new_user: Json<NewUser<'_>>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,
     cache: &State<Cache<String>>,
-    other_cache: &State<Cache<u128>>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
     //TODO: maybe use lazy_static macro crate to optimize this
     let re = Regex::new(USERNAME_REGEX).unwrap();
-    if re.is_match(&user.username) == false {
+    if re.is_match(user.username) == false {
         return ApiResult::Failure {
             status: Status::BadRequest,
             message: String::from(
@@ -71,7 +84,7 @@ pub async fn post(
     }
 
     let set = RegexSet::new(&PASSWORD_REGEX).unwrap();
-    let matches: Vec<_> = set.matches(&user.password).into_iter().collect();
+    let matches: Vec<_> = set.matches(user.password).into_iter().collect();
     if matches.len() != PASSWORD_REGEX_COUNT {
         for first_error in 0..PASSWORD_REGEX_COUNT {
             if !matches.contains(&first_error) {
@@ -84,41 +97,32 @@ pub async fn post(
     }
 
     let re = Regex::new(EMAIL_REGEX).unwrap();
-    if re.is_match(&user.email) == false || user.email.len() > 256 {
+    if re.is_match(user.email) == false || user.email.len() > 256 {
         return ApiResult::Failure {
             status: Status::BadRequest,
             message: String::from("invalid email format"),
         };
     }
 
-    if query::is_taken("username", &user.username, &mut db).await {
+    if query::is_taken("username", user.username, &mut db).await {
         return ApiResult::Failure {
             status: Status::Conflict,
-            message: format!("username '{}' is already taken", &user.username),
+            message: format!("username '{}' is already taken", user.username),
         };
     }
 
-    if query::is_taken("email", &user.email, &mut db).await {
+    if query::is_taken("email", user.email, &mut db).await {
         return ApiResult::Failure {
             status: Status::Conflict,
-            message: format!("email '{}' is already taken", &user.email),
+            message: format!("email '{}' is already taken", user.email),
         };
     }
 
-    let rand_token: u128 = rand::random();
-
-    //TEST
-    let last_item = cache.set(
-        "token",
-        &format!("{:x}", rand_token),
-        Duration::from_secs(10),
-    );
-    println!("last_item: {:?}", last_item);
-    //TEST
+    let rand_token = Token::new();
 
     //TEST
     let last_item =
-        other_cache.set("token", &rand_token, Duration::from_secs(10));
+        cache.set("token", &rand_token.to_string(), Duration::from_secs(10));
     println!("last_item: {:?}", last_item);
     //TEST
 
@@ -126,8 +130,6 @@ pub async fn post(
     //instead of this
     ApiResult::Success {
         status: Status::Ok,
-        payload: Token {
-            token: format!("{:x}", rand_token),
-        },
+        payload: rand_token,
     }
 }

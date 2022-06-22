@@ -12,6 +12,7 @@ mod routes;
 mod session;
 
 use cache::Cache;
+use payload::NewUser;
 use query::PostgresDb;
 use rocket::fairing::AdHoc;
 use rocket::tokio::time::{sleep, Duration};
@@ -25,10 +26,10 @@ fn rocket() -> _ {
     // Remember to add the Cache cleanup call here when creating a managed Cache
     let cleanup_job =
         AdHoc::try_on_ignite("Cache Cleanup Job", |rocket| async {
-            let cache_string = rocket.state::<Cache<String>>().unwrap().clone();
+            let new_users = rocket.state::<Cache<NewUser>>().unwrap().clone();
             rocket::tokio::task::spawn(async move {
                 loop {
-                    cache_string.cleanup();
+                    new_users.cleanup();
                     sleep(Duration::from_secs(CACHE_CLEANUP_INTERVAL)).await;
                 }
             });
@@ -37,7 +38,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .attach(PostgresDb::init())
-        .manage(Cache::<String>::new())
+        .manage(Cache::<NewUser>::new())
         .attach(cleanup_job)
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])

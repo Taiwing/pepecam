@@ -3,6 +3,7 @@ extern crate rocket;
 extern crate rand;
 
 mod cache;
+mod payload;
 mod query;
 mod result;
 mod routes;

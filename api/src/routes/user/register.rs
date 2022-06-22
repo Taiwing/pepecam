@@ -1,3 +1,4 @@
+use crate::payload::{NewUser, Token};
 use crate::result::ApiResult;
 use crate::{
     cache::Cache,
@@ -5,38 +6,10 @@ use crate::{
     session,
 };
 use regex::{Regex, RegexSet};
-use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
+use rocket::serde::json::Json;
 use rocket::{http::Status, State};
 use rocket_db_pools::Connection;
-use std::{fmt, time::Duration};
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-pub struct Token {
-    token: Uuid,
-}
-
-impl Token {
-    pub fn new() -> Self {
-        Token {
-            token: Uuid::new_v4(),
-        }
-    }
-}
-
-impl fmt::Display for Token {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.token)
-    }
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(crate = "rocket::serde")]
-pub struct NewUser<'r> {
-    username: &'r str,
-    password: &'r str,
-    email: &'r str,
-}
+use std::time::Duration;
 
 // Username is simply a string of six to sixty-four word characters.
 const USERNAME_REGEX: &str = r"^\w{6,64}$";
@@ -126,8 +99,7 @@ pub async fn post(
     println!("last_item: {:?}", last_item);
     //TEST
 
-    //TODO: generate confirmation_token and send it through an email
-    //instead of this
+    //TODO: send token through an email instead of this
     ApiResult::Success {
         status: Status::Ok,
         payload: rand_token,

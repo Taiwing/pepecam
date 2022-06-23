@@ -1,5 +1,6 @@
 //! Handle every sql query for the api.
 
+use crate::payload::NewUser;
 use crate::rocket::futures::TryStreamExt;
 use rocket_db_pools::{sqlx, Connection, Database};
 use sqlx::{types::Uuid, PgPool, Row};
@@ -16,7 +17,7 @@ pub async fn is_taken(
     value: &str,
     db: &mut Connection<PostgresDb>,
 ) -> bool {
-    let query = format!("SELECT {} FROM accounts WHERE {} = $1", field, field);
+    let query = format!("SELECT {} FROM accounts WHERE {} = $1;", field, field);
     let row = sqlx::query(&query)
         .bind(value)
         .fetch_optional(&mut **db)
@@ -66,4 +67,28 @@ pub async fn user_pictures(
         0 => None,
         _ => Some(pictures),
     }
+}
+
+/// Create an account for a new user.
+pub async fn create_account(
+    mut db: Connection<PostgresDb>,
+    new_user: NewUser,
+) -> Result<String, sqlx::Error> {
+    let password_hash = "lolImAVeryNaughtyHash";
+    sqlx::query(
+        "
+		INSERT INTO accounts (email, username, password_hash)
+		VALUES ($1, $2, $3)
+		RETURNING account_id;
+	",
+    )
+    .bind(&new_user.email)
+    .bind(&new_user.username)
+    .bind(password_hash)
+    .fetch_one(&mut *db)
+    .await?;
+    Ok(format!(
+        "Great success! New user account '{}' has been created!",
+        new_user.username
+    ))
 }

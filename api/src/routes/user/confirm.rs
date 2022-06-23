@@ -1,15 +1,20 @@
 use crate::{
     cache::Cache,
     payload::{DefaultResponse, NewUser, Token},
+    query::{self, PostgresDb},
     result::ApiResult,
+    session,
 };
 use rocket::serde::json::Json;
 use rocket::{http::Status, State};
+use rocket_db_pools::Connection;
 
 /// Confirm new user account with the registration token.
 #[post("/confirm", data = "<registration_token>", format = "json")]
-pub fn post(
+pub async fn post(
     registration_token: Json<Token>,
+    _sess: session::Unconnected,
+    db: Connection<PostgresDb>,
     cache: &State<Cache<NewUser>>,
 ) -> ApiResult<DefaultResponse> {
     let token = registration_token.into_inner();
@@ -24,15 +29,15 @@ pub fn post(
             };
         }
     };
-    println!("{:?}", new_user);
-    //TODO: add new user to database and log user
-    ApiResult::Success {
-        status: Status::Created,
-        payload: DefaultResponse {
-            response: format!(
-                "'{}' user account has been successfully created!",
-                new_user.username
-            ),
+    match query::create_account(db, new_user).await {
+        //TODO: log user on success
+        Ok(response) => ApiResult::Success {
+            status: Status::Created,
+            payload: DefaultResponse { response },
+        },
+        Err(_) => ApiResult::Failure {
+            status: Status::Conflict,
+            message: format!("could not create new user account"),
         },
     }
 }

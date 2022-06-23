@@ -2,9 +2,11 @@
 
 #[macro_use]
 extern crate rocket;
+extern crate argon2;
 extern crate rand;
 
 mod cache;
+mod password;
 mod payload;
 mod query;
 mod result;

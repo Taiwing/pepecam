@@ -7,6 +7,9 @@ use sqlx::{types::Uuid, PgPool, Row};
 
 //TODO: find a way to remove the "postgres" string or to use the environment
 //instead (something like 'std::env!("DATABASE_NAME")' if possible).
+//TODO: Maybe actually implement this structure. This would mean setting every
+//query function as a mehod of a PostgresDb implementation (which would all work
+//on an '&mut PostgresDb' instance or something). This would be easier to use.
 #[derive(Database)]
 #[database("postgres")]
 pub struct PostgresDb(PgPool);
@@ -20,6 +23,23 @@ pub async fn is_taken(
     let query = format!("SELECT {} FROM accounts WHERE {} = $1;", field, field);
     let row = sqlx::query(&query)
         .bind(value)
+        .fetch_optional(&mut **db)
+        .await
+        .unwrap();
+    match row {
+        None => false,
+        Some(_) => true,
+    }
+}
+
+/// Check if the given user account exists
+pub async fn account_exists(
+    account_id: &Uuid,
+    db: &mut Connection<PostgresDb>,
+) -> bool {
+    let query = "SELECT account_id FROM accounts WHERE account_id = $1;";
+    let row = sqlx::query(query)
+        .bind(account_id)
         .fetch_optional(&mut **db)
         .await
         .unwrap();

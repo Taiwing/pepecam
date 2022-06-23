@@ -19,8 +19,11 @@ pub mod password {
 
 /// Manage user sessions with private cookies.
 pub mod session {
+    use crate::query::{self, PostgresDb};
     use rocket::http::Status;
     use rocket::request::{FromRequest, Outcome, Request};
+    use rocket_db_pools::Connection;
+    use sqlx::types::Uuid;
 
     /// The user must not be logged in to use the given route.
     pub struct Unconnected {}
@@ -38,8 +41,14 @@ pub mod session {
     }
 
     /// Check if the user account exists.
-    fn is_valid_account(account_id: &str) -> bool {
-        account_id == "valid_account_id" //TODO: check in db
+    async fn is_valid_account(
+        account_id: &str,
+        db: &mut Connection<PostgresDb>,
+    ) -> bool {
+        match Uuid::parse_str(account_id) {
+            Err(_) => false,
+            Ok(uuid) => query::account_exists(&uuid, db).await,
+        }
     }
 
     #[rocket::async_trait]
@@ -49,9 +58,13 @@ pub mod session {
         async fn from_request(
             request: &'r Request<'_>,
         ) -> Outcome<Self, Self::Error> {
+            let mut db =
+                request.guard::<Connection<PostgresDb>>().await.unwrap();
             match request.cookies().get_private("account_id") {
                 None => Outcome::Success(Unconnected {}),
-                Some(cookie) if is_valid_account(cookie.value()) => {
+                Some(cookie)
+                    if is_valid_account(cookie.value(), &mut db).await =>
+                {
                     Outcome::Failure((Status::Forbidden, Error::LoggedIn))
                 }
                 Some(_) => Outcome::Failure((
@@ -69,11 +82,15 @@ pub mod session {
         async fn from_request(
             request: &'r Request<'_>,
         ) -> Outcome<Self, Self::Error> {
+            let mut db =
+                request.guard::<Connection<PostgresDb>>().await.unwrap();
             match request.cookies().get_private("account_id") {
                 None => {
                     Outcome::Failure((Status::Unauthorized, Error::NotLoggedIn))
                 }
-                Some(cookie) if is_valid_account(cookie.value()) => {
+                Some(cookie)
+                    if is_valid_account(cookie.value(), &mut db).await =>
+                {
                     Outcome::Success(Connected {
                         account_id: cookie.value().to_string(),
                     })

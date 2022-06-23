@@ -1,9 +1,9 @@
 use crate::{
+    auth::session,
     cache::Cache,
     payload::{DefaultResponse, NewUser, Token},
     query::{self, PostgresDb},
     result::ApiResult,
-    session,
 };
 use rocket::serde::json::Json;
 use rocket::{http::Status, State};

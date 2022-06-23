@@ -1,9 +1,9 @@
 use crate::result::ApiResult;
 use crate::{
+    auth::session,
     cache::Cache,
     payload::{NewUser, Token},
     query::{self, PostgresDb},
-    session,
 };
 use regex::{Regex, RegexSet};
 use rocket::serde::json::Json;

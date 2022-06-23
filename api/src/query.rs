@@ -1,7 +1,7 @@
 //! Handle every sql query for the api.
 
 use crate::rocket::futures::TryStreamExt;
-use crate::{password, payload::NewUser};
+use crate::{auth::password, payload::NewUser};
 use rocket_db_pools::{sqlx, Connection, Database};
 use sqlx::{types::Uuid, PgPool, Row};
 
@@ -75,11 +75,15 @@ pub async fn create_account(
     new_user: NewUser,
 ) -> Result<String, sqlx::Error> {
     let password_hash = password::hash(&new_user.password);
+
+    //TEST
     println!("password_hash: '{}'", &password_hash);
     println!(
         "password::verify output: '{}'",
         password::verify(&new_user.password, &password_hash)
     );
+    //TEST
+
     sqlx::query(
         "
 		INSERT INTO accounts (email, username, password_hash)

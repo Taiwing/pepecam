@@ -4,7 +4,7 @@ pub mod logout;
 pub mod register;
 pub mod reset;
 
-use crate::session;
+use crate::auth::session;
 
 #[put("/")]
 pub fn put(sess: session::Connected) -> String {

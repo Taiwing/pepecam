@@ -1,4 +1,4 @@
-use crate::session;
+use crate::auth::session;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize};
 
 #[derive(Deserialize)]

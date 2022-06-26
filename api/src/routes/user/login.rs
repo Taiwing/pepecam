@@ -5,6 +5,7 @@ use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use rocket::http::{Cookie, CookieJar, Status};
 use rocket::serde::{json::Json, Deserialize};
+use rocket::time::{Duration, OffsetDateTime};
 use rocket_db_pools::Connection;
 
 #[derive(Deserialize)]
@@ -13,6 +14,9 @@ pub struct Credentials {
     username: String,
     password: String,
 }
+
+// One day
+const DAY: Duration = Duration::days(1);
 
 /// Login in to the application.
 #[put("/login", data = "<credentials>", format = "json")]
@@ -29,9 +33,9 @@ pub async fn put(
         if auth::password::verify(&credentials.password, &account.password_hash)
             == true
         {
-            let session_cookie =
+            let mut session_cookie =
                 Cookie::new("account_id", account.account_id.to_string());
-            //TODO: use set_expires to expire session after one day
+            session_cookie.set_expires(OffsetDateTime::now_utc() + DAY);
             cookies.add_private(session_cookie);
             return ApiResult::Success {
                 status: Status::Ok,

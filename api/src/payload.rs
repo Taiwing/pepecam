@@ -32,7 +32,7 @@ impl fmt::Display for Token {
 }
 
 /// New user data for user registration.
-#[derive(Deserialize, Clone, Debug)]
+#[derive(Deserialize, Clone)]
 #[serde(crate = "rocket::serde")]
 pub struct NewUser {
     pub username: String,

@@ -2,8 +2,22 @@
 
 use crate::rocket::futures::TryStreamExt;
 use crate::{auth::password, payload::NewUser};
-use rocket_db_pools::{sqlx, Connection, Database};
-use sqlx::{types::Uuid, PgPool, Row};
+use rocket_db_pools::sqlx::{self, types::Uuid, PgPool, Row};
+use rocket_db_pools::{Connection, Database};
+
+pub mod types {
+    use super::sqlx;
+
+    /// An account instance from the 'accounts' table.
+    #[derive(sqlx::FromRow)]
+    pub struct Account {
+        pub account_id: sqlx::types::Uuid,
+        pub email: String,
+        pub username: String,
+        pub password_hash: String,
+        pub email_notifications: bool,
+    }
+}
 
 //TODO: find a way to remove the "postgres" string or to use the environment
 //instead (something like 'std::env!("DATABASE_NAME")' if possible).
@@ -95,15 +109,6 @@ pub async fn create_account(
     new_user: NewUser,
 ) -> Result<String, sqlx::Error> {
     let password_hash = password::hash(&new_user.password);
-
-    //TEST
-    println!("password_hash: '{}'", &password_hash);
-    println!(
-        "password::verify output: '{}'",
-        password::verify(&new_user.password, &password_hash)
-    );
-    //TEST
-
     sqlx::query(
         "
 		INSERT INTO accounts (email, username, password_hash)
@@ -120,4 +125,17 @@ pub async fn create_account(
         "Great success! New user account '{}' has been created!",
         new_user.username
     ))
+}
+
+/// Get user by username
+pub async fn get_user_by_username(
+    username: &str,
+    db: &mut Connection<PostgresDb>,
+) -> Option<types::Account> {
+    let query = "SELECT * FROM accounts WHERE username = $1;";
+    sqlx::query_as(query)
+        .bind(username)
+        .fetch_optional(&mut **db)
+        .await
+        .unwrap()
 }

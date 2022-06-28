@@ -11,10 +11,10 @@ pub struct User {
 #[get("/user", data = "<user>", format = "json")]
 pub async fn get(
     user: Json<User>,
-    db: Connection<PostgresDb>,
+    mut db: Connection<PostgresDb>,
 ) -> Option<Json<Vec<String>>> {
     let username: &str = &user.into_inner().username;
-    match query::user_pictures(db, username).await {
+    match query::user_pictures(&mut db, username).await {
         None => None,
         Some(pictures) => Some(Json(pictures)),
     }

@@ -64,9 +64,9 @@ pub async fn account_exists(
 }
 
 /// Get a list of ids for every picture in the database.
-pub async fn pictures(mut db: Connection<PostgresDb>) -> Option<Vec<String>> {
+pub async fn pictures(db: &mut Connection<PostgresDb>) -> Option<Vec<String>> {
     let mut rows =
-        sqlx::query("SELECT picture_id FROM pictures;").fetch(&mut *db);
+        sqlx::query("SELECT picture_id FROM pictures;").fetch(&mut **db);
     let mut pictures: Vec<String> = vec![];
     while let Some(row) = rows.try_next().await.ok()? {
         let picture_id: Uuid = row.try_get(0).ok()?;
@@ -80,7 +80,7 @@ pub async fn pictures(mut db: Connection<PostgresDb>) -> Option<Vec<String>> {
 
 /// Get a list of pictures uploaded by a given user.
 pub async fn user_pictures(
-    mut db: Connection<PostgresDb>,
+    db: &mut Connection<PostgresDb>,
     username: &str,
 ) -> Option<Vec<String>> {
     let mut rows = sqlx::query(
@@ -91,7 +91,7 @@ pub async fn user_pictures(
 	",
     )
     .bind(username)
-    .fetch(&mut *db);
+    .fetch(&mut **db);
     let mut pictures: Vec<String> = vec![];
     while let Some(row) = rows.try_next().await.ok()? {
         let picture_id: Uuid = row.try_get(0).ok()?;
@@ -105,8 +105,8 @@ pub async fn user_pictures(
 
 /// Create an account for a new user.
 pub async fn create_account(
-    mut db: Connection<PostgresDb>,
-    new_user: NewUser,
+    db: &mut Connection<PostgresDb>,
+    new_user: &NewUser,
 ) -> Result<String, sqlx::Error> {
     let password_hash = password::hash(&new_user.password);
     sqlx::query(
@@ -119,7 +119,7 @@ pub async fn create_account(
     .bind(&new_user.email)
     .bind(&new_user.username)
     .bind(&password_hash)
-    .fetch_one(&mut *db)
+    .fetch_one(&mut **db)
     .await?;
     Ok(format!(
         "Great success! New user account '{}' has been created!",

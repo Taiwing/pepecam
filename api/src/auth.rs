@@ -7,7 +7,6 @@ pub mod password {
     pub fn hash(password: &str) -> String {
         let config = Config::default();
         let salt: [u8; 16] = rand::random();
-        println!("salt: {:?}", salt); //TEST
         argon2::hash_encoded(password.as_bytes(), &salt, &config).unwrap()
     }
 

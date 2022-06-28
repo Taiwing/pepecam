@@ -52,7 +52,7 @@ pub async fn post(
         }
         Err(_) => ApiResult::Failure {
             status: Status::Conflict,
-            message: format!("could not create new user account"),
+            message: String::from("could not create new user account"),
         },
     }
 }

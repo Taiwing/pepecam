@@ -31,7 +31,7 @@ pub async fn login(
             == true
         {
             let mut session_cookie =
-                Cookie::new("account_id", account.account_id.to_string());
+                Cookie::new("session", account.account_id.to_string());
             session_cookie.set_expires(OffsetDateTime::now_utc() + DAY);
             cookies.add_private(session_cookie);
             return Ok(String::from("great authentication success!"));

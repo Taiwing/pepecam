@@ -59,7 +59,7 @@ pub mod session {
         ) -> Outcome<Self, Self::Error> {
             let mut db =
                 request.guard::<Connection<PostgresDb>>().await.unwrap();
-            match request.cookies().get_private("account_id") {
+            match request.cookies().get_private("session") {
                 None => Outcome::Success(Unconnected {}),
                 Some(cookie)
                     if is_valid_account(cookie.value(), &mut db).await =>
@@ -83,7 +83,7 @@ pub mod session {
         ) -> Outcome<Self, Self::Error> {
             let mut db =
                 request.guard::<Connection<PostgresDb>>().await.unwrap();
-            match request.cookies().get_private("account_id") {
+            match request.cookies().get_private("session") {
                 None => {
                     Outcome::Failure((Status::Unauthorized, Error::NotLoggedIn))
                 }

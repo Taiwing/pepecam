@@ -15,8 +15,8 @@ pub struct Credentials {
     pub password: String,
 }
 
-// One day
-const DAY: Duration = Duration::days(1);
+// Session default duration (1 day)
+const SESSION_DURATION: Duration = Duration::days(1);
 
 /// Helper function checking credentials and creating the session on success.
 pub async fn login(
@@ -32,7 +32,8 @@ pub async fn login(
         {
             let mut session_cookie =
                 Cookie::new("session", account.account_id.to_string());
-            session_cookie.set_expires(OffsetDateTime::now_utc() + DAY);
+            session_cookie
+                .set_expires(OffsetDateTime::now_utc() + SESSION_DURATION);
             cookies.add_private(session_cookie);
             return Ok(String::from("great authentication success!"));
         }

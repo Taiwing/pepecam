@@ -1,17 +1,18 @@
 //! Handle every sql query for the api.
 
 use crate::rocket::futures::TryStreamExt;
+use crate::uuid::SqlxUuid;
 use crate::{auth::password, payload::NewUser};
-use rocket_db_pools::sqlx::{self, types::Uuid, PgPool, Row};
+use rocket_db_pools::sqlx::{self, PgPool, Row};
 use rocket_db_pools::{Connection, Database};
 
 pub mod types {
-    use super::sqlx;
+    use super::SqlxUuid;
 
     /// An account instance from the 'accounts' table.
     #[derive(sqlx::FromRow)]
     pub struct Account {
-        pub account_id: sqlx::types::Uuid,
+        pub account_id: SqlxUuid,
         pub email: String,
         pub username: String,
         pub password_hash: String,
@@ -48,7 +49,7 @@ pub async fn is_taken(
 
 /// Check if the given user account exists
 pub async fn account_exists(
-    account_id: &Uuid,
+    account_id: &SqlxUuid,
     db: &mut Connection<PostgresDb>,
 ) -> bool {
     let query = "SELECT account_id FROM accounts WHERE account_id = $1;";
@@ -69,7 +70,7 @@ pub async fn pictures(db: &mut Connection<PostgresDb>) -> Option<Vec<String>> {
         sqlx::query("SELECT picture_id FROM pictures;").fetch(&mut **db);
     let mut pictures: Vec<String> = vec![];
     while let Some(row) = rows.try_next().await.ok()? {
-        let picture_id: Uuid = row.try_get(0).ok()?;
+        let picture_id: SqlxUuid = row.try_get(0).ok()?;
         pictures.push(picture_id.to_hyphenated().to_string());
     }
     match pictures.len() {
@@ -94,7 +95,7 @@ pub async fn user_pictures(
     .fetch(&mut **db);
     let mut pictures: Vec<String> = vec![];
     while let Some(row) = rows.try_next().await.ok()? {
-        let picture_id: Uuid = row.try_get(0).ok()?;
+        let picture_id: SqlxUuid = row.try_get(0).ok()?;
         pictures.push(picture_id.to_hyphenated().to_string());
     }
     match pictures.len() {

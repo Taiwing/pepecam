@@ -19,13 +19,14 @@ pub async fn post(
     registration_token: Json<Token>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,
-    cache: &State<Cache<NewUser>>,
+    new_users: &State<Cache<NewUser>>,
+    sessions: &State<Cache<session::Connected>>,
     cookies: &CookieJar<'_>,
 ) -> ApiResult<DefaultResponse> {
     let token = registration_token.into_inner();
     let token_name = format!("registration_token:{}", token);
 
-    let new_user = match cache.del(&token_name) {
+    let new_user = match new_users.del(&token_name) {
         Some(item) => item,
         None => {
             return ApiResult::Failure {
@@ -40,7 +41,9 @@ pub async fn post(
                 username: new_user.username,
                 password: new_user.password,
             };
-            if let Err(_) = login(&credentials, &mut db, cookies).await {
+            if let Err(_) =
+                login(&credentials, &mut db, cookies, sessions).await
+            {
                 response = String::from(
                     "user account created but an error occured on login",
                 );

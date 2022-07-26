@@ -11,8 +11,9 @@ mod payload;
 mod query;
 mod result;
 mod routes;
-mod session;
+mod uuid;
 
+use auth::session;
 use cache::Cache;
 use payload::NewUser;
 use query::PostgresDb;
@@ -29,9 +30,12 @@ fn rocket() -> _ {
     let cleanup_job =
         AdHoc::try_on_ignite("Cache Cleanup Job", |rocket| async {
             let new_users = rocket.state::<Cache<NewUser>>().unwrap().clone();
+            let sessions =
+                rocket.state::<Cache<session::Connected>>().unwrap().clone();
             rocket::tokio::task::spawn(async move {
                 loop {
                     new_users.cleanup();
+                    sessions.cleanup();
                     sleep(Duration::from_secs(CACHE_CLEANUP_INTERVAL)).await;
                 }
             });
@@ -41,6 +45,7 @@ fn rocket() -> _ {
     rocket::build()
         .attach(PostgresDb::init())
         .manage(Cache::<NewUser>::new())
+        .manage(Cache::<session::Connected>::new())
         .attach(cleanup_job)
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])

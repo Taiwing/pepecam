@@ -140,3 +140,75 @@ pub async fn get_user_by_username(
         .await
         .unwrap()
 }
+
+/// Modify user account
+///
+/// Note: This implementation is really dumb. It executes one query per
+/// optional parameter. There should be an elegant way of bulding a multi
+/// type dynamic query but I did not find it. This is the simplest way.
+pub async fn put_user(
+    db: &mut Connection<PostgresDb>,
+    account_id: &SqlxUuid,
+    username: Option<String>,
+    password: Option<String>,
+    email: Option<String>,
+    email_notifications: Option<bool>,
+) -> Result<String, sqlx::Error> {
+    let password_hash = match password {
+        Some(password) => Some(password::hash(&password)),
+        None => None,
+    };
+
+    if let Some(username) = username {
+        let query = format!(
+            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
+            "username"
+        );
+        sqlx::query(&query)
+            .bind(&username)
+            .bind(account_id)
+            .execute(&mut **db)
+            .await?;
+    }
+
+    if let Some(password_hash) = password_hash {
+        let query = format!(
+            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
+            "password_hash"
+        );
+        sqlx::query(&query)
+            .bind(&password_hash)
+            .bind(account_id)
+            .execute(&mut **db)
+            .await?;
+    }
+
+    if let Some(email) = email {
+        let query = format!(
+            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
+            "email"
+        );
+        sqlx::query(&query)
+            .bind(&email)
+            .bind(account_id)
+            .execute(&mut **db)
+            .await?;
+    }
+
+    if let Some(email_notifications) = email_notifications {
+        let query = format!(
+            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
+            "email_notifications"
+        );
+        sqlx::query(&query)
+            .bind(&email_notifications)
+            .bind(account_id)
+            .execute(&mut **db)
+            .await?;
+    }
+
+    Ok(format!(
+        "Great success! User account '{}' has been updated!",
+        account_id
+    ))
+}

@@ -9,6 +9,7 @@ mod auth;
 mod cache;
 mod payload;
 mod query;
+mod regex;
 mod result;
 mod routes;
 mod uuid;

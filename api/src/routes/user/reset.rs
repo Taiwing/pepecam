@@ -1,8 +1,12 @@
 use crate::cache::Cache;
 use crate::payload::{DefaultResponse, Token};
-use crate::query::{get_user_by_username, PostgresDb};
+use crate::query::{get_user_by_username, put_user, PostgresDb};
+use crate::regex::{
+    PASSWORD_REGEX, PASSWORD_REGEX_COUNT, PASSWORD_REGEX_ERRORS,
+};
 use crate::result::ApiResult;
-use crate::uuid::from_sqlx_to_serde;
+use crate::uuid::{from_serde_to_sqlx, from_sqlx_to_serde};
+use regex::RegexSet;
 use rocket::http::Status;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
 use rocket::State;
@@ -22,8 +26,6 @@ pub struct ResetUsername {
 pub struct ResetToken {
     reset_token: Uuid,
 }
-
-//TODO: do not forget to validate passwords with the same regex as for the register route
 
 /// Request payload containing the new password for the PUT /reset route
 #[derive(Serialize, Deserialize)]
@@ -71,15 +73,60 @@ pub async fn get(
 }
 
 #[put("/reset", data = "<password_reset>", format = "json")]
-pub fn put(password_reset: Json<PasswordReset>) -> ApiResult<DefaultResponse> {
+pub async fn put(
+    password_reset: Json<PasswordReset>,
+    mut db: Connection<PostgresDb>,
+    reset_requests: &State<Cache<Request>>,
+) -> ApiResult<DefaultResponse> {
     let password_reset = password_reset.into_inner();
-    ApiResult::Success {
-        status: Status::Ok,
-        payload: DefaultResponse {
-            response: format!(
-                "password: use reset-token '{}' to reset password to '{}'\n",
-                password_reset.reset_token, password_reset.password
-            ),
+
+    let set = RegexSet::new(&PASSWORD_REGEX).unwrap();
+    let matches: Vec<_> =
+        set.matches(&password_reset.password).into_iter().collect();
+    if matches.len() != PASSWORD_REGEX_COUNT {
+        for first_error in 0..PASSWORD_REGEX_COUNT {
+            if !matches.contains(&first_error) {
+                return ApiResult::Failure {
+                    status: Status::BadRequest,
+                    message: String::from(PASSWORD_REGEX_ERRORS[first_error]),
+                };
+            }
+        }
+    }
+
+    let token_name = format!("reset_token:{}", password_reset.reset_token);
+    let request = match reset_requests.del(&token_name) {
+        Some(item) => item,
+        None => {
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message: format!(
+                    "invalid reset token '{}'",
+                    password_reset.reset_token
+                ),
+            };
+        }
+    };
+
+    match put_user(
+        &mut db,
+        &from_serde_to_sqlx(&request.account_id),
+        None,
+        Some(password_reset.password),
+        None,
+        None,
+    )
+    .await
+    {
+        Ok(_) => ApiResult::Success {
+            status: Status::Ok,
+            payload: DefaultResponse {
+                response: String::from("Password successfully reset!"),
+            },
+        },
+        Err(_) => ApiResult::Failure {
+            status: Status::InternalServerError,
+            message: String::from("Failed to reset the password."),
         },
     }
 }

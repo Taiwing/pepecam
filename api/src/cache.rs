@@ -104,6 +104,7 @@ impl<T: Clone> Cache<T> {
     }
 
     /// Check if a given key exists in the cache.
+    #[allow(unused)]
     pub fn exists(&self, key: &str) -> bool {
         let map = self.safe.lock().unwrap();
         map.contains_key(key)

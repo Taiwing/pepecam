@@ -153,7 +153,7 @@ pub async fn put_user(
     password: Option<String>,
     email: Option<String>,
     email_notifications: Option<bool>,
-) -> Result<String, sqlx::Error> {
+) -> Result<(), sqlx::Error> {
     let password_hash = match password {
         Some(password) => Some(password::hash(&password)),
         None => None,
@@ -207,8 +207,5 @@ pub async fn put_user(
             .await?;
     }
 
-    Ok(format!(
-        "Great success! User account '{}' has been updated!",
-        account_id
-    ))
+    Ok(())
 }

@@ -44,7 +44,7 @@ pub async fn post(
     new_user: Json<NewUser>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,
-    cache: &State<Cache<NewUser>>,
+    new_users: &State<Cache<NewUser>>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
@@ -96,7 +96,7 @@ pub async fn post(
 
     let token = Token::new();
     let token_name = format!("registration_token:{}", token);
-    cache.set(
+    new_users.set(
         &token_name,
         &user,
         Duration::from_secs(REGISTRATION_TOKEN_LIFETIME),

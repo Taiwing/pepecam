@@ -14,7 +14,7 @@ pub struct DefaultResponse {
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Token {
-    token: Uuid,
+    pub token: Uuid,
 }
 
 impl Token {

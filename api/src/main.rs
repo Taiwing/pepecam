@@ -20,6 +20,7 @@ use query::PostgresDb;
 use rocket::fairing::AdHoc;
 use rocket::tokio::time::{sleep, Duration};
 use rocket_db_pools::Database;
+use routes::user::reset;
 
 // Interval in seconds for cleanup of expired values from the caches
 const CACHE_CLEANUP_INTERVAL: u64 = 5;
@@ -32,10 +33,13 @@ fn rocket() -> _ {
             let new_users = rocket.state::<Cache<NewUser>>().unwrap().clone();
             let sessions =
                 rocket.state::<Cache<session::Connected>>().unwrap().clone();
+            let reset_requests =
+                rocket.state::<Cache<reset::Request>>().unwrap().clone();
             rocket::tokio::task::spawn(async move {
                 loop {
                     new_users.cleanup();
                     sessions.cleanup();
+                    reset_requests.cleanup();
                     sleep(Duration::from_secs(CACHE_CLEANUP_INTERVAL)).await;
                 }
             });
@@ -46,6 +50,7 @@ fn rocket() -> _ {
         .attach(PostgresDb::init())
         .manage(Cache::<NewUser>::new())
         .manage(Cache::<session::Connected>::new())
+        .manage(Cache::<reset::Request>::new())
         .attach(cleanup_job)
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])

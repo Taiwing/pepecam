@@ -1,0 +1,3 @@
+- implement tests for every route and structures
+- try and use environment variables for some constants (maybe create a config
+  module and initialize it once at launch)

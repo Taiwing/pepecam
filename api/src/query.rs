@@ -78,14 +78,20 @@ pub async fn account_exists(
 }
 
 /// Get a list of ids for every picture in the database.
-pub async fn pictures(db: &mut Connection<PostgresDb>) -> Option<Vec<Picture>> {
+pub async fn pictures(
+    db: &mut Connection<PostgresDb>,
+    index: u32,
+    count: u32,
+) -> Option<Vec<Picture>> {
     let query = "
 		SELECT picture_id, pictures.account_id, creation_ts, username as author
 		FROM pictures JOIN accounts
 		ON pictures.account_id = accounts.account_id
-		ORDER BY creation_ts DESC;
+		ORDER BY creation_ts DESC LIMIT $1 OFFSET $2;
 	";
     let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
+        .bind(count)
+        .bind(index * count)
         .fetch_all(&mut **db)
         .await
         .unwrap();

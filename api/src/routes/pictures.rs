@@ -10,8 +10,8 @@ use rocket_db_pools::Connection;
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct PicturePage {
-    pub index: usize,
-    pub count: usize,
+    pub index: u32,
+    pub count: u32,
 }
 
 #[get("/", data = "<page>", format = "json")]
@@ -21,7 +21,11 @@ pub async fn get(
 ) -> Option<Json<Vec<Picture>>> {
     let page = page.into_inner();
 
-    match query::pictures(&mut db).await {
+    if page.count == 0 {
+        return None;
+    }
+
+    match query::pictures(&mut db, page.index, page.count).await {
         None => None,
         Some(pictures) => Some(Json(pictures)),
     }

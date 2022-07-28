@@ -220,7 +220,6 @@ pub async fn like(
         }
     };
 
-    println!("query:\n{}", &query);
     sqlx::query(&query)
         .bind(picture_id)
         .bind(account_id)

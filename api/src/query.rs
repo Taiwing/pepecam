@@ -1,12 +1,16 @@
 //! Handle every sql query for the api.
 
 use crate::rocket::futures::TryStreamExt;
-use crate::uuid::SqlxUuid;
-use crate::{auth::password, payload::NewUser};
+use crate::uuid::{from_sqlx_to_serde, SqlxUuid};
+use crate::{
+    auth::password,
+    payload::{NewUser, Picture},
+};
 use rocket_db_pools::sqlx::{self, PgPool, Row};
 use rocket_db_pools::{Connection, Database};
 
 pub mod types {
+    use super::sqlx::{self, types::time::OffsetDateTime};
     use super::SqlxUuid;
 
     /// An account instance from the 'accounts' table.
@@ -17,6 +21,15 @@ pub mod types {
         pub username: String,
         pub password_hash: String,
         pub email_notifications: bool,
+    }
+
+    /// A picture from the GET pictures request
+    #[derive(sqlx::FromRow)]
+    pub struct DbPicture {
+        pub picture_id: SqlxUuid,
+        pub account_id: SqlxUuid,
+        pub creation_ts: OffsetDateTime,
+        pub author: String,
     }
 }
 
@@ -65,18 +78,30 @@ pub async fn account_exists(
 }
 
 /// Get a list of ids for every picture in the database.
-pub async fn pictures(db: &mut Connection<PostgresDb>) -> Option<Vec<String>> {
-    let mut rows =
-        sqlx::query("SELECT picture_id FROM pictures;").fetch(&mut **db);
-    let mut pictures: Vec<String> = vec![];
-    while let Some(row) = rows.try_next().await.ok()? {
-        let picture_id: SqlxUuid = row.try_get(0).ok()?;
-        pictures.push(picture_id.to_hyphenated().to_string());
+pub async fn pictures(db: &mut Connection<PostgresDb>) -> Option<Vec<Picture>> {
+    let query = "
+		SELECT picture_id, pictures.account_id, creation_ts, username as author
+		FROM pictures JOIN accounts
+		ON pictures.account_id = accounts.account_id
+		ORDER BY creation_ts DESC;
+	";
+    let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
+        .fetch_all(&mut **db)
+        .await
+        .unwrap();
+    if raw_pictures.len() == 0 {
+        return None;
     }
-    match pictures.len() {
-        0 => None,
-        _ => Some(pictures),
-    }
+    let pictures = raw_pictures
+        .iter()
+        .map(|raw_picture| Picture {
+            picture_id: from_sqlx_to_serde(&raw_picture.picture_id),
+            account_id: from_sqlx_to_serde(&raw_picture.account_id),
+            creation_ts: raw_picture.creation_ts.unix_timestamp(),
+            author: raw_picture.author.clone(),
+        })
+        .collect();
+    Some(pictures)
 }
 
 /// Get a list of pictures uploaded by a given user.

@@ -39,3 +39,13 @@ pub struct NewUser {
     pub password: String,
     pub email: String,
 }
+
+/// Picture data
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct Picture {
+    pub picture_id: Uuid,
+    pub account_id: Uuid,
+    pub creation_ts: i64,
+    pub author: String,
+}

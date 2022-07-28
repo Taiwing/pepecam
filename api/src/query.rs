@@ -239,6 +239,7 @@ pub async fn put_user(
     Ok(())
 }
 
+/// Add or remove a like/dislike on a given picture
 pub async fn like(
     db: &mut Connection<PostgresDb>,
     like: Option<bool>,
@@ -268,6 +269,7 @@ pub async fn like(
     Ok(())
 }
 
+/// Add given comment to a picture
 pub async fn comment(
     db: &mut Connection<PostgresDb>,
     comment: &str,

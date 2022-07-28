@@ -9,6 +9,7 @@ use crate::payload::DefaultResponse;
 use crate::query::{put_user, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
+use crate::validation;
 use rocket::http::Status;
 use rocket::serde::{json::Json, Deserialize, Serialize};
 use rocket_db_pools::Connection;
@@ -22,10 +23,6 @@ pub struct UserChanges {
     email_notifications: Option<bool>,
 }
 
-//TODO: validate UserChanges fields (move the code from the register route to
-//a dedicated module, maybe rename regex to validation and go from there)
-//Also, return an error when the payload is empty -_-
-
 #[put("/", data = "<user_changes>", format = "json")]
 pub async fn put(
     user_changes: Json<UserChanges>,
@@ -33,6 +30,49 @@ pub async fn put(
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
     let user_changes = user_changes.into_inner();
+
+    match user_changes {
+        UserChanges {
+            username: None,
+            password: None,
+            email: None,
+            email_notifications: None,
+        } => {
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message: String::from("empty payload"),
+            };
+        }
+        _ => {}
+    }
+
+    if let Some(ref username) = user_changes.username {
+        if let Err(message) = validation::username(&username) {
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message,
+            };
+        }
+    }
+
+    if let Some(ref password) = user_changes.password {
+        if let Err(message) = validation::username(&password) {
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message,
+            };
+        }
+    }
+
+    if let Some(ref email) = user_changes.email {
+        if let Err(message) = validation::username(&email) {
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message,
+            };
+        }
+    }
+
     match put_user(
         &mut db,
         &from_serde_to_sqlx(&sess.account_id),
@@ -50,7 +90,7 @@ pub async fn put(
             },
         },
         Err(_) => ApiResult::Failure {
-            status: Status::InternalServerError,
+            status: Status::Conflict,
             message: String::from("Failed to update user account."),
         },
     }

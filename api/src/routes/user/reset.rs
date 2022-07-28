@@ -1,12 +1,9 @@
 use crate::cache::Cache;
 use crate::payload::{DefaultResponse, Token};
 use crate::query::{get_user_by_username, put_user, PostgresDb};
-use crate::regex::{
-    PASSWORD_REGEX, PASSWORD_REGEX_COUNT, PASSWORD_REGEX_ERRORS,
-};
 use crate::result::ApiResult;
 use crate::uuid::{from_serde_to_sqlx, from_sqlx_to_serde};
-use regex::RegexSet;
+use crate::validation;
 use rocket::http::Status;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize, Serialize};
 use rocket::State;
@@ -80,18 +77,11 @@ pub async fn put(
 ) -> ApiResult<DefaultResponse> {
     let password_reset = password_reset.into_inner();
 
-    let set = RegexSet::new(&PASSWORD_REGEX).unwrap();
-    let matches: Vec<_> =
-        set.matches(&password_reset.password).into_iter().collect();
-    if matches.len() != PASSWORD_REGEX_COUNT {
-        for first_error in 0..PASSWORD_REGEX_COUNT {
-            if !matches.contains(&first_error) {
-                return ApiResult::Failure {
-                    status: Status::BadRequest,
-                    message: String::from(PASSWORD_REGEX_ERRORS[first_error]),
-                };
-            }
-        }
+    if let Err(message) = validation::password(&password_reset.password) {
+        return ApiResult::Failure {
+            status: Status::BadRequest,
+            message,
+        };
     }
 
     let token_name = format!("reset_token:{}", password_reset.reset_token);
@@ -126,7 +116,7 @@ pub async fn put(
         },
         Err(_) => ApiResult::Failure {
             status: Status::InternalServerError,
-            message: String::from("Failed to reset the password."),
+            message: String::from("Failed to reset password."),
         },
     }
 }

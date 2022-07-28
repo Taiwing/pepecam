@@ -160,10 +160,7 @@ pub async fn put_user(
     };
 
     if let Some(username) = username {
-        let query = format!(
-            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
-            "username"
-        );
+        let query = "UPDATE accounts SET username = $1 WHERE account_id = $2";
         sqlx::query(&query)
             .bind(&username)
             .bind(account_id)
@@ -172,10 +169,8 @@ pub async fn put_user(
     }
 
     if let Some(password_hash) = password_hash {
-        let query = format!(
-            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
-            "password_hash"
-        );
+        let query =
+            "UPDATE accounts SET password_hash = $1 WHERE account_id = $2";
         sqlx::query(&query)
             .bind(&password_hash)
             .bind(account_id)
@@ -184,10 +179,7 @@ pub async fn put_user(
     }
 
     if let Some(email) = email {
-        let query = format!(
-            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
-            "email"
-        );
+        let query = "UPDATE accounts SET email = $1 WHERE account_id = $2";
         sqlx::query(&query)
             .bind(&email)
             .bind(account_id)
@@ -196,10 +188,7 @@ pub async fn put_user(
     }
 
     if let Some(email_notifications) = email_notifications {
-        let query = format!(
-            "UPDATE accounts SET {} = $1 WHERE account_id = $2",
-            "email_notifications"
-        );
+        let query = "UPDATE accounts SET email_notifications = $1 WHERE account_id = $2";
         sqlx::query(&query)
             .bind(&email_notifications)
             .bind(account_id)

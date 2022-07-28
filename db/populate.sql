@@ -31,7 +31,7 @@ $$;
 
 -- Random Date function
 CREATE FUNCTION random_date(start_date VARCHAR, end_date VARCHAR)
-	RETURNS DATE
+	RETURNS TIMESTAMPTZ
 	LANGUAGE PLPGSQL
 AS
 $$
@@ -42,7 +42,7 @@ $$
 			random() * (TO_TIMESTAMP(end_date, 'YYYY-MM-DD HH24:MI:SS') 
 			- TO_TIMESTAMP(start_date, 'YYYY-MM-DD HH24:MI:SS'))
 		INTO rand_date;
-		RETURN rand_date::DATE;
+		RETURN rand_date::TIMESTAMPTZ;
 	END
 $$;
 

@@ -29,16 +29,26 @@ pub async fn put(
     )
     .await
     {
-        //TODO change response depending on the like value
-        Ok(_) => ApiResult::Success {
-            status: Status::Ok,
-            payload: DefaultResponse {
-                response: format!(
-                    "like on picture '{}' successfully toggled",
+        Ok(_) => {
+            let response = match picture.like {
+                None => format!(
+                    "like on picture '{}' successfully unset",
                     picture.picture_id
                 ),
-            },
-        },
+                Some(true) => format!(
+                    "like on picture '{}' successfully set",
+                    picture.picture_id
+                ),
+                Some(false) => format!(
+                    "dislike on picture '{}' successfully set",
+                    picture.picture_id
+                ),
+            };
+            return ApiResult::Success {
+                status: Status::Ok,
+                payload: DefaultResponse { response },
+            };
+        }
         Err(_) => ApiResult::Failure {
             status: Status::BadRequest,
             message: String::from("invalid picture id"),

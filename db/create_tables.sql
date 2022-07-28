@@ -19,6 +19,7 @@ ALTER TABLE pictures ADD FOREIGN KEY (account_id) REFERENCES accounts (account_i
 CREATE TABLE IF NOT EXISTS likes (
 	picture_id UUID NOT NULL,
 	account_id UUID NOT NULL,
+	value BOOLEAN NOT NULL DEFAULT TRUE,
 	CONSTRAINT NO_DUPLICATE_LIKE UNIQUE (picture_id, account_id)
 );
 

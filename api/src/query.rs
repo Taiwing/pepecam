@@ -1,12 +1,11 @@
 //! Handle every sql query for the api.
 
-use crate::rocket::futures::TryStreamExt;
 use crate::uuid::{from_sqlx_to_serde, SqlxUuid};
 use crate::{
     auth::password,
     payload::{NewUser, Picture},
 };
-use rocket_db_pools::sqlx::{self, PgPool, Row};
+use rocket_db_pools::sqlx::{self, PgPool};
 use rocket_db_pools::{Connection, Database};
 
 pub mod types {
@@ -114,25 +113,35 @@ pub async fn pictures(
 pub async fn user_pictures(
     db: &mut Connection<PostgresDb>,
     username: &str,
-) -> Option<Vec<String>> {
-    let mut rows = sqlx::query(
-        "
-		SELECT picture_id
-		FROM pictures JOIN accounts ON accounts.username = $1
-		WHERE accounts.account_id = pictures.account_id;
-	",
-    )
-    .bind(username)
-    .fetch(&mut **db);
-    let mut pictures: Vec<String> = vec![];
-    while let Some(row) = rows.try_next().await.ok()? {
-        let picture_id: SqlxUuid = row.try_get(0).ok()?;
-        pictures.push(picture_id.to_hyphenated().to_string());
+    index: u32,
+    count: u32,
+) -> Option<Vec<Picture>> {
+    let query = "
+		SELECT picture_id, pictures.account_id, creation_ts, username as author
+		FROM pictures JOIN accounts
+		ON pictures.account_id = accounts.account_id AND accounts.username = $1
+		ORDER BY creation_ts DESC LIMIT $2 OFFSET $3;
+	";
+    let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
+        .bind(username)
+        .bind(count)
+        .bind(index * count)
+        .fetch_all(&mut **db)
+        .await
+        .unwrap();
+    if raw_pictures.len() == 0 {
+        return None;
     }
-    match pictures.len() {
-        0 => None,
-        _ => Some(pictures),
-    }
+    let pictures = raw_pictures
+        .iter()
+        .map(|raw_picture| Picture {
+            picture_id: from_sqlx_to_serde(&raw_picture.picture_id),
+            account_id: from_sqlx_to_serde(&raw_picture.account_id),
+            creation_ts: raw_picture.creation_ts.unix_timestamp(),
+            author: raw_picture.author.clone(),
+        })
+        .collect();
+    Some(pictures)
 }
 
 /// Create an account for a new user.

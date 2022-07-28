@@ -10,8 +10,8 @@ use rocket_db_pools::Connection;
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct PicturePage {
-    pub index: u32,
-    pub count: u32,
+    index: u32,
+    count: u32,
 }
 
 #[get("/", data = "<page>", format = "json")]

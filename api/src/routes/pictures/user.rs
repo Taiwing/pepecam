@@ -1,20 +1,25 @@
+use crate::payload::Picture;
 use crate::query::{self, PostgresDb};
 use rocket::serde::{json::Json, Deserialize};
 use rocket_db_pools::Connection;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
-pub struct User {
+pub struct UserPicturePage {
     username: String,
+    index: u32,
+    count: u32,
 }
 
-#[get("/user", data = "<user>", format = "json")]
+#[get("/user", data = "<page>", format = "json")]
 pub async fn get(
-    user: Json<User>,
+    page: Json<UserPicturePage>,
     mut db: Connection<PostgresDb>,
-) -> Option<Json<Vec<String>>> {
-    let username: &str = &user.into_inner().username;
-    match query::user_pictures(&mut db, username).await {
+) -> Option<Json<Vec<Picture>>> {
+    let page = page.into_inner();
+    match query::user_pictures(&mut db, &page.username, page.index, page.count)
+        .await
+    {
         None => None,
         Some(pictures) => Some(Json(pictures)),
     }

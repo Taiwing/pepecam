@@ -9,14 +9,14 @@ use rocket_db_pools::Connection;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
-pub struct Picture {
+pub struct PictureLike {
     picture_id: Uuid,
     like: Option<bool>,
 }
 
 #[put("/like", data = "<picture>", format = "json")]
 pub async fn put(
-    picture: Json<Picture>,
+    picture: Json<PictureLike>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {

@@ -1,5 +1,11 @@
 use crate::auth::session;
+use crate::payload::DefaultResponse;
+use crate::query::{self, PostgresDb};
+use crate::result::ApiResult;
+use crate::uuid::from_serde_to_sqlx;
+use rocket::http::Status;
 use rocket::serde::{json::Json, uuid::Uuid, Deserialize};
+use rocket_db_pools::Connection;
 
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -9,13 +15,29 @@ pub struct PictureComment {
 }
 
 #[put("/comment", data = "<picture_comment>", format = "json")]
-pub fn put(
+pub async fn put(
     picture_comment: Json<PictureComment>,
     sess: session::Connected,
-) -> String {
+    mut db: Connection<PostgresDb>,
+) -> ApiResult<DefaultResponse> {
     let picture_comment = picture_comment.into_inner();
-    format!(
-        "PUT comment '{}' on picture {} as {}\n",
-        &picture_comment.comment, picture_comment.picture_id, sess.account_id
+    match query::comment(
+        &mut db,
+        &picture_comment.comment,
+        &from_serde_to_sqlx(&picture_comment.picture_id),
+        &from_serde_to_sqlx(&sess.account_id),
     )
+    .await
+    {
+        Ok(_) => ApiResult::Success {
+            status: Status::Ok,
+            payload: DefaultResponse {
+                response: String::from("Comment successfully set!"),
+            },
+        },
+        Err(_) => ApiResult::Failure {
+            status: Status::BadRequest,
+            message: String::from("invalid picture id"),
+        },
+    }
 }

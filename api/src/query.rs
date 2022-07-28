@@ -227,3 +227,23 @@ pub async fn like(
         .await?;
     Ok(())
 }
+
+pub async fn comment(
+    db: &mut Connection<PostgresDb>,
+    comment: &str,
+    picture_id: &SqlxUuid,
+    account_id: &SqlxUuid,
+) -> Result<(), sqlx::Error> {
+    let query = "
+		INSERT INTO comments (picture_id, account_id, content)
+		VALUES ($1, $2, $3);
+	";
+
+    sqlx::query(&query)
+        .bind(picture_id)
+        .bind(account_id)
+        .bind(comment)
+        .execute(&mut **db)
+        .await?;
+    Ok(())
+}

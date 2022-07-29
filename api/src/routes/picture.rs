@@ -43,6 +43,16 @@ const PICTURE_PATH: &str = "../front/pictures";
 
 const PICTURE_SIZEMAX: usize = 10;
 
+struct DummyPicture; //TODO remove this when adding photon
+
+fn create_picture(
+    raw_picture_bytes: Vec<u8>,
+    superposable: Superposable,
+    mut db: Connection<PostgresDb>,
+) -> Result<String, ()> {
+    Err(())
+}
+
 #[post("/<superposable>", data = "<picture>", format = "image/jpeg")]
 pub async fn post(
     superposable: &str,
@@ -51,40 +61,36 @@ pub async fn post(
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
     let superposable = match Superposable::from_str(superposable) {
-        Ok(superposable) => superposable,
         Err(_) => {
             return ApiResult::Failure {
                 status: Status::NotFound,
                 message: String::from("invalid superposable"),
             };
         }
+        Ok(superposable) => superposable,
     };
 
-    let picture_id = SerdeUuid::new_v4();
-    let filename = format!("{}/{}", PICTURE_PATH, picture_id.hyphenated());
-    let filepath = Path::new(&filename);
-
-    match picture
-        .open(PICTURE_SIZEMAX.mebibytes())
-        .into_file(&filepath)
-        .await
-    {
-        Ok(transfer) if transfer.is_complete() => {}
-        Ok(_) => {
-            let _ = fs::remove_file(&filepath);
-            return ApiResult::Failure {
-                status: Status::BadRequest,
-                message: format!(
-                    "picture too big (max is {} MiB)",
-                    PICTURE_SIZEMAX
-                ),
-            };
-        }
-        _ => {
-            return ApiResult::Failure {
-                status: Status::BadRequest,
-                message: String::from("picture upload failure"),
-            };
+    match picture.open(PICTURE_SIZEMAX.mebibytes()).into_bytes().await {
+        Err(_) => ApiResult::Failure {
+            status: Status::BadRequest,
+            message: String::from("file upload failure"),
+        },
+        Ok(transfer) if !transfer.is_complete() => ApiResult::Failure {
+            status: Status::BadRequest,
+            message: format!("file too big ({} MiB max)", PICTURE_SIZEMAX),
+        },
+        Ok(transfer) => {
+            let raw_picture_bytes = transfer.into_inner();
+            match create_picture(raw_picture_bytes, superposable, db) {
+                Err(_) => ApiResult::Failure {
+                    status: Status::InternalServerError,
+                    message: String::from("failed to create new picture"),
+                },
+                Ok(response) => ApiResult::Success {
+                    status: Status::Created,
+                    payload: DefaultResponse { response },
+                },
+            }
         }
     }
     //TODO: create the new picture by using the superposable
@@ -95,12 +101,4 @@ pub async fn post(
     // (if the transfer fails or whatever). Search 'watermark' for the function
     // we need to use. This should do the trick.
     //TODO: add the new picture to the database (maybe add a superposable field to the picture table)
-    let response = format!(
-        "new picture {} successfully created",
-        picture_id.hyphenated()
-    );
-    ApiResult::Success {
-        status: Status::Created,
-        payload: DefaultResponse { response },
-    }
 }

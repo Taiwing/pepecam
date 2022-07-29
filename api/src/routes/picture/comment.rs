@@ -30,7 +30,7 @@ pub async fn post(
     .await
     {
         Ok(_) => ApiResult::Success {
-            status: Status::Ok,
+            status: Status::Created,
             payload: DefaultResponse {
                 response: String::from("Comment successfully set!"),
             },

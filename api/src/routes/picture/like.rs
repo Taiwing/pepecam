@@ -39,7 +39,7 @@ pub async fn post(
                 action, picture.picture_id
             );
             return ApiResult::Success {
-                status: Status::Ok,
+                status: Status::Created,
                 payload: DefaultResponse { response },
             };
         }

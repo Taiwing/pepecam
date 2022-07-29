@@ -63,6 +63,7 @@ fn rocket() -> _ {
         .mount("/picture", routes![routes::picture::like::post])
         .mount("/picture", routes![routes::picture::like::delete])
         .mount("/picture", routes![routes::picture::comment::post])
+        .mount("/picture", routes![routes::picture::post])
         .mount("/pictures", routes![routes::pictures::get])
         .register("/", catchers![result::default])
         .register("/", catchers![result::bad_request])

@@ -62,26 +62,27 @@ pub async fn post(
     let filename =
         format!("{}/{}", PICTURE_PATH, picture_id.hyphenated().to_string());
 
-    if picture
+    match picture
         .open(PICTURE_SIZEMAX.mebibytes())
         .into_file(&Path::new(&filename))
         .await
-        .is_ok()
     {
-		//TODO: create the new picture by using the superposable
-        //TODO: add the new picture to the database (maybe add a superposable field to the db)
-        let response = format!(
-            "new picture {} successfully created",
-            picture_id.hyphenated().to_string()
-        );
-        return ApiResult::Success {
-            status: Status::Created,
-            payload: DefaultResponse { response },
-        };
+        Ok(transfer) if transfer.is_complete() => {}
+        _ => {
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message: String::from("invalid picture"),
+            };
+        }
     }
-
-    ApiResult::Failure {
-        status: Status::BadRequest,
-        message: String::from("invalid picture"),
+    //TODO: create the new picture by using the superposable
+    //TODO: add the new picture to the database (maybe add a superposable field to the db)
+    let response = format!(
+        "new picture {} successfully created",
+        picture_id.hyphenated().to_string()
+    );
+    ApiResult::Success {
+        status: Status::Created,
+        payload: DefaultResponse { response },
     }
 }

@@ -14,8 +14,8 @@ pub struct PictureComment {
     comment: String,
 }
 
-#[put("/comment", data = "<picture_comment>", format = "json")]
-pub async fn put(
+#[post("/comment", data = "<picture_comment>", format = "json")]
+pub async fn post(
     picture_comment: Json<PictureComment>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,

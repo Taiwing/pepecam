@@ -32,7 +32,6 @@ pub async fn login(
         query::get_user_by_username(&credentials.username, db).await
     {
         if auth::password::verify(&credentials.password, &account.password_hash)
-            == true
         {
             let session = session::Connected::new(from_sqlx_to_serde(
                 &account.account_id,

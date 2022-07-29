@@ -113,6 +113,6 @@ impl<T: Clone> Cache<T> {
     /// Cleanup the cache by removing expired items.
     pub fn cleanup(&self) {
         let mut map = self.safe.lock().unwrap();
-        map.retain(|_, item| item.is_expired() == false);
+        map.retain(|_, item| !item.is_expired());
     }
 }

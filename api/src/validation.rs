@@ -9,10 +9,10 @@ const PASSWORD_REGEX_COUNT: usize = 5;
 
 // Password must contain one lowercase letter, one uppercase letter, a digit, a
 // special character and must be at least 8 characters long.
-const PASSWORD_REGEX: [&'static str; PASSWORD_REGEX_COUNT] =
+const PASSWORD_REGEX: [&str; PASSWORD_REGEX_COUNT] =
     [r"[a-z]+", r"[A-Z]+", r"\d+", r"\W+", r".{8,}"];
 
-const PASSWORD_REGEX_ERRORS: [&'static str; PASSWORD_REGEX_COUNT] = [
+const PASSWORD_REGEX_ERRORS: [&str; PASSWORD_REGEX_COUNT] = [
     "password must contain at least one lower case letter",
     "password must contain at least one upper case letter",
     "password must contain at least one digit",
@@ -31,7 +31,7 @@ const EMAIL_REGEX: &str =
 /// Check that the given username is a valid string
 pub fn username(username: &str) -> Result<(), String> {
     let re = Regex::new(USERNAME_REGEX).unwrap();
-    if re.is_match(username) == false {
+    if !re.is_match(username) {
         return Err(String::from(
             "username must be a word of 6 to 64 characters long",
         ));
@@ -44,9 +44,9 @@ pub fn password(password: &str) -> Result<(), String> {
     let set = RegexSet::new(&PASSWORD_REGEX).unwrap();
     let matches: Vec<_> = set.matches(password).into_iter().collect();
     if matches.len() != PASSWORD_REGEX_COUNT {
-        for first_error in 0..PASSWORD_REGEX_COUNT {
-            if !matches.contains(&first_error) {
-                return Err(String::from(PASSWORD_REGEX_ERRORS[first_error]));
+        for (index, error) in PASSWORD_REGEX_ERRORS.iter().enumerate() {
+            if !matches.contains(&index) {
+                return Err(String::from(*error));
             }
         }
     }
@@ -56,7 +56,7 @@ pub fn password(password: &str) -> Result<(), String> {
 /// Check that the email actually looks like an email
 pub fn email(email: &str) -> Result<(), String> {
     let re = Regex::new(EMAIL_REGEX).unwrap();
-    if re.is_match(email) == false || email.len() > 256 {
+    if !re.is_match(email) || email.len() > 256 {
         return Err(String::from("invalid email format"));
     }
     Ok(())

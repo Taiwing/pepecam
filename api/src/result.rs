@@ -46,25 +46,25 @@ impl ApiError {
 /// // Outgoing data payload that can be 'jsonified'.
 /// #[derive(Serialize)]
 /// pub struct OutgoingData {
-///		field: String,
+///     field: String,
 /// }
 ///
 /// // Route returning an ApiResult depending on the input value.
 /// #[post("/my-post-route", data = "<number>")]
 /// fn my_post_route(number: u32) -> ApiResult<OutgoingData> {
-///		if number > 0 {
-///			ApiResult::Success {
-///				status: Status::Ok,
-///				payload: OutgoingData {
-///					field: number.to_string()
-///				}
-///			}
-/// 	} else {
-///			ApiResult::Failure {
-///				status: Status::BadRequest,
-///				message: String::from("this is not right!"),
-///			}
-///		}
+///     if number > 0 {
+///         ApiResult::Success {
+///             status: Status::Ok,
+///             payload: OutgoingData {
+///                 field: number.to_string()
+///             }
+///         }
+///     } else {
+///         ApiResult::Failure {
+///             status: Status::BadRequest,
+///             message: String::from("this is not right!"),
+///         }
+///     }
 /// }
 /// ```
 pub enum ApiResult<T: Serialize> {

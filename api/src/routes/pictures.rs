@@ -29,8 +29,5 @@ pub async fn get(
                 .await
         }
     };
-    match result {
-        None => None,
-        Some(pictures) => Some(Json(pictures)),
-    }
+    result.map(Json)
 }

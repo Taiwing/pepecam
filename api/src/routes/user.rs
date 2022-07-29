@@ -31,23 +31,21 @@ pub async fn put(
 ) -> ApiResult<DefaultResponse> {
     let user_changes = user_changes.into_inner();
 
-    match user_changes {
-        UserChanges {
-            username: None,
-            password: None,
-            email: None,
-            email_notifications: None,
-        } => {
-            return ApiResult::Failure {
-                status: Status::BadRequest,
-                message: String::from("empty payload"),
-            };
-        }
-        _ => {}
+    if let UserChanges {
+        username: None,
+        password: None,
+        email: None,
+        email_notifications: None,
+    } = user_changes
+    {
+        return ApiResult::Failure {
+            status: Status::BadRequest,
+            message: String::from("empty payload"),
+        };
     }
 
     if let Some(ref username) = user_changes.username {
-        if let Err(message) = validation::username(&username) {
+        if let Err(message) = validation::username(username) {
             return ApiResult::Failure {
                 status: Status::BadRequest,
                 message,
@@ -56,7 +54,7 @@ pub async fn put(
     }
 
     if let Some(ref password) = user_changes.password {
-        if let Err(message) = validation::username(&password) {
+        if let Err(message) = validation::password(password) {
             return ApiResult::Failure {
                 status: Status::BadRequest,
                 message,
@@ -65,7 +63,7 @@ pub async fn put(
     }
 
     if let Some(ref email) = user_changes.email {
-        if let Err(message) = validation::username(&email) {
+        if let Err(message) = validation::email(email) {
             return ApiResult::Failure {
                 status: Status::BadRequest,
                 message,

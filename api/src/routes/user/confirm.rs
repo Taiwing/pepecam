@@ -41,12 +41,9 @@ pub async fn post(
                 username: new_user.username,
                 password: new_user.password,
             };
-            if let Err(_) =
-                login(&credentials, &mut db, cookies, sessions).await
+            if (login(&credentials, &mut db, cookies, sessions).await).is_err()
             {
-                response = String::from(
-                    "user account created but an error occured on login",
-                );
+                response = String::from("login error");
             }
             ApiResult::Success {
                 status: Status::Created,

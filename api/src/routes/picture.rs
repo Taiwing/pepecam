@@ -42,7 +42,7 @@ const PICTURE_PATH: &str = "..";
 
 const PICTURE_SIZEMAX: usize = 10;
 
-#[post("/<superposable>", data = "<picture>")]
+#[post("/<superposable>", data = "<picture>", format = "image/jpeg")]
 pub async fn post(
     superposable: &str,
     picture: Data<'_>,
@@ -60,8 +60,7 @@ pub async fn post(
     };
 
     let picture_id = SerdeUuid::new_v4();
-    let filename =
-        format!("{}/{}", PICTURE_PATH, picture_id.hyphenated().to_string());
+    let filename = format!("{}/{}", PICTURE_PATH, picture_id.hyphenated());
     let filepath = Path::new(&filename);
 
     match picture
@@ -91,7 +90,7 @@ pub async fn post(
     //TODO: add the new picture to the database (maybe add a superposable field to the db)
     let response = format!(
         "new picture {} successfully created",
-        picture_id.hyphenated().to_string()
+        picture_id.hyphenated()
     );
     ApiResult::Success {
         status: Status::Created,

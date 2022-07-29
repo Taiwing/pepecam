@@ -38,10 +38,10 @@ pub async fn post(
                 "{} on picture '{}' successfully set",
                 action, picture.picture_id
             );
-            return ApiResult::Success {
+            ApiResult::Success {
                 status: Status::Created,
                 payload: DefaultResponse { response },
-            };
+            }
         }
         Err(_) => ApiResult::Failure {
             status: Status::BadRequest,
@@ -75,10 +75,10 @@ pub async fn delete(
                 "like on picture '{}' successfully unset",
                 picture.picture_id
             );
-            return ApiResult::Success {
+            ApiResult::Success {
                 status: Status::Ok,
                 payload: DefaultResponse { response },
-            };
+            }
         }
         Err(_) => ApiResult::Failure {
             status: Status::BadRequest,

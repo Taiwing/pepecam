@@ -94,7 +94,7 @@ pub async fn pictures(
         .fetch_all(&mut **db)
         .await
         .unwrap();
-    if raw_pictures.len() == 0 {
+    if raw_pictures.is_empty() {
         return None;
     }
     let pictures = raw_pictures
@@ -129,7 +129,7 @@ pub async fn user_pictures(
         .fetch_all(&mut **db)
         .await
         .unwrap();
-    if raw_pictures.len() == 0 {
+    if raw_pictures.is_empty() {
         return None;
     }
     let pictures = raw_pictures
@@ -194,14 +194,11 @@ pub async fn put_user(
     email: Option<String>,
     email_notifications: Option<bool>,
 ) -> Result<(), sqlx::Error> {
-    let password_hash = match password {
-        Some(password) => Some(password::hash(&password)),
-        None => None,
-    };
+    let password_hash = password.map(|password| password::hash(&password));
 
     if let Some(username) = username {
         let query = "UPDATE accounts SET username = $1 WHERE account_id = $2";
-        sqlx::query(&query)
+        sqlx::query(query)
             .bind(&username)
             .bind(account_id)
             .execute(&mut **db)
@@ -211,7 +208,7 @@ pub async fn put_user(
     if let Some(password_hash) = password_hash {
         let query =
             "UPDATE accounts SET password_hash = $1 WHERE account_id = $2";
-        sqlx::query(&query)
+        sqlx::query(query)
             .bind(&password_hash)
             .bind(account_id)
             .execute(&mut **db)
@@ -220,7 +217,7 @@ pub async fn put_user(
 
     if let Some(email) = email {
         let query = "UPDATE accounts SET email = $1 WHERE account_id = $2";
-        sqlx::query(&query)
+        sqlx::query(query)
             .bind(&email)
             .bind(account_id)
             .execute(&mut **db)
@@ -229,7 +226,7 @@ pub async fn put_user(
 
     if let Some(email_notifications) = email_notifications {
         let query = "UPDATE accounts SET email_notifications = $1 WHERE account_id = $2";
-        sqlx::query(&query)
+        sqlx::query(query)
             .bind(&email_notifications)
             .bind(account_id)
             .execute(&mut **db)
@@ -290,7 +287,7 @@ pub async fn comment(
 		VALUES ($1, $2, $3);
 	";
 
-    sqlx::query(&query)
+    sqlx::query(query)
         .bind(picture_id)
         .bind(account_id)
         .bind(comment)

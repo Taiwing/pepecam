@@ -91,7 +91,8 @@ pub async fn post(
 	// https://docs.rs/photon-rs/latest/photon_rs/native/fn.open_image_from_bytes.html
 	// This means that the picture must be read into a byte buffer, not into a
 	// file, which is actually better since there is no need to delete it then
-	// (if the transfer fails or whatever).
+	// (if the transfer fails or whatever). Search 'watermark' for the function
+	// we need to use. This should do the trick.
     //TODO: add the new picture to the database (maybe add a superposable field to the picture table)
     let response = format!(
         "new picture {} successfully created",

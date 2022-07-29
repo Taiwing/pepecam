@@ -1,5 +1,11 @@
 version: "3.7"
 
+x-pictures-volume:
+  &pictures-volume
+  - type: bind
+    source: ./front/pictures/
+    target: /pictures/
+
 services:
   db:
     build: ./db/
@@ -28,6 +34,8 @@ services:
 #        {${DB_USER}={
 #          url=postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_USER}
 #        }}
+#    volumes:
+#      pictures: *pictures-volume
 #    depends_on:
 #      - db
 
@@ -35,6 +43,9 @@ services:
     build: ./front/
     ports:
       - "${FRONT_PORT}:80"
+    volumes:
+      - <<: *pictures-volume
+        target: /usr/local/apache2/htdocs/pictures/
     depends_on:
       #- api
       - db # TEMP (only for dev purposes)

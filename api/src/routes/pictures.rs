@@ -1,6 +1,5 @@
 pub mod comment;
 pub mod like;
-pub mod user;
 
 use crate::payload::Picture;
 use crate::query::{self, PostgresDb};
@@ -10,6 +9,7 @@ use rocket_db_pools::Connection;
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct PicturePage {
+    username: Option<String>,
     index: u32,
     count: u32,
 }
@@ -25,7 +25,14 @@ pub async fn get(
         return None;
     }
 
-    match query::pictures(&mut db, page.index, page.count).await {
+    let result = match page.username {
+        None => query::pictures(&mut db, page.index, page.count).await,
+        Some(ref username) => {
+            query::user_pictures(&mut db, username, page.index, page.count)
+                .await
+        }
+    };
+    match result {
         None => None,
         Some(pictures) => Some(Json(pictures)),
     }

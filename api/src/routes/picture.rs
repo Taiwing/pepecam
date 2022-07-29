@@ -6,6 +6,7 @@ use crate::uuid::SerdeUuid;
 use rocket::data::{Data, ToByteUnit};
 use rocket::http::Status;
 use rocket_db_pools::Connection;
+use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -61,17 +62,28 @@ pub async fn post(
     let picture_id = SerdeUuid::new_v4();
     let filename =
         format!("{}/{}", PICTURE_PATH, picture_id.hyphenated().to_string());
+    let filepath = Path::new(&filename);
 
     match picture
         .open(PICTURE_SIZEMAX.mebibytes())
-        .into_file(&Path::new(&filename))
+        .into_file(&filepath)
         .await
     {
         Ok(transfer) if transfer.is_complete() => {}
+        Ok(_) => {
+            let _ = fs::remove_file(&filepath);
+            return ApiResult::Failure {
+                status: Status::BadRequest,
+                message: format!(
+                    "picture too big (max is {} MiB)",
+                    PICTURE_SIZEMAX
+                ),
+            };
+        }
         _ => {
             return ApiResult::Failure {
                 status: Status::BadRequest,
-                message: String::from("invalid picture"),
+                message: String::from("picture upload failure"),
             };
         }
     }

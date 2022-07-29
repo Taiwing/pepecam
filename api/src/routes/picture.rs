@@ -87,7 +87,12 @@ pub async fn post(
         }
     }
     //TODO: create the new picture by using the superposable
-    //TODO: add the new picture to the database (maybe add a superposable field to the db)
+	//TODO: use photon_rs for that check this out for loading the picture:
+	// https://docs.rs/photon-rs/latest/photon_rs/native/fn.open_image_from_bytes.html
+	// This means that the picture must be read into a byte buffer, not into a
+	// file, which is actually better since there is no need to delete it then
+	// (if the transfer fails or whatever).
+    //TODO: add the new picture to the database (maybe add a superposable field to the picture table)
     let response = format!(
         "new picture {} successfully created",
         picture_id.hyphenated()

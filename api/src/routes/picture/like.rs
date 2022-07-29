@@ -11,17 +11,17 @@ use rocket_db_pools::Connection;
 #[serde(crate = "rocket::serde")]
 pub struct PictureLike {
     picture_id: Uuid,
-    like: Option<bool>,
+    like: bool,
 }
 
-#[put("/like", data = "<picture>", format = "json")]
-pub async fn put(
+#[post("/like", data = "<picture>", format = "json")]
+pub async fn post(
     picture: Json<PictureLike>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
     let picture = picture.into_inner();
-    match query::like(
+    match query::post_like(
         &mut db,
         picture.like,
         &from_serde_to_sqlx(&picture.picture_id),
@@ -30,20 +30,51 @@ pub async fn put(
     .await
     {
         Ok(_) => {
-            let response = match picture.like {
-                None => format!(
-                    "like on picture '{}' successfully unset",
-                    picture.picture_id
-                ),
-                Some(true) => format!(
-                    "like on picture '{}' successfully set",
-                    picture.picture_id
-                ),
-                Some(false) => format!(
-                    "dislike on picture '{}' successfully set",
-                    picture.picture_id
-                ),
+            let action = match picture.like {
+                true => "like",
+                false => "dislike",
             };
+            let response = format!(
+                "{} on picture '{}' successfully set",
+                action, picture.picture_id
+            );
+            return ApiResult::Success {
+                status: Status::Ok,
+                payload: DefaultResponse { response },
+            };
+        }
+        Err(_) => ApiResult::Failure {
+            status: Status::BadRequest,
+            message: String::from("invalid picture id"),
+        },
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct PictureId {
+    picture_id: Uuid,
+}
+
+#[delete("/like", data = "<picture>", format = "json")]
+pub async fn delete(
+    picture: Json<PictureId>,
+    sess: session::Connected,
+    mut db: Connection<PostgresDb>,
+) -> ApiResult<DefaultResponse> {
+    let picture = picture.into_inner();
+    match query::delete_like(
+        &mut db,
+        &from_serde_to_sqlx(&picture.picture_id),
+        &from_serde_to_sqlx(&sess.account_id),
+    )
+    .await
+    {
+        Ok(_) => {
+            let response = format!(
+                "like on picture '{}' successfully unset",
+                picture.picture_id
+            );
             return ApiResult::Success {
                 status: Status::Ok,
                 payload: DefaultResponse { response },

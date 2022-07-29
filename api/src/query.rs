@@ -239,29 +239,38 @@ pub async fn put_user(
     Ok(())
 }
 
-/// Add or remove a like/dislike on a given picture
-pub async fn like(
+/// Add a like or a dislike on a given picture
+pub async fn post_like(
     db: &mut Connection<PostgresDb>,
-    like: Option<bool>,
+    like: bool,
     picture_id: &SqlxUuid,
     account_id: &SqlxUuid,
 ) -> Result<(), sqlx::Error> {
-    let query = match like {
-        None => String::from(
-            "DELETE FROM likes WHERE picture_id = $1 AND account_id = $2",
-        ),
-        Some(value) => {
-            format!(
-                "INSERT INTO likes (picture_id, account_id, value)
-				VALUES ($1, $2, {value})
-				ON CONFLICT ON CONSTRAINT no_duplicate_like
-				DO UPDATE SET value = {value};",
-                value = value
-            )
-        }
-    };
+    let query = "
+		INSERT INTO likes (picture_id, account_id, value)
+		VALUES ($1, $2, $3)
+		ON CONFLICT ON CONSTRAINT no_duplicate_like
+		DO UPDATE SET value = $3;
+	";
 
-    sqlx::query(&query)
+    sqlx::query(query)
+        .bind(picture_id)
+        .bind(account_id)
+        .bind(like)
+        .execute(&mut **db)
+        .await?;
+    Ok(())
+}
+
+/// Remove like or dislike on a given picture
+pub async fn delete_like(
+    db: &mut Connection<PostgresDb>,
+    picture_id: &SqlxUuid,
+    account_id: &SqlxUuid,
+) -> Result<(), sqlx::Error> {
+    let query = "DELETE FROM likes WHERE picture_id = $1 AND account_id = $2";
+
+    sqlx::query(query)
         .bind(picture_id)
         .bind(account_id)
         .execute(&mut **db)

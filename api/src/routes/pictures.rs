@@ -1,6 +1,3 @@
-pub mod comment;
-pub mod like;
-
 use crate::payload::Picture;
 use crate::query::{self, PostgresDb};
 use rocket::serde::{json::Json, Deserialize};

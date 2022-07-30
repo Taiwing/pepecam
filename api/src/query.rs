@@ -30,6 +30,12 @@ pub mod types {
         pub creation_ts: OffsetDateTime,
         pub author: String,
     }
+
+    /// A picture id from the POST picture request
+    #[derive(sqlx::FromRow)]
+    pub struct PictureId {
+        pub picture_id: SqlxUuid,
+    }
 }
 
 //TODO: find a way to remove the "postgres" string or to use the environment
@@ -53,10 +59,7 @@ pub async fn is_taken(
         .fetch_optional(&mut **db)
         .await
         .unwrap();
-    match row {
-        None => false,
-        Some(_) => true,
-    }
+    row.is_some()
 }
 
 /// Check if the given user account exists
@@ -70,10 +73,7 @@ pub async fn account_exists(
         .fetch_optional(&mut **db)
         .await
         .unwrap();
-    match row {
-        None => false,
-        Some(_) => true,
-    }
+    row.is_some()
 }
 
 /// Get a list of ids for every picture in the database.
@@ -291,6 +291,39 @@ pub async fn comment(
         .bind(picture_id)
         .bind(account_id)
         .bind(comment)
+        .execute(&mut **db)
+        .await?;
+    Ok(())
+}
+
+/// Create a new picture
+pub async fn post_picture(
+    db: &mut Connection<PostgresDb>,
+    account_id: &SqlxUuid,
+) -> Result<SqlxUuid, sqlx::Error> {
+    let query = "
+		INSERT INTO pictures (account_id) VALUES ($1)
+		RETURNING picture_id;
+	";
+
+    let new_picture: types::PictureId = sqlx::query_as(query)
+        .bind(account_id)
+        .fetch_one(&mut **db)
+        .await?;
+    Ok(new_picture.picture_id)
+}
+
+/// Delete a picture
+pub async fn delete_picture(
+    db: &mut Connection<PostgresDb>,
+    picture_id: &SqlxUuid,
+    account_id: &SqlxUuid,
+) -> Result<(), sqlx::Error> {
+    let query = "DELETE FROM pictures WHERE picture_id = $1 AND account_id = $2";
+
+    sqlx::query(query)
+        .bind(picture_id)
+        .bind(account_id)
         .execute(&mut **db)
         .await?;
     Ok(())

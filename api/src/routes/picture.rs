@@ -2,12 +2,12 @@ use crate::auth::session;
 use crate::payload::DefaultResponse;
 use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
-use crate::uuid::SerdeUuid;
+use crate::uuid::from_serde_to_sqlx;
+use crate::uuid::SqlxUuid;
+use photon_rs::native;
 use rocket::data::{Data, ToByteUnit};
 use rocket::http::Status;
 use rocket_db_pools::Connection;
-use std::fs;
-use std::path::Path;
 use std::str::FromStr;
 
 pub mod comment;
@@ -43,14 +43,31 @@ const PICTURE_PATH: &str = "../front/pictures";
 
 const PICTURE_SIZEMAX: usize = 10;
 
-struct DummyPicture; //TODO remove this when adding photon
-
-fn create_picture(
+async fn create_picture(
     raw_picture_bytes: Vec<u8>,
     superposable: Superposable,
-    mut db: Connection<PostgresDb>,
-) -> Result<String, ()> {
-    Err(())
+    account_id: &SqlxUuid,
+    db: &mut Connection<PostgresDb>,
+) -> Result<SqlxUuid, ()> {
+    let base_picture =
+        match native::open_image_from_bytes(raw_picture_bytes.as_slice()) {
+            Err(_) => {
+                return Err(());
+            }
+            Ok(base_picture) => base_picture,
+        };
+    //TODO: open the superposable here and "watermark" it to the base_picture
+    let new_picture = base_picture; //TEMP
+    let picture_id = match query::post_picture(db, account_id).await {
+        Err(_) => {
+            return Err(());
+        }
+        Ok(picture_id) => picture_id,
+    };
+    let filename =
+        format!("{}/{}.jpg", PICTURE_PATH, picture_id.to_hyphenated());
+    native::save_image(new_picture, &filename);
+    Ok(picture_id)
 }
 
 #[post("/<superposable>", data = "<picture>", format = "image/jpeg")]
@@ -81,24 +98,36 @@ pub async fn post(
         },
         Ok(transfer) => {
             let raw_picture_bytes = transfer.into_inner();
-            match create_picture(raw_picture_bytes, superposable, db) {
+            match create_picture(
+                raw_picture_bytes,
+                superposable,
+                &from_serde_to_sqlx(&sess.account_id),
+                &mut db,
+            )
+            .await
+            {
                 Err(_) => ApiResult::Failure {
                     status: Status::InternalServerError,
                     message: String::from("failed to create new picture"),
                 },
-                Ok(response) => ApiResult::Success {
+                Ok(picture_id) => ApiResult::Success {
                     status: Status::Created,
-                    payload: DefaultResponse { response },
+                    payload: DefaultResponse {
+                        response: picture_id.to_hyphenated().to_string(),
+                    },
                 },
             }
         }
     }
-    //TODO: create the new picture by using the superposable
-    //TODO: use photon_rs for that check this out for loading the picture:
-    // https://docs.rs/photon-rs/latest/photon_rs/native/fn.open_image_from_bytes.html
-    // This means that the picture must be read into a byte buffer, not into a
-    // file, which is actually better since there is no need to delete it then
-    // (if the transfer fails or whatever). Search 'watermark' for the function
-    // we need to use. This should do the trick.
-    //TODO: add the new picture to the database (maybe add a superposable field to the picture table)
 }
+
+/*
+#[delete("/", data = "<picture>", format = "json")]
+pub async fn delete(
+	picture: Json<PictureId>,
+    sess: session::Connected,
+    mut db: Connection<PostgresDb>,
+) -> ApiResult<DefaultResponse> {
+	todo()
+}
+*/

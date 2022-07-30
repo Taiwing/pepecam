@@ -3,6 +3,7 @@
 #[macro_use]
 extern crate rocket;
 extern crate argon2;
+extern crate photon_rs;
 extern crate rand;
 
 mod auth;

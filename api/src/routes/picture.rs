@@ -1,5 +1,6 @@
 use crate::auth::session;
 use crate::payload::DefaultResponse;
+use crate::payload::PictureId;
 use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
@@ -7,6 +8,7 @@ use crate::uuid::SqlxUuid;
 use photon_rs::native;
 use rocket::data::{Data, ToByteUnit};
 use rocket::http::Status;
+use rocket::serde::json::Json;
 use rocket_db_pools::Connection;
 use std::str::FromStr;
 
@@ -113,7 +115,10 @@ pub async fn post(
                 Ok(picture_id) => ApiResult::Success {
                     status: Status::Created,
                     payload: DefaultResponse {
-                        response: picture_id.to_hyphenated().to_string(),
+                        response: format!(
+                            "picture '{}' successfully created",
+                            picture_id.to_hyphenated()
+                        ),
                     },
                 },
             }
@@ -121,13 +126,32 @@ pub async fn post(
     }
 }
 
-/*
 #[delete("/", data = "<picture>", format = "json")]
 pub async fn delete(
-	picture: Json<PictureId>,
+    picture: Json<PictureId>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
-	todo()
+    let picture_id = picture.into_inner().picture_id;
+    match query::delete_picture(
+        &mut db,
+        &from_serde_to_sqlx(&picture_id),
+        &from_serde_to_sqlx(&sess.account_id),
+    )
+    .await
+    {
+        Err(_) => ApiResult::Failure {
+            status: Status::InternalServerError,
+            message: String::from("failed to delete picture"),
+        },
+        Ok(_) => ApiResult::Success {
+            status: Status::Ok,
+            payload: DefaultResponse {
+                response: format!(
+                    "picture '{}' successfully deleted",
+                    picture_id.hyphenated()
+                ),
+            },
+        },
+    }
 }
-*/

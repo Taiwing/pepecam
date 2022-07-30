@@ -1,5 +1,6 @@
 use crate::auth::session;
 use crate::payload::DefaultResponse;
+use crate::payload::PictureId;
 use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
@@ -48,12 +49,6 @@ pub async fn post(
             message: String::from("invalid picture id"),
         },
     }
-}
-
-#[derive(Deserialize)]
-#[serde(crate = "rocket::serde")]
-pub struct PictureId {
-    picture_id: Uuid,
 }
 
 #[delete("/like", data = "<picture>", format = "json")]

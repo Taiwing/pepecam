@@ -49,3 +49,9 @@ pub struct Picture {
     pub creation_ts: i64,
     pub author: String,
 }
+
+#[derive(Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct PictureId {
+    pub picture_id: Uuid,
+}

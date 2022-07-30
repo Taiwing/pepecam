@@ -319,7 +319,8 @@ pub async fn delete_picture(
     picture_id: &SqlxUuid,
     account_id: &SqlxUuid,
 ) -> Result<(), sqlx::Error> {
-    let query = "DELETE FROM pictures WHERE picture_id = $1 AND account_id = $2";
+    let query =
+        "DELETE FROM pictures WHERE picture_id = $1 AND account_id = $2";
 
     sqlx::query(query)
         .bind(picture_id)

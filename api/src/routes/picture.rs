@@ -10,6 +10,7 @@ use rocket::data::{Data, ToByteUnit};
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket_db_pools::Connection;
+use std::fs;
 use std::str::FromStr;
 
 pub mod comment;
@@ -133,6 +134,7 @@ pub async fn delete(
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
     let picture_id = picture.into_inner().picture_id;
+    let filename = format!("{}/{}.jpg", PICTURE_PATH, picture_id.hyphenated());
     match query::delete_picture(
         &mut db,
         &from_serde_to_sqlx(&picture_id),
@@ -142,15 +144,34 @@ pub async fn delete(
     {
         Err(_) => ApiResult::Failure {
             status: Status::InternalServerError,
-            message: String::from("failed to delete picture"),
+            message: format!(
+                "failed to delete '{}' picture",
+                picture_id.hyphenated()
+            ),
         },
-        Ok(_) => ApiResult::Success {
-            status: Status::Ok,
-            payload: DefaultResponse {
-                response: format!(
-                    "picture '{}' successfully deleted",
+        Ok(count) if count == 0 => ApiResult::Failure {
+            status: Status::BadRequest,
+            message: format!(
+                "could not find '{}' picture for current user",
+                picture_id.hyphenated()
+            ),
+        },
+        Ok(_) => match fs::remove_file(&filename) {
+            Err(_) => ApiResult::Failure {
+                status: Status::InternalServerError,
+                message: format!(
+                    "could not remove '{}' picture file",
                     picture_id.hyphenated()
                 ),
+            },
+            Ok(_) => ApiResult::Success {
+                status: Status::Ok,
+                payload: DefaultResponse {
+                    response: format!(
+                        "picture '{}' successfully deleted",
+                        picture_id.hyphenated()
+                    ),
+                },
             },
         },
     }

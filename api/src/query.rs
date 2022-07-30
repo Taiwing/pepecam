@@ -318,7 +318,7 @@ pub async fn delete_picture(
     db: &mut Connection<PostgresDb>,
     picture_id: &SqlxUuid,
     account_id: &SqlxUuid,
-) -> Result<(), sqlx::Error> {
+) -> Result<u64, sqlx::Error> {
     let query =
         "DELETE FROM pictures WHERE picture_id = $1 AND account_id = $2";
 
@@ -326,6 +326,6 @@ pub async fn delete_picture(
         .bind(picture_id)
         .bind(account_id)
         .execute(&mut **db)
-        .await?;
-    Ok(())
+        .await
+        .map(|result| result.rows_affected())
 }

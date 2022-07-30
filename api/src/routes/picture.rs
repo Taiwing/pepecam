@@ -5,6 +5,7 @@ use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
 use crate::uuid::SqlxUuid;
+use photon_rs::multiple;
 use photon_rs::native;
 use rocket::data::{Data, ToByteUnit};
 use rocket::http::Status;
@@ -16,13 +17,9 @@ use std::str::FromStr;
 pub mod comment;
 pub mod like;
 
-//TODO: Change the Superposable names when they will actually exist
+//TODO: Add Superposables (like 3 or 4)
 pub enum Superposable {
-    First,
-    Second,
-    Third,
-    Fourth,
-    Fifth,
+    Mickey,
 }
 
 impl FromStr for Superposable {
@@ -30,19 +27,20 @@ impl FromStr for Superposable {
 
     fn from_str(input: &str) -> Result<Superposable, Self::Err> {
         match input.to_lowercase().as_str() {
-            "first" => Ok(Superposable::First),
-            "second" => Ok(Superposable::Second),
-            "third" => Ok(Superposable::Third),
-            "fourth" => Ok(Superposable::Fourth),
-            "fifth" => Ok(Superposable::Fifth),
+            "mickey" => Ok(Superposable::Mickey),
             _ => Err(()),
         }
     }
 }
 
 //TODO: remove the relative PATH when the API is containerized
+//TODO: also maybe use an env variable for the picture directory location
 const PICTURE_PATH: &str = "../front/pictures";
 //const PICTURE_PATH: &str = "/pictures";
+
+//TODO: same as above, replace by containerized version
+const SUPERPOSABLE_PATH: &str = concat!("../front/pictures", "/superposables");
+//const SUPERPOSABLE_PATH: &str = concat!("/pictures", "/superposables");
 
 const PICTURE_SIZEMAX: usize = 10;
 
@@ -52,15 +50,26 @@ async fn create_picture(
     account_id: &SqlxUuid,
     db: &mut Connection<PostgresDb>,
 ) -> Result<SqlxUuid, ()> {
-    let base_picture =
+    let mut base_picture =
         match native::open_image_from_bytes(raw_picture_bytes.as_slice()) {
             Err(_) => {
                 return Err(());
             }
             Ok(base_picture) => base_picture,
         };
-    //TODO: open the superposable here and "watermark" it to the base_picture
-    let new_picture = base_picture; //TEMP
+    let filename = match superposable {
+        Superposable::Mickey => "mickey-ears.png",
+    };
+    let superposable_picture = match native::open_image(&format!(
+        "{}/{}",
+        SUPERPOSABLE_PATH, filename
+    )) {
+        Err(_) => {
+            return Err(());
+        }
+        Ok(image) => image,
+    };
+    multiple::watermark(&mut base_picture, &superposable_picture, 0, 0);
     let picture_id = match query::post_picture(db, account_id).await {
         Err(_) => {
             return Err(());
@@ -69,7 +78,7 @@ async fn create_picture(
     };
     let filename =
         format!("{}/{}.jpg", PICTURE_PATH, picture_id.to_hyphenated());
-    native::save_image(new_picture, &filename);
+    native::save_image(base_picture, &filename);
     Ok(picture_id)
 }
 

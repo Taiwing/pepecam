@@ -11,14 +11,14 @@ desktop and on phones and small resolutions.
 # clone it
 git clone https://github.com/Taiwing/camagru
 # build
-docker-compose up
+docker compose up
 ```
 Click [here](http://localhost:8080) to test it.
 
 ## How it works
 
 This application is bundled with docker-compose. Each part is a service in the
-docker-compose.yml file at the root of the repository.
+compose.yaml file at the root of the repository.
 
 ### api
 

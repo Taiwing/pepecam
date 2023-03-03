@@ -1,5 +1,3 @@
-version: "3.7"
-
 x-pictures-volume:
   &pictures-volume
   - type: bind

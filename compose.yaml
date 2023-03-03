@@ -1,8 +1,7 @@
-x-pictures-volume:
-  &pictures-volume
-  - type: bind
-    source: ./front/pictures/
-    target: /pictures/
+x-pictures-volume: &pictures-volume
+  type: bind
+  source: ./front/pictures/
+  target: /pictures/
 
 services:
   db:

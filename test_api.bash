@@ -1,7 +1,8 @@
 #!/bin/bash
 
 echo get pictures
-curl -X GET http://localhost:3000/pictures
+curl -X GET http://localhost:3000/pictures -H 'Content-Type: application/json' \
+	--data '{"index":0,"count":10}' | jq
 echo
 
 echo register user
@@ -15,4 +16,4 @@ echo
 echo confirm user
 curl -c jar -X POST http://localhost:3000/user/confirm \
 	-H 'Content-Type: application/json' \
-	--data '{"token":"'$REGISTER_TOKEN'"}'
+	--data '{"token":"'$REGISTER_TOKEN'"}' | jq

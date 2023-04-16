@@ -14,3 +14,4 @@ sqlx = { version = "0.5", default-features = false, features = ["uuid", "macros"
 rocket_db_pools = { version = "0.1.0-rc.2", features = ["sqlx_postgres"] }
 rust-argon2 = "1.0"
 photon-rs = "0.3.1"
+strum = { version = "0.24", features = ["derive"] }

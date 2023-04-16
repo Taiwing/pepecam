@@ -13,24 +13,21 @@ use rocket::serde::json::Json;
 use rocket_db_pools::Connection;
 use std::fs;
 use std::str::FromStr;
+use strum::{self, AsRefStr, EnumString};
 
 pub mod comment;
 pub mod like;
 
-//TODO: Add Superposables (like 3 or 4)
+#[derive(EnumString, AsRefStr)] // Convert from &str to Superposable and back
+#[strum(serialize_all = "lowercase")] // Every Superposable name is in lowercase
 pub enum Superposable {
-    Mickey,
-}
-
-impl FromStr for Superposable {
-    type Err = ();
-
-    fn from_str(input: &str) -> Result<Superposable, Self::Err> {
-        match input.to_lowercase().as_str() {
-            "mickey" => Ok(Superposable::Mickey),
-            _ => Err(()),
-        }
-    }
+    Chic,
+    Cry,
+    Honk,
+    Rage,
+    Smirk,
+    Soned,
+    Sweat,
 }
 
 //TODO: remove the relative PATH when the API is containerized
@@ -57,9 +54,7 @@ async fn create_picture(
             }
             Ok(base_picture) => base_picture,
         };
-    let filename = match superposable {
-        Superposable::Mickey => "mickey-ears.png",
-    };
+    let filename = &format!("{}.png", superposable.as_ref());
     let superposable_picture = match native::open_image(&format!(
         "{}/{}",
         SUPERPOSABLE_PATH, filename

@@ -5,8 +5,7 @@ use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
 use crate::uuid::SqlxUuid;
-use photon_rs::multiple;
-use photon_rs::native;
+use photon_rs::{multiple, native, PhotonImage};
 use rocket::data::{Data, ToByteUnit};
 use rocket::http::Status;
 use rocket::serde::json::Json;
@@ -39,21 +38,35 @@ const PICTURE_PATH: &str = "../front/pictures";
 const SUPERPOSABLE_PATH: &str = concat!("../front/pictures", "/superposables");
 //const SUPERPOSABLE_PATH: &str = concat!("/pictures", "/superposables");
 
+// Superposable picture width and height in pixels
+const SUPERPOSABLE_SIDE: u32 = 512;
+
 const PICTURE_SIZEMAX: usize = 10;
 
+fn load_user_picture(raw_bytes: Vec<u8>) -> Result<PhotonImage, String> {
+    let user_picture = match native::open_image_from_bytes(raw_bytes.as_slice())
+    {
+        Err(_) => {
+            return Err(String::from("invalid user picture"));
+        }
+        Ok(user_picture) => user_picture,
+    };
+
+    if user_picture.get_width() < SUPERPOSABLE_SIDE
+        || user_picture.get_height() < SUPERPOSABLE_SIDE
+    {
+        return Err(String::from("user picture too small"));
+    }
+
+    Ok(user_picture)
+}
+
 async fn create_picture(
-    raw_picture_bytes: Vec<u8>,
+    mut user_picture: PhotonImage,
     superposable: Superposable,
     account_id: &SqlxUuid,
     db: &mut Connection<PostgresDb>,
 ) -> Result<SqlxUuid, ()> {
-    let mut base_picture =
-        match native::open_image_from_bytes(raw_picture_bytes.as_slice()) {
-            Err(_) => {
-                return Err(());
-            }
-            Ok(base_picture) => base_picture,
-        };
     let filename = &format!("{}.png", superposable.as_ref());
     let superposable_picture = match native::open_image(&format!(
         "{}/{}",
@@ -64,7 +77,8 @@ async fn create_picture(
         }
         Ok(image) => image,
     };
-    multiple::watermark(&mut base_picture, &superposable_picture, 0, 0);
+    let y: u32 = user_picture.get_height() - SUPERPOSABLE_SIDE;
+    multiple::watermark(&mut user_picture, &superposable_picture, 0, y);
     let picture_id = match query::post_picture(db, account_id).await {
         Err(_) => {
             return Err(());
@@ -73,7 +87,7 @@ async fn create_picture(
     };
     let filename =
         format!("{}/{}.jpg", PICTURE_PATH, picture_id.to_hyphenated());
-    native::save_image(base_picture, &filename);
+    native::save_image(user_picture, &filename);
     Ok(picture_id)
 }
 
@@ -104,9 +118,17 @@ pub async fn post(
             message: format!("file too big ({} MiB max)", PICTURE_SIZEMAX),
         },
         Ok(transfer) => {
-            let raw_picture_bytes = transfer.into_inner();
+            let user_picture = match load_user_picture(transfer.into_inner()) {
+                Err(message) => {
+                    return ApiResult::Failure {
+                        status: Status::BadRequest,
+                        message,
+                    };
+                }
+                Ok(user_picture) => user_picture,
+            };
             match create_picture(
-                raw_picture_bytes,
+                user_picture,
                 superposable,
                 &from_serde_to_sqlx(&sess.account_id),
                 &mut db,

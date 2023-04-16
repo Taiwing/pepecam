@@ -24,6 +24,7 @@ pub enum Superposable {
     Cry,
     Honk,
     Rage,
+    Sad,
     Smirk,
     Soned,
     Sweat,

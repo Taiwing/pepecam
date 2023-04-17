@@ -1,3 +1,4 @@
+API:
 - implement tests for every route and structures
 - try and use environment variables for some constants (maybe create a config
   module and initialize it once at launch)
@@ -7,5 +8,8 @@
 - check the queries for unhandled failure (basically use the rows_affected
   value instead of returning an Ok(()))
 - create superposable enum in db and add this information to pictures table
+
+GLOBAL:
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
+- write a script to generate pepe'd pictures (still using picsum maybe)

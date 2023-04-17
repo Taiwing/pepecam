@@ -20,7 +20,7 @@ class PepePost extends HTMLElement {
 
     const date = new Date(Number(creation_ts) * 1000)
     title.textContent = `${author} at ${date.toLocaleString()}`
-    picture.src = `http://localhost:8080/picture/${picture_id}.jpg`
+    picture.src = `http://localhost:8080/pictures/${picture_id}.jpg`
     picture.alt = `Picture ${picture_id}`
   }
 }

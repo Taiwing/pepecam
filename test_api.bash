@@ -1,8 +1,8 @@
 #!/bin/bash
 
 echo get pictures
-curl -X GET http://localhost:3000/pictures -H 'Content-Type: application/json' \
-	--data '{"index":0,"count":10}' | jq
+curl -X GET 'http://localhost:3000/pictures?index=0&count=10' \
+	-H 'Content-Type: application/json'
 echo
 
 echo register user

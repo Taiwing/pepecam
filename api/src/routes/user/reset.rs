@@ -10,13 +10,6 @@ use rocket::State;
 use rocket_db_pools::Connection;
 use std::time::Duration;
 
-/// Request payload containing the username for the GET /reset route
-#[derive(Serialize, Deserialize)]
-#[serde(crate = "rocket::serde")]
-pub struct ResetUsername {
-    username: String,
-}
-
 /// Reset token to be sent to the user
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -41,16 +34,13 @@ pub struct Request {
 // Time during which the reset can be used in seconds.
 const RESET_TOKEN_LIFETIME: u64 = 300; // 5 minutes
 
-#[get("/reset", data = "<reset_username>", format = "json")]
+#[get("/reset?<username>")]
 pub async fn get(
-    reset_username: Json<ResetUsername>,
+    username: String,
     mut db: Connection<PostgresDb>,
     reset_requests: &State<Cache<Request>>,
 ) -> Option<Json<ResetToken>> {
-    let reset_username = reset_username.into_inner();
-    if let Some(account) =
-        get_user_by_username(&reset_username.username, &mut db).await
-    {
+    if let Some(account) = get_user_by_username(&username, &mut db).await {
         let token = Token::new();
         let token_name = format!("reset_token:{}", token);
         let request = Request {

@@ -12,7 +12,6 @@ class PepePost extends HTMLElement {
 
   connectedCallback() {
     const picture_id = this.getAttribute('data-picture-id')
-    const account_id = this.getAttribute('data-account-id')
     const creation_ts = this.getAttribute('data-creation-ts')
     const author = this.getAttribute('data-author')
 
@@ -20,7 +19,7 @@ class PepePost extends HTMLElement {
     const picture = this.shadowRoot.querySelector('img')
 
     const date = new Date(Number(creation_ts) * 1000)
-    title.textContent = `${author} (${account_id}) at ${date}`
+    title.textContent = `${author} at ${date.toLocaleString()}`
     picture.src = `http://localhost:8080/picture/${picture_id}.jpg`
     picture.alt = `Picture ${picture_id}`
   }

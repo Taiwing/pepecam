@@ -7,9 +7,8 @@ class PepePost extends HTMLElement {
     const style = document.createElement('style')
     style.textContent = `
       img {
-        width: 100%;
         max-width: 550px;
-        height: 500px;
+        max-height: 500px;
         object-fit: cover;
         border-radius: 10px;
       }

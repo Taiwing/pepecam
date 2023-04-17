@@ -4,10 +4,19 @@ class PepePost extends HTMLElement {
     super()
     this.attachShadow({ mode: 'open' })
 
+    const style = document.createElement('style')
+    style.textContent = `
+      img {
+        width: 100%;
+        max-width: 550px;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 10px;
+      }
+    `
     const title = document.createElement('h2')
     const picture = document.createElement('img')
-    this.shadowRoot.appendChild(title)
-    this.shadowRoot.appendChild(picture)
+    this.shadowRoot.append(style, title, picture)
   }
 
   connectedCallback() {
@@ -29,17 +38,22 @@ class PepePost extends HTMLElement {
 customElements.define('pepe-post', PepePost)
 
 // Global variables
-let index = 0
+let index = -1
+let finished = false
 const count = 50
 
 // Get posts
 async function getPepePosts() {
   try {
+    index += 1
     const url = `http://localhost:3000/pictures?index=${index}&count=${count}`
     const response = await fetch(url)
-
-    index += 1
     const posts = await response.json()
+
+    if (response.status !== 200 || !posts || posts.length === 0) {
+      finished = true
+      return
+    }
 
     const feed = document.querySelector('.feed')
     for (const post of posts) {
@@ -52,13 +66,17 @@ async function getPepePosts() {
       feed.appendChild(postElement)
     }
   } catch (error) {
+    finished = true
+    //TODO: remove this log to "respect" the subject
     console.error(error)
   }
 }
 
 // Get posts on scroll
 window.addEventListener('scroll', () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+  if (finished) return
+
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.75) {
     getPepePosts()
   }
 })

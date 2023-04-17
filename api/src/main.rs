@@ -8,6 +8,7 @@ extern crate rand;
 
 mod auth;
 mod cache;
+mod cors;
 mod payload;
 mod query;
 mod result;
@@ -17,6 +18,7 @@ mod validation;
 
 use auth::session;
 use cache::Cache;
+use cors::Cors;
 use payload::NewUser;
 use query::PostgresDb;
 use rocket::fairing::AdHoc;
@@ -54,6 +56,7 @@ fn rocket() -> _ {
         .manage(Cache::<session::Connected>::new())
         .manage(Cache::<reset::Request>::new())
         .attach(cleanup_job)
+        .attach(Cors)
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])
         .mount("/user", routes![routes::user::login::put])

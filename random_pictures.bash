@@ -8,20 +8,20 @@
 # number of pictures to download
 COUNT=1084
 
+# picture resolutions
+RESOLUTIONS=(
+	"600/900"
+	"900/600"
+	"1024/1024"
+	"1280/900"
+	"900/1280"
+	"1920/1080"
+	"1080/1920"
+)
+
 function download_pictures() {
 	# picsum output directory
 	mkdir -p picsum/
-
-	# resolutions
-	RESOLUTIONS=(
-		"600/900"
-		"900/600"
-		"1024"
-		"1280/900"
-		"900/1280"
-		"1920/1080"
-		"1080/1920"
-	)
 
 	# download pictures
 	for i in $(seq 0 $COUNT); do
@@ -61,6 +61,16 @@ function generate_pepes() {
 			--data-binary @picsum/$i.jpg)
 		PICTURE_ID="${PICTURE_ID:22:36}"
 		mv front/pictures/$PICTURE_ID.jpg pepe/$i-$PEPE.jpg
+	done
+}
+
+function download_missing() {
+	# download pictures
+	for i in $(seq 0 $COUNT); do
+		if [ ! -s "picsum/$i.jpg" ]; then
+			RESOLUTION=${RESOLUTIONS[ $RANDOM % ${#RESOLUTIONS[@]} ]}
+			wget -O picsum/$i.jpg https://loremflickr.com/$RESOLUTION
+		fi
 	done
 }
 

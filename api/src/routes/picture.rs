@@ -26,7 +26,7 @@ pub enum Superposable {
     Rage,
     Sad,
     Smirk,
-    Soned,
+    Stoned,
     Sweat,
 }
 

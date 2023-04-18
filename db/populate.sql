@@ -1,16 +1,16 @@
 -- Set params
 SET SESSION test.n_accounts = '50';
-SET SESSION test.n_pictures = '500';
-SET SESSION test.n_likes = '1000';
-SET SESSION test.n_comments = '1000';
+SET SESSION test.n_pictures = '1084';
+SET SESSION test.n_likes = '8000';
+SET SESSION test.n_comments = '5000';
 SET SESSION test.date_min = '2022-01-01 00:00:00';
-SET SESSION test.date_max = '2022-06-11 00:00:00';
+SET SESSION test.date_max = '2023-04-18 00:00:00';
 SET SESSION test.password_hash = '1e623de0d44a6e7443ab927559c02452';
 
 -- Generate Users
 INSERT INTO accounts
 SELECT uuid_generate_v4(),
-	CONCAT('User', id, '@lolmail.com'), 
+	CONCAT('User', id, '@lolmail.com'),
 	CONCAT('User', id),
 	CURRENT_SETTING('test.password_hash'),
 	true
@@ -39,7 +39,7 @@ $$
 	BEGIN
 		SELECT
 			TO_TIMESTAMP(start_date, 'YYYY-MM-DD HH24:MI:SS') +
-			random() * (TO_TIMESTAMP(end_date, 'YYYY-MM-DD HH24:MI:SS') 
+			random() * (TO_TIMESTAMP(end_date, 'YYYY-MM-DD HH24:MI:SS')
 			- TO_TIMESTAMP(start_date, 'YYYY-MM-DD HH24:MI:SS'))
 		INTO rand_date;
 		RETURN rand_date::TIMESTAMPTZ;

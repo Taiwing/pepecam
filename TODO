@@ -12,3 +12,21 @@ API:
 GLOBAL:
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
+- add documentation about the populate scripts in README (maybe "clean" the
+  logic so that it is simpler to use)
+- maybe try and find a way to use an ENV variable to populate the database
+- implement mail logic (find a way to send mail from the backend)
+
+FRONT:
+- add like/dislike buttons and toggle comments (or go to dedicated page when
+  clicking on picture and then comment)
+- user sign-up/login (add buttons in the header and maybe turn it into a
+  component)
+- when user is connected show a logout button at the same place as login in
+  the header
+- also add a settings button to change account parameters (email, password,
+  notfications, etc...)
+- create edition page (studio, pepe's lair, or something cool idk) with current
+  webcam view or an uploaded picture and a pepe selector, and also a side
+  section for previously created pictures
+- make sure this shit looks good on mobile ("displays correctly")

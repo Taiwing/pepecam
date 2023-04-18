@@ -12,4 +12,3 @@ API:
 GLOBAL:
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
-- write a script to generate pepe'd pictures (still using picsum maybe)

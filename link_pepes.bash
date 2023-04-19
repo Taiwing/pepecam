@@ -5,10 +5,15 @@ DB_PICTURES=$(docker exec camagru-db-1 psql -U postgres postgres \
 	-c "SELECT picture_id FROM pictures" \
 	| grep -E '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
 
+cd front/pictures/
+
+# Remove old symlinks
+find ./ -maxdepth 1 -type l -delete
+
 # Get the subset of picture id that do not match a file in front/pictures/
 MISSING_PICTURE=()
 for picture in $DB_PICTURES; do
-	if [ ! -f front/pictures/$picture.jpg ]; then
+	if [ ! -f $picture.jpg ]; then
 		MISSING_PICTURE+=($picture)
 	fi
 done
@@ -23,8 +28,6 @@ MISSING_PICTURE=($(shuf -e "${MISSING_PICTURE[@]}"))
 INDEX=0
 for picture in ${MISSING_PICTURE[@]}; do
 	[ ! -f pepe/$INDEX-*.jpg ] && exit 0
-	ln -s pepe/$INDEX-*.jpg front/pictures/$picture.jpg
+	ln -s pepe/$INDEX-*.jpg $picture.jpg
 	INDEX=$((INDEX + 1))
 done
-
-mv pepe front/pictures

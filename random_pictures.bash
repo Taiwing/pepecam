@@ -62,6 +62,8 @@ function generate_pepes() {
 		PICTURE_ID="${PICTURE_ID:22:36}"
 		mv front/pictures/$PICTURE_ID.jpg pepe/$i-$PEPE.jpg
 	done
+
+	mv pepe front/pictures
 }
 
 function download_missing() {

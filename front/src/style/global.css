@@ -1,0 +1,63 @@
+body {
+	margin: 0;
+	color: #b1b1b1;
+	background: #171717;
+	font-family: sans-serif;
+}
+
+header {
+	display: flex;
+	flex-direction: row;
+	font-weight: bold;
+	font-size: 2rem;
+	padding: 2rem 0.75rem;
+	color: #03f200;
+	background-color: #0b0b0b;
+	position: sticky;
+	top: 0px;
+}
+
+header a {
+	text-decoration: none;
+	color: inherit;
+}
+
+header a:before {
+	content: "Pepecam";
+}
+
+main {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+footer {
+	display: flex;
+	flex-direction: row;
+	padding: 0.75rem;
+	color: #b1b1b1;
+	background-color: #121212;
+	position: sticky;
+	bottom: 0px;
+}
+
+@media only screen and (max-width: 800px) {
+	header {
+		font-size: 3rem;
+		padding: 1rem 0.75rem;
+	}
+
+	header a:before {
+		content: "P";
+	}
+
+	body {
+		font-size: 1.5rem;
+	}
+
+	footer {
+		display: none;
+	}
+}

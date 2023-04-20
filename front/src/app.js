@@ -5,14 +5,7 @@ class PepePost extends HTMLElement {
     this.attachShadow({ mode: 'open' })
 
     const style = document.createElement('style')
-    style.textContent = `
-      img {
-        max-width: 550px;
-        max-height: 500px;
-        object-fit: cover;
-        border-radius: 10px;
-      }
-    `
+    style.textContent = '@import "style/pepe-post.css";'
     const title = document.createElement('h2')
     const picture = document.createElement('img')
     this.shadowRoot.append(style, title, picture)

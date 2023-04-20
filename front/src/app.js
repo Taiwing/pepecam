@@ -17,10 +17,14 @@ class PepePost extends HTMLElement {
     const author = this.getAttribute('data-author')
 
     const title = this.shadowRoot.querySelector('h2')
-    const picture = this.shadowRoot.querySelector('img')
-
+    const nameSpan = document.createElement('span')
+    const dateSpane = document.createElement('span')
     const date = new Date(Number(creation_ts) * 1000)
-    title.textContent = `${author} at ${date.toLocaleString()}`
+    nameSpan.textContent = `@${author}`
+    dateSpane.textContent = ` at ${date.toLocaleString()}`
+    title.append(nameSpan, dateSpane)
+
+    const picture = this.shadowRoot.querySelector('img')
     picture.src = `http://localhost:8080/pictures/${picture_id}.jpg`
     picture.alt = `Picture ${picture_id}`
   }

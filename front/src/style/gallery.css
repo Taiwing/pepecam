@@ -1,9 +1,23 @@
 .feed {
 	gap: 2rem;
+	max-width: 40%;
+	margin: auto;
 }
 
 pepe-post {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: flex-start;
+	width: 100%;
+}
+
+@media only screen and (max-width: 800px) {
+	.feed {
+		gap: 1rem;
+		max-width: 90%;
+	}
+
+	pepe-post {
+		align-items: center;
+	}
 }

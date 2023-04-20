@@ -17,12 +17,12 @@ header {
 	top: 0px;
 }
 
-header a {
+header > a {
 	text-decoration: none;
 	color: inherit;
 }
 
-header a:before {
+header > a:before {
 	content: "Pepecam";
 }
 
@@ -49,7 +49,7 @@ footer {
 		padding: 1rem 0.75rem;
 	}
 
-	header a:before {
+	header > a:before {
 		content: "P";
 	}
 

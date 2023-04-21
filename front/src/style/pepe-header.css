@@ -1,0 +1,14 @@
+a {
+	text-decoration: none;
+	color: #03f200;
+}
+
+a:before {
+	content: "Pepecam";
+}
+
+@media only screen and (max-width: 800px) {
+	a:before {
+		content: "P";
+	}
+}

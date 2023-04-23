@@ -1,4 +1,4 @@
-.feed {
+.gallery {
 	gap: 2rem;
 	max-width: 40%;
 	margin: auto;
@@ -12,7 +12,7 @@ pepe-post {
 }
 
 @media only screen and (max-width: 800px) {
-	.feed {
+	.gallery {
 		gap: 1rem;
 		max-width: 90%;
 	}

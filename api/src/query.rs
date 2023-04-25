@@ -237,7 +237,7 @@ pub async fn put_user(
 }
 
 /// Add a like or a dislike on a given picture
-pub async fn post_like(
+pub async fn put_like(
     db: &mut Connection<PostgresDb>,
     like: bool,
     picture_id: &SqlxUuid,

@@ -8,8 +8,8 @@ use rocket::{
 };
 
 /// Log out of the application.
-#[put("/logout")]
-pub fn put(
+#[post("/logout")]
+pub fn post(
     sess: session::Connected,
     cookies: &CookieJar<'_>,
     sessions: &State<Cache<session::Connected>>,

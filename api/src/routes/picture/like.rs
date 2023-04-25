@@ -15,14 +15,14 @@ pub struct PictureLike {
     like: bool,
 }
 
-#[post("/like", data = "<picture>", format = "json")]
-pub async fn post(
+#[put("/like", data = "<picture>", format = "json")]
+pub async fn put(
     picture: Json<PictureLike>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
     let picture = picture.into_inner();
-    match query::post_like(
+    match query::put_like(
         &mut db,
         picture.like,
         &from_serde_to_sqlx(&picture.picture_id),

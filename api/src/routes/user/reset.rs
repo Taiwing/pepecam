@@ -17,7 +17,7 @@ pub struct ResetToken {
     reset_token: Uuid,
 }
 
-/// Request payload containing the new password for the PUT /reset route
+/// Request payload containing the new password for the POST /reset route
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct PasswordReset {
@@ -59,8 +59,8 @@ pub async fn get(
     None
 }
 
-#[put("/reset", data = "<password_reset>", format = "json")]
-pub async fn put(
+#[post("/reset", data = "<password_reset>", format = "json")]
+pub async fn post(
     password_reset: Json<PasswordReset>,
     mut db: Connection<PostgresDb>,
     reset_requests: &State<Cache<Request>>,

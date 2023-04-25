@@ -54,8 +54,8 @@ pub async fn login(
 }
 
 /// Route handler to login into the application.
-#[put("/login", data = "<credentials>", format = "json")]
-pub async fn put(
+#[post("/login", data = "<credentials>", format = "json")]
+pub async fn post(
     credentials: Json<Credentials>,
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,

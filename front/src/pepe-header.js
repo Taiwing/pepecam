@@ -1,4 +1,4 @@
-const formField = (name, type, label, placeholder) => {
+const formField = (name, type, label, placeholder, optional) => {
   const labelElement = document.createElement('label')
   labelElement.setAttribute('for', name)
   labelElement.textContent = label || name
@@ -7,6 +7,9 @@ const formField = (name, type, label, placeholder) => {
   input.setAttribute('type', type)
   input.setAttribute('name', name)
   input.setAttribute('placeholder', placeholder || name)
+  if (!optional) {
+    input.setAttribute('required', '')
+  }
   labelElement.append(input)
   return labelElement
 }
@@ -27,8 +30,8 @@ const buildFormDialog = (formName, formFields) => {
 
     const forms = []
     for (const field of formFields) {
-      const { name, type, label, placeholder } = field
-      const fieldElement = formField(name, type, label, placeholder)
+      const { name, type, label, placeholder, optional } = field
+      const fieldElement = formField(name, type, label, placeholder, optional)
       forms.push(fieldElement)
     }
 
@@ -55,6 +58,7 @@ const loginFields = [
 
 const signupFields = [
   { name: 'username', type: 'text' },
+  { name: 'email', type: 'email', optional: true },
   { name: 'password', type: 'password' },
   {
     name: 'password-confirm',

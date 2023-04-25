@@ -8,7 +8,16 @@ class PepeHeader extends HTMLElement {
     style.textContent = `@import "style/pepe-header.css"`
     const home = document.createElement('a')
     home.href = '/'
-    this.shadowRoot.append(style, home)
+
+    const div = document.createElement('div')
+    div.setAttribute('id', 'login-signup')
+    const loginButton = document.createElement('button')
+    const signupButton = document.createElement('button')
+    loginButton.textContent = 'login'
+    signupButton.textContent = 'signup'
+    div.append(loginButton, signupButton)
+
+    this.shadowRoot.append(style, home, div)
   }
 }
 

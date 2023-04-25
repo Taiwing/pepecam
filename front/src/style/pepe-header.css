@@ -7,6 +7,31 @@ a:before {
 	content: "Pepecam";
 }
 
+button {
+	background-color: inherit;
+	color: #03f200;
+	padding: 0.5rem 1rem;
+	border: 0.1rem solid #03f200;
+	border-radius: 0.5rem;
+	text-align: center;
+	display: inline-block;
+	font-size: 1rem;
+	transition-duration: 0.4s;
+}
+
+button:hover {
+	background-color: #03f200;
+	color: #0b0b0b;
+}
+
+#login-signup {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+}
+
 @media only screen and (max-width: 800px) {
 	a:before {
 		content: "P";

@@ -30,3 +30,4 @@ FRONT:
   webcam view or an uploaded picture and a pepe selector, and also a side
   section for previously created pictures
 - make sure this shit looks good on mobile ("displays correctly")
+- use classes and ids instead of tags for the styling (more reliable)

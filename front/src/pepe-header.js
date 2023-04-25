@@ -32,6 +32,7 @@ const buildFormDialog = (formName, formFields) => {
     for (const field of formFields) {
       const { name, type, label, placeholder, optional } = field
       const fieldElement = formField(name, type, label, placeholder, optional)
+      fieldElement.setAttribute('id', `${formName}-${name}`)
       forms.push(fieldElement)
     }
 
@@ -81,6 +82,21 @@ class PepeHeader extends HTMLElement {
 
     const loginDialog = buildFormDialog('login', loginFields)
     const signupDialog = buildFormDialog('signup', signupFields)
+    const passwordField = signupDialog
+      .querySelector('#signup-password')
+      .querySelector('input')
+    const confirmPasswordField = signupDialog
+      .querySelector('#signup-password-confirm')
+      .querySelector('input')
+    const validatePassword = () => {
+      if (passwordField.value !== confirmPasswordField.value) {
+        confirmPasswordField.setCustomValidity('Passwords must match')
+      } else {
+        confirmPasswordField.setCustomValidity('')
+      }
+    }
+    passwordField.addEventListener('change', validatePassword)
+    confirmPasswordField.addEventListener('keyup', validatePassword)
 
     const div = document.createElement('div')
     div.setAttribute('id', 'login-signup')

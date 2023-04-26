@@ -1,4 +1,4 @@
-import { getCookie } from './cookies.js'
+import { getCookie, toggleConnectedEvent } from './utils.js'
 
 const formField = (name, type, label, placeholder) => {
   const labelElement = document.createElement('label')
@@ -37,7 +37,7 @@ const postForm = (form, action) => {
   })
 }
 
-const buildFormDialog = (formName, action, formFields, toggleConnected) => {
+const buildFormDialog = (formName, action, formFields) => {
     const dialog = document.createElement('dialog')
     dialog.setAttribute('id', `${formName}-dialog`)
 
@@ -69,7 +69,7 @@ const buildFormDialog = (formName, action, formFields, toggleConnected) => {
         if (response.ok) {
           const message = await response.json()
           alert(`Success: ${JSON.stringify(message)}`) //TEMP
-          toggleConnected()
+          submit.dispatchEvent(toggleConnectedEvent())
         } else {
           const { message, error } = await response.json()
           const errorMessage = message || error || JSON.stringify(response)
@@ -118,21 +118,21 @@ class PepeHeader extends HTMLElement {
     const home = document.createElement('a')
     home.href = '/'
 
-    const unconnected = document.createElement('div')
-    unconnected.setAttribute('id', 'unconnected')
-    unconnected.classList.add('user-actions')
+    const unconnectedElement = document.createElement('div')
+    unconnectedElement.setAttribute('id', 'unconnected')
+    unconnectedElement.classList.add('user-actions')
 
-    const connected = document.createElement('div')
-    connected.setAttribute('id', 'connected')
-    connected.classList.add('user-actions')
+    const connectedElement = document.createElement('div')
+    connectedElement.setAttribute('id', 'connected')
+    connectedElement.classList.add('user-actions')
 
-    const toggleConnected = () => {
-      if (getCookie('session')) {
-        unconnected.style.display = 'none'
-        connected.style.display = 'flex'
+    const toggleConnected = ({ detail: { connected } }) => {
+      if (connected) {
+        unconnectedElement.style.display = 'none'
+        connectedElement.style.display = 'flex'
       } else {
-        connected.style.display = 'none'
-        unconnected.style.display = 'flex'
+        connectedElement.style.display = 'none'
+        unconnectedElement.style.display = 'flex'
       }
     }
 
@@ -140,13 +140,11 @@ class PepeHeader extends HTMLElement {
       'login',
       'http://localhost:3000/user/login',
       loginFields,
-      toggleConnected,
     )
     const signupDialog = buildFormDialog(
       'signup',
       'http://localhost:3000/user/register',
       signupFields,
-      toggleConnected,
     )
     const passwordField = signupDialog
       .querySelector('#signup-password')
@@ -185,7 +183,7 @@ class PepeHeader extends HTMLElement {
         alert(`Error: ${error}`)
       }
 
-      toggleConnected()
+      logoutButton.dispatchEvent(toggleConnectedEvent())
     })
 
     const loginButton = document.createElement('button')
@@ -196,17 +194,18 @@ class PepeHeader extends HTMLElement {
     signupButton.textContent = 'signup'
     signupButton.addEventListener('click', () => signupDialog.showModal())
 
-    connected.append(logoutButton)
-    unconnected.append(loginButton, signupButton)
-    toggleConnected()
+    connectedElement.append(logoutButton)
+    unconnectedElement.append(loginButton, signupButton)
+    this.shadowRoot.addEventListener('toggle-connected', toggleConnected)
+    this.shadowRoot.dispatchEvent(toggleConnectedEvent())
 
     this.shadowRoot.append(
       style,
       home,
       loginDialog,
       signupDialog,
-      connected,
-      unconnected,
+      connectedElement,
+      unconnectedElement,
     )
   }
 }

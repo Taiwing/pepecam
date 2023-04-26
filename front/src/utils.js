@@ -1,4 +1,4 @@
-const getCookies = () =>
+export const getCookies = () =>
   document
   .cookie
   .split(';')
@@ -10,9 +10,14 @@ const getCookies = () =>
     return acc
   }, {})
 
-const getCookie = (name) => {
+export const getCookie = (name) => {
   const cookies = getCookies()
   return cookies[name] ? JSON.parse(cookies[name]) : undefined
 }
 
-export { getCookies, getCookie }
+export const toggleConnectedEvent = () =>
+  new CustomEvent('toggle-connected', {
+    bubbles: true,
+    composed: true,
+    detail: { connected: !!getCookie('session') },
+  })

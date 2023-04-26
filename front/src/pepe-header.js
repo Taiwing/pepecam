@@ -67,12 +67,11 @@ const buildFormDialog = (formName, action, formFields) => {
           const message = await response.json()
           alert(`Success: ${JSON.stringify(message)}`) //TEMP
         } else {
-          const { message, error } = response.json()
+          const { message, error } = await response.json()
           const errorMessage = message || error || JSON.stringify(response)
           alert(`Error: ${errorMessage}`)
         }
       } catch (error) {
-        console.log('toto')
         alert(`Error: ${error}`)
       }
     })

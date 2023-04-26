@@ -20,10 +20,6 @@ GLOBAL:
 FRONT:
 - add like/dislike buttons and toggle comments (or go to dedicated page when
   clicking on picture and then comment)
-- user sign-up/login (add buttons in the header and maybe turn it into a
-  component)
-- when user is connected show a logout button at the same place as login in
-  the header
 - also add a settings button to change account parameters (email, password,
   notfications, etc...)
 - create edition page (studio, pepe's lair, or something cool idk) with current

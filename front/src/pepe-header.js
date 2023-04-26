@@ -30,6 +30,7 @@ const postForm = (form, action) => {
   return fetch(action, {
     method: 'POST',
     headers,
+    credentials: 'include',
     body: JSON.stringify(data),
   })
 }

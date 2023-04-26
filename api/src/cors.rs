@@ -18,12 +18,18 @@ impl Fairing for Cors {
         _request: &'r Request<'_>,
         response: &mut Response<'r>,
     ) {
-        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Origin",
+            "http://localhost:8080",
+        ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
             "GET, POST, PUT, DELETE",
         ));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Headers",
+            "Content-Type",
+        ));
         response.set_header(Header::new(
             "Access-Control-Allow-Credentials",
             "true",

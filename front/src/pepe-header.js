@@ -196,7 +196,7 @@ class PepeHeader extends HTMLElement {
 
     connectedElement.append(logoutButton)
     unconnectedElement.append(loginButton, signupButton)
-    this.shadowRoot.addEventListener('toggle-connected', toggleConnected)
+    window.addEventListener('toggle-connected', toggleConnected)
     this.shadowRoot.dispatchEvent(toggleConnectedEvent())
 
     this.shadowRoot.append(

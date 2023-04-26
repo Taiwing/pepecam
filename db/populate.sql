@@ -71,7 +71,8 @@ FROM GENERATE_SERIES(1, CURRENT_SETTING('test.n_pictures')::int);
 INSERT INTO likes
 SELECT
 	random_picture(),
-	random_user()
+	random_user(),
+	(ROUND(RANDOM())::INT)::BOOLEAN
 FROM GENERATE_SERIES(1, CURRENT_SETTING('test.n_likes')::int)
 ON CONFLICT DO NOTHING;
 

@@ -15,7 +15,7 @@ pub fn post(
     sessions: &State<Cache<session::Connected>>,
 ) -> ApiResult<DefaultResponse> {
     sessions.del(&sess.account_id.to_string());
-    cookies.remove_private(Cookie::named("session"));
+    cookies.remove(Cookie::named("session"));
     ApiResult::Success {
         status: Status::Ok,
         payload: DefaultResponse {

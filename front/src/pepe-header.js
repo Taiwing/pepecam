@@ -1,3 +1,5 @@
+import { getCookie } from './cookies.js'
+
 const formField = (name, type, label, placeholder) => {
   const labelElement = document.createElement('label')
   labelElement.setAttribute('for', name)

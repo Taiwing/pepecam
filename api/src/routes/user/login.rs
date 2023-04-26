@@ -46,7 +46,7 @@ pub async fn login(
                 OffsetDateTime::now_utc()
                     + Duration::seconds_f64(SESSION_DURATION),
             );
-            cookies.add_private(cookie);
+            cookies.add(cookie);
             return Ok(String::from("great authentication success!"));
         }
     }

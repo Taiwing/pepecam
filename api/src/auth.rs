@@ -108,7 +108,7 @@ pub mod session {
         async fn from_request(
             request: &'r Request<'_>,
         ) -> Outcome<Self, Self::Error> {
-            match request.cookies().get_private("session") {
+            match request.cookies().get("session") {
                 None => Outcome::Success(Unconnected {}),
                 Some(_session_cookie) => {
                     Outcome::Failure((Status::Forbidden, Error::LoggedIn))
@@ -128,7 +128,7 @@ pub mod session {
                 request.guard::<Connection<PostgresDb>>().await.unwrap();
             let sessions =
                 request.guard::<&State<Cache<Connected>>>().await.unwrap();
-            match request.cookies().get_private("session") {
+            match request.cookies().get("session") {
                 None => {
                     Outcome::Failure((Status::Unauthorized, Error::NotLoggedIn))
                 }

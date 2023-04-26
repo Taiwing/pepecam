@@ -37,7 +37,7 @@ const postForm = (form, action) => {
   })
 }
 
-const buildFormDialog = (formName, action, formFields) => {
+const buildFormDialog = (formName, action, formFields, toggleConnected) => {
     const dialog = document.createElement('dialog')
     dialog.setAttribute('id', `${formName}-dialog`)
 
@@ -69,6 +69,7 @@ const buildFormDialog = (formName, action, formFields) => {
         if (response.ok) {
           const message = await response.json()
           alert(`Success: ${JSON.stringify(message)}`) //TEMP
+          toggleConnected()
         } else {
           const { message, error } = await response.json()
           const errorMessage = message || error || JSON.stringify(response)
@@ -117,15 +118,35 @@ class PepeHeader extends HTMLElement {
     const home = document.createElement('a')
     home.href = '/'
 
+    const unconnected = document.createElement('div')
+    unconnected.setAttribute('id', 'unconnected')
+    unconnected.classList.add('user-actions')
+
+    const connected = document.createElement('div')
+    connected.setAttribute('id', 'connected')
+    connected.classList.add('user-actions')
+
+    const toggleConnected = () => {
+      if (getCookie('session')) {
+        unconnected.style.display = 'none'
+        connected.style.display = 'flex'
+      } else {
+        connected.style.display = 'none'
+        unconnected.style.display = 'flex'
+      }
+    }
+
     const loginDialog = buildFormDialog(
       'login',
       'http://localhost:3000/user/login',
       loginFields,
+      toggleConnected,
     )
     const signupDialog = buildFormDialog(
       'signup',
       'http://localhost:3000/user/register',
       signupFields,
+      toggleConnected,
     )
     const passwordField = signupDialog
       .querySelector('#signup-password')
@@ -143,17 +164,50 @@ class PepeHeader extends HTMLElement {
     passwordField.addEventListener('change', validatePassword)
     confirmPasswordField.addEventListener('keyup', validatePassword)
 
-    const div = document.createElement('div')
-    div.setAttribute('id', 'login-signup')
+    const logoutButton = document.createElement('button')
+    logoutButton.textContent = 'logout'
+    logoutButton.addEventListener('click', async () => {
+      try {
+        const response = await fetch('http://localhost:3000/user/logout', {
+          method: 'POST',
+          credentials: 'include',
+        })
+
+        if (response.ok) {
+          const message = await response.json()
+          alert(`Success: ${JSON.stringify(message)}`) //TEMP
+        } else {
+          const { message, error } = await response.json()
+          const errorMessage = message || error || JSON.stringify(response)
+          alert(`Error: ${errorMessage}`)
+        }
+      } catch (error) {
+        alert(`Error: ${error}`)
+      }
+
+      toggleConnected()
+    })
+
     const loginButton = document.createElement('button')
     loginButton.textContent = 'login'
     loginButton.addEventListener('click', () => loginDialog.showModal())
+
     const signupButton = document.createElement('button')
     signupButton.textContent = 'signup'
     signupButton.addEventListener('click', () => signupDialog.showModal())
-    div.append(loginButton, signupButton)
 
-    this.shadowRoot.append(style, home, loginDialog, signupDialog, div)
+    connected.append(logoutButton)
+    unconnected.append(loginButton, signupButton)
+    toggleConnected()
+
+    this.shadowRoot.append(
+      style,
+      home,
+      loginDialog,
+      signupDialog,
+      connected,
+      unconnected,
+    )
   }
 }
 

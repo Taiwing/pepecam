@@ -3,10 +3,12 @@ const getCookies = () =>
   .cookie
   .split(';')
   .map(cookie => cookie.split('='))
-  .reduce((acc, [key, value]) => ({
-    ...acc,
-    [key.trim()]: decodeURIComponent(value.trim()),
-  }), {})
+  .reduce((acc, [key, value]) => {
+    if (key && key.trim() && value && value.trim()) {
+      acc[key.trim()] = decodeURIComponent(value.trim())
+    }
+    return acc
+  }, {})
 
 const getCookie = (name) => {
   const cookies = getCookies()

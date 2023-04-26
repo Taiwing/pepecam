@@ -57,6 +57,7 @@ fn rocket() -> _ {
         .manage(Cache::<reset::Request>::new())
         .attach(cleanup_job)
         .attach(Cors)
+        .mount("/", routes![routes::options])
         .mount("/user", routes![routes::user::register::post])
         .mount("/user", routes![routes::user::confirm::post])
         .mount("/user", routes![routes::user::login::post])

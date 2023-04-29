@@ -39,6 +39,10 @@ button:hover {
 	gap: 0.5rem;
 }
 
+.user-actions[hidden] {
+	display: none;
+}
+
 dialog {
 	background-color: inherit;
 	color: inherit;

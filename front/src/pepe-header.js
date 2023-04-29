@@ -47,7 +47,7 @@ const PepeHeaderTemplate = document.createElement('template')
 PepeHeaderTemplate.innerHTML = `
   <style>@import "style/pepe-header.css"</style>
   <a href="/"></a>
-  <div id="unconnected" class="user-actions">
+  <div id="unconnected" class="user-actions" hidden>
     <button id="login">login</button>
     <button id="signup">signup</button>
   </div>
@@ -163,13 +163,12 @@ class PepeHeader extends HTMLElement {
     const unconnectedElement = this.shadowRoot.getElementById('unconnected')
     const connectedElement = this.shadowRoot.getElementById('connected')
 
-    //TODO: use css to hide/show (with properties)
     if (connected) {
-      unconnectedElement.style.display = 'none'
-      connectedElement.style.display = 'flex'
+      connectedElement.removeAttribute('hidden')
+      unconnectedElement.setAttribute('hidden', '')
     } else {
-      connectedElement.style.display = 'none'
-      unconnectedElement.style.display = 'flex'
+      unconnectedElement.removeAttribute('hidden')
+      connectedElement.setAttribute('hidden', '')
     }
   }
 

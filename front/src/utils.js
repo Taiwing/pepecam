@@ -21,3 +21,11 @@ export const toggleConnectedEvent = () =>
     composed: true,
     detail: { connected: !!getCookie('session') },
   })
+
+export const createElement = (tag, attributes = {}) => {
+  const element = document.createElement(tag)
+  Object.entries(attributes).forEach(([key, value]) =>
+    element.setAttribute(key, value)
+  )
+  return element
+}

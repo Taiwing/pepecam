@@ -1,3 +1,5 @@
+import { createElement } from './utils.js'
+
 const PepePostTemplate = document.createElement('template')
 PepePostTemplate.innerHTML = `
   <style>@import "style/pepe-post.css"</style>
@@ -60,10 +62,6 @@ class PepeGallery extends HTMLElement {
         this.getPepePosts()
       }
     })
-
-    window.addEventListener('toggle-connected', () => {
-      console.log('pepe-gallery: TEST turlututu TEST')
-    })
   }
 
   // Get posts
@@ -82,13 +80,14 @@ class PepeGallery extends HTMLElement {
 
       const gallery = this.shadowRoot.querySelector('.gallery')
       for (const post of posts) {
-        const postElement = document.createElement('pepe-post')
         const { picture_id, account_id, creation_ts, author } = post
-        postElement.setAttribute('data-picture-id', picture_id)
-        postElement.setAttribute('data-account-id', account_id)
-        postElement.setAttribute('data-creation-ts', creation_ts)
-        postElement.setAttribute('data-author', author)
-        gallery.appendChild(postElement)
+        const attributes = {
+          'data-picture-id': picture_id,
+          'data-account-id': account_id,
+          'data-creation-ts': creation_ts,
+          'data-author': author,
+        }
+        gallery.appendChild(createElement('pepe-post', attributes))
       }
     } catch (error) {
       this.finished = true

@@ -48,6 +48,9 @@ pub struct Picture {
     pub account_id: Uuid,
     pub creation_ts: i64,
     pub author: String,
+    pub like_count: i64,
+    pub dislike_count: i64,
+    pub comment_count: i64,
 }
 
 #[derive(Deserialize)]

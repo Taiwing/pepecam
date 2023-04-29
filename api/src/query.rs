@@ -29,6 +29,9 @@ pub mod types {
         pub account_id: SqlxUuid,
         pub creation_ts: OffsetDateTime,
         pub author: String,
+        pub like_count: i64,
+        pub dislike_count: i64,
+        pub comment_count: i64,
     }
 
     /// A picture id from the POST picture request
@@ -83,9 +86,21 @@ pub async fn pictures(
     count: u32,
 ) -> Option<Vec<Picture>> {
     let query = "
-		SELECT picture_id, pictures.account_id, creation_ts, username as author
-		FROM pictures JOIN accounts
-		ON pictures.account_id = accounts.account_id
+		SELECT
+			pictures.picture_id, pictures.account_id, pictures.creation_ts,
+			accounts.username as author,
+			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
+			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
+			COALESCE(comment_counts.comment_count, 0) AS comment_count
+		FROM pictures
+		JOIN accounts ON pictures.account_id = accounts.account_id
+		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
+		LEFT JOIN (
+			SELECT picture_id, COUNT(*) AS comment_count
+			FROM comments GROUP BY picture_id
+		) AS comment_counts ON pictures.picture_id = comment_counts.picture_id
+		GROUP BY
+			pictures.picture_id, accounts.username, comment_counts.comment_count
 		ORDER BY creation_ts DESC LIMIT $1 OFFSET $2;
 	";
     let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
@@ -104,6 +119,9 @@ pub async fn pictures(
             account_id: from_sqlx_to_serde(&raw_picture.account_id),
             creation_ts: raw_picture.creation_ts.unix_timestamp(),
             author: raw_picture.author.clone(),
+            like_count: raw_picture.like_count,
+            dislike_count: raw_picture.dislike_count,
+            comment_count: raw_picture.comment_count,
         })
         .collect();
     Some(pictures)
@@ -117,9 +135,22 @@ pub async fn user_pictures(
     count: u32,
 ) -> Option<Vec<Picture>> {
     let query = "
-		SELECT picture_id, pictures.account_id, creation_ts, username as author
-		FROM pictures JOIN accounts
+		SELECT
+			pictures.picture_id, pictures.account_id, pictures.creation_ts,
+			accounts.username as author,
+			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
+			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
+			COALESCE(comment_counts.comment_count, 0) AS comment_count
+		FROM pictures
+		JOIN accounts
 		ON pictures.account_id = accounts.account_id AND accounts.username = $1
+		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
+		LEFT JOIN (
+			SELECT picture_id, COUNT(*) AS comment_count
+			FROM comments GROUP BY picture_id
+		) AS comment_counts ON pictures.picture_id = comment_counts.picture_id
+		GROUP BY
+			pictures.picture_id, accounts.username, comment_counts.comment_count
 		ORDER BY creation_ts DESC LIMIT $2 OFFSET $3;
 	";
     let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
@@ -139,6 +170,9 @@ pub async fn user_pictures(
             account_id: from_sqlx_to_serde(&raw_picture.account_id),
             creation_ts: raw_picture.creation_ts.unix_timestamp(),
             author: raw_picture.author.clone(),
+            like_count: raw_picture.like_count,
+            dislike_count: raw_picture.dislike_count,
+            comment_count: raw_picture.comment_count,
         })
         .collect();
     Some(pictures)

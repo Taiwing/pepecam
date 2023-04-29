@@ -1,14 +1,19 @@
+const PepePostTemplate = document.createElement('template')
+PepePostTemplate.innerHTML = `
+  <style>@import "style/pepe-post.css"</style>
+  <h2>
+    <span id='author-span'></span>
+    <span id='date-span'></span>
+  </h2>
+  <img />
+`
+
 // PepePost element
 class PepePost extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-
-    const style = document.createElement('style')
-    style.textContent = '@import "style/pepe-post.css";'
-    const title = document.createElement('h2')
-    const picture = document.createElement('img')
-    this.shadowRoot.append(style, title, picture)
+    this.shadowRoot.appendChild(PepePostTemplate.content.cloneNode(true))
   }
 
   connectedCallback() {
@@ -16,13 +21,11 @@ class PepePost extends HTMLElement {
     const creation_ts = this.getAttribute('data-creation-ts')
     const author = this.getAttribute('data-author')
 
-    const title = this.shadowRoot.querySelector('h2')
-    const nameSpan = document.createElement('span')
-    const dateSpane = document.createElement('span')
+    const authorSpan = this.shadowRoot.querySelector('#author-span')
+    const dateSpan = this.shadowRoot.querySelector('#date-span')
+    authorSpan.textContent = `@${author}`
     const date = new Date(Number(creation_ts) * 1000)
-    nameSpan.textContent = `@${author}`
-    dateSpane.textContent = ` at ${date.toLocaleString()}`
-    title.append(nameSpan, dateSpane)
+    dateSpan.textContent = ` at ${date.toLocaleString()}`
 
     const picture = this.shadowRoot.querySelector('img')
     picture.src = `http://localhost:8080/pictures/${picture_id}.jpg`
@@ -56,6 +59,10 @@ class PepeGallery extends HTMLElement {
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.75) {
         this.getPepePosts()
       }
+    })
+
+    window.addEventListener('toggle-connected', () => {
+      console.log('pepe-gallery: TEST turlututu TEST')
     })
   }
 

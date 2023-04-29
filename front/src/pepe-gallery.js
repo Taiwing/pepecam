@@ -24,8 +24,9 @@ class PepePost extends HTMLElement {
     const author = this.getAttribute('data-author')
 
     const authorSpan = this.shadowRoot.querySelector('#author-span')
-    const dateSpan = this.shadowRoot.querySelector('#date-span')
     authorSpan.textContent = `@${author}`
+
+    const dateSpan = this.shadowRoot.querySelector('#date-span')
     const date = new Date(Number(creation_ts) * 1000)
     dateSpan.textContent = ` at ${date.toLocaleString()}`
 
@@ -38,27 +39,30 @@ class PepePost extends HTMLElement {
 // Register the PepePost element
 customElements.define('pepe-post', PepePost)
 
+const PepeGalleryTemplate = document.createElement('template')
+PepeGalleryTemplate.innerHTML = `
+  <style>@import "style/pepe-gallery.css"</style>
+  <div class='gallery'></div>
+`
+
 // PepeGallery element
 class PepeGallery extends HTMLElement {
   count = 10 // Number of posts to get
 
   constructor() {
     super()
+    this._index = -1
+    this._finished = false
     this.attachShadow({ mode: 'open' })
-    this.index = -1
-    this.finished = false
-
-    const style = document.createElement('style')
-    style.textContent = '@import "style/pepe-gallery.css";'
-    const gallery = document.createElement('div')
-    gallery.classList.add('gallery')
-    this.shadowRoot.append(style, gallery)
+    this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
 
     // Get posts on scroll
     window.addEventListener('scroll', () => {
-      if (this.finished) return
+      if (this._finished) return
 
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.75) {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.75
+      ) {
         this.getPepePosts()
       }
     })
@@ -67,14 +71,14 @@ class PepeGallery extends HTMLElement {
   // Get posts
   async getPepePosts() {
     try {
-      this.index += 1
+      this._index += 1
       const url =
-        `http://localhost:3000/pictures?index=${this.index}&count=${this.count}`
+        `http://localhost:3000/pictures?index=${this._index}&count=${this.count}`
       const response = await fetch(url)
       const posts = await response.json()
 
       if (response.status !== 200 || !posts || posts.length === 0) {
-        this.finished = true
+        this._finished = true
         return
       }
 
@@ -90,7 +94,7 @@ class PepeGallery extends HTMLElement {
         gallery.appendChild(createElement('pepe-post', attributes))
       }
     } catch (error) {
-      this.finished = true
+      this._finished = true
       //TODO: remove this log to "respect" the subject
       console.error(error)
     }

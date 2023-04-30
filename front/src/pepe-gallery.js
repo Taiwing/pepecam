@@ -76,7 +76,7 @@ class PepeGallery extends HTMLElement {
       this._index += 1
       const url =
         `http://localhost:3000/pictures?index=${this._index}&count=${this.count}`
-      const response = await fetch(url)
+      const response = await fetch(url, { method: 'GET', credentials: 'include' })
       const posts = await response.json()
 
       if (response.status !== 200 || !posts || posts.length === 0) {

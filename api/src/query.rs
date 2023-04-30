@@ -32,6 +32,8 @@ pub mod types {
         pub like_count: i64,
         pub dislike_count: i64,
         pub comment_count: i64,
+        pub liked: Option<bool>,
+        pub disliked: Option<bool>,
     }
 
     /// A picture id from the POST picture request
@@ -84,6 +86,7 @@ pub async fn pictures(
     db: &mut Connection<PostgresDb>,
     index: u32,
     count: u32,
+    connected_user: Option<SqlxUuid>,
 ) -> Option<Vec<Picture>> {
     let query = "
 		SELECT
@@ -91,7 +94,9 @@ pub async fn pictures(
 			accounts.username as author,
 			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
 			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
-			COALESCE(comment_counts.comment_count, 0) AS comment_count
+			COALESCE(comment_counts.comment_count, 0) AS comment_count,
+			BOOL_OR(likes.value = TRUE AND likes.account_id = $3) AS liked,
+			BOOL_OR(likes.value = FALSE AND likes.account_id = $3) AS disliked
 		FROM pictures
 		JOIN accounts ON pictures.account_id = accounts.account_id
 		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
@@ -103,15 +108,18 @@ pub async fn pictures(
 			pictures.picture_id, accounts.username, comment_counts.comment_count
 		ORDER BY creation_ts DESC LIMIT $1 OFFSET $2;
 	";
+
     let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
         .bind(count)
         .bind(index * count)
+        .bind(connected_user)
         .fetch_all(&mut **db)
         .await
         .unwrap();
     if raw_pictures.is_empty() {
         return None;
     }
+
     let pictures = raw_pictures
         .iter()
         .map(|raw_picture| Picture {
@@ -122,6 +130,8 @@ pub async fn pictures(
             like_count: raw_picture.like_count,
             dislike_count: raw_picture.dislike_count,
             comment_count: raw_picture.comment_count,
+            liked: raw_picture.liked,
+            disliked: raw_picture.disliked,
         })
         .collect();
     Some(pictures)
@@ -153,6 +163,7 @@ pub async fn user_pictures(
 			pictures.picture_id, accounts.username, comment_counts.comment_count
 		ORDER BY creation_ts DESC LIMIT $2 OFFSET $3;
 	";
+
     let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
         .bind(username)
         .bind(count)
@@ -163,6 +174,7 @@ pub async fn user_pictures(
     if raw_pictures.is_empty() {
         return None;
     }
+
     let pictures = raw_pictures
         .iter()
         .map(|raw_picture| Picture {
@@ -173,6 +185,8 @@ pub async fn user_pictures(
             like_count: raw_picture.like_count,
             dislike_count: raw_picture.dislike_count,
             comment_count: raw_picture.comment_count,
+            liked: None,
+            disliked: None,
         })
         .collect();
     Some(pictures)

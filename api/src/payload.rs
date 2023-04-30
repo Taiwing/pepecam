@@ -51,6 +51,8 @@ pub struct Picture {
     pub like_count: i64,
     pub dislike_count: i64,
     pub comment_count: i64,
+    pub liked: Option<bool>,
+    pub disliked: Option<bool>,
 }
 
 #[derive(Deserialize)]

@@ -51,6 +51,9 @@ pub mod session {
         pub session_id: SerdeUuid,
     }
 
+    /// The user may or may not be logged in to use the given route.
+    pub struct IsConnected(pub Option<Connected>);
+
     impl Connected {
         /// Create a new connected session for the given user
         pub fn new(account_id: SerdeUuid) -> Self {
@@ -142,6 +145,31 @@ pub mod session {
                         Status::BadRequest,
                         Error::InvalidSession,
                     )),
+                },
+            }
+        }
+    }
+
+    #[rocket::async_trait]
+    impl<'r> FromRequest<'r> for IsConnected {
+        type Error = Error;
+
+        async fn from_request(
+            request: &'r Request<'_>,
+        ) -> Outcome<Self, Self::Error> {
+            let mut db =
+                request.guard::<Connection<PostgresDb>>().await.unwrap();
+            let sessions =
+                request.guard::<&State<Cache<Connected>>>().await.unwrap();
+            match request.cookies().get("session") {
+                None => Outcome::Success(IsConnected { 0: None }),
+                Some(cookie) => match Connected::from_str(cookie.value()) {
+                    Some(session)
+                        if session.is_valid(sessions, &mut db).await =>
+                    {
+                        Outcome::Success(IsConnected { 0: Some(session) })
+                    }
+                    _ => Outcome::Success(IsConnected { 0: None }),
                 },
             }
         }

@@ -10,6 +10,21 @@ img {
 	border-radius: 10px;
 }
 
+#action-bar {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	margin: 1rem;
+	width: 100%;
+	gap: 0.5rem;
+}
+
+.post-action {
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+}
+
 @media only screen and (max-width: 800px) {
 	h2 {
 		margin: 0.5rem 0;

@@ -1,0 +1,37 @@
+.icon {
+	padding: 0;
+	border: none;
+	background-color: inherit;
+}
+
+.icon > img {
+	width: 2rem;
+	height: 2rem;
+	padding: 0.5rem;
+	filter: invert(100%);
+	background-color: transparent;
+}
+
+#thumbs-up, #thumbs-up[filled]:hover {
+	content: url('../icons/thumb-up-svgrepo-com.svg');
+}
+
+#thumbs-up[filled], #thumbs-up:hover {
+	content: url('../icons/thumb-up-fill-svgrepo-com.svg');
+}
+
+#thumbs-down, #thumbs-down[filled]:hover {
+	content: url('../icons/thumb-down-svgrepo-com.svg');
+}
+
+#thumbs-down[filled], #thumbs-down:hover {
+	content: url('../icons/thumb-down-fill-svgrepo-com.svg');
+}
+
+#comment, #comment[filled]:hover {
+	content: url('../icons/comment-text-svgrepo-com.svg');
+}
+
+#comment[filled], #comment:hover {
+	content: url('../icons/comment-text-solid-svgrepo-com.svg');
+}

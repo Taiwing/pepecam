@@ -25,7 +25,8 @@ pub async fn get(
     let result = match username {
         None => query::pictures(&mut db, index, count, account_id).await,
         Some(ref username) => {
-            query::user_pictures(&mut db, username, index, count).await
+            query::user_pictures(&mut db, username, index, count, account_id)
+                .await
         }
     };
     result.map(Json)

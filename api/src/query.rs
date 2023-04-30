@@ -95,8 +95,8 @@ pub async fn pictures(
 			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
 			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
 			COALESCE(comment_counts.comment_count, 0) AS comment_count,
-			BOOL_OR(likes.value = TRUE AND likes.account_id = $3) AS liked,
-			BOOL_OR(likes.value = FALSE AND likes.account_id = $3) AS disliked
+			COALESCE(BOOL_OR(likes.value = TRUE AND likes.account_id = $3), FALSE) AS liked,
+			COALESCE(BOOL_OR(likes.value = FALSE AND likes.account_id = $3), FALSE) AS disliked
 		FROM pictures
 		JOIN accounts ON pictures.account_id = accounts.account_id
 		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
@@ -143,6 +143,7 @@ pub async fn user_pictures(
     username: &str,
     index: u32,
     count: u32,
+    connected_user: Option<SqlxUuid>,
 ) -> Option<Vec<Picture>> {
     let query = "
 		SELECT
@@ -150,7 +151,9 @@ pub async fn user_pictures(
 			accounts.username as author,
 			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
 			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
-			COALESCE(comment_counts.comment_count, 0) AS comment_count
+			COALESCE(comment_counts.comment_count, 0) AS comment_count,
+			COALESCE(BOOL_OR(likes.value = TRUE AND likes.account_id = $4), FALSE) AS liked,
+			COALESCE(BOOL_OR(likes.value = FALSE AND likes.account_id = $4), FALSE) AS disliked
 		FROM pictures
 		JOIN accounts
 		ON pictures.account_id = accounts.account_id AND accounts.username = $1
@@ -168,6 +171,7 @@ pub async fn user_pictures(
         .bind(username)
         .bind(count)
         .bind(index * count)
+        .bind(connected_user)
         .fetch_all(&mut **db)
         .await
         .unwrap();
@@ -185,8 +189,8 @@ pub async fn user_pictures(
             like_count: raw_picture.like_count,
             dislike_count: raw_picture.dislike_count,
             comment_count: raw_picture.comment_count,
-            liked: None,
-            disliked: None,
+            liked: raw_picture.liked,
+            disliked: raw_picture.disliked,
         })
         .collect();
     Some(pictures)

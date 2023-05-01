@@ -1,5 +1,6 @@
 h2 {
 	width: 100%;
+	margin: unset;
 }
 
 img {
@@ -14,7 +15,6 @@ img {
 	display: flex;
 	flex-direction: row;
 	align-items: flex-start;
-	margin: 1rem;
 	width: 100%;
 	gap: 0.5rem;
 }
@@ -26,10 +26,6 @@ img {
 }
 
 @media only screen and (max-width: 800px) {
-	h2 {
-		margin: 0.5rem 0;
-	}
-
 	h2 > span:nth-child(2) {
 		display: none;
 	}

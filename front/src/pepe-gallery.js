@@ -167,7 +167,6 @@ customElements.define('pepe-post', PepePost)
 const PepeGalleryTemplate = document.createElement('template')
 PepeGalleryTemplate.innerHTML = `
   <style>@import "style/pepe-gallery.css"</style>
-  <div class='gallery'></div>
 `
 
 // PepeGallery element
@@ -185,7 +184,10 @@ class PepeGallery extends HTMLElement {
     window.addEventListener('scroll', this._onScroll.bind(this))
 
     // Handle login/logout
-    window.addEventListener('toggle-connected', this._onToggleConnected.bind(this))
+    window.addEventListener(
+      'toggle-connected',
+      this._onToggleConnected.bind(this),
+    )
   }
 
   _onScroll() {
@@ -201,7 +203,7 @@ class PepeGallery extends HTMLElement {
   _onToggleConnected() {
     this._index = -1
     this._finished = false
-    this.shadowRoot.querySelector('.gallery').innerHTML = ''
+    this.shadowRoot.innerHTML = ''
     this.getPepePosts()
   }
 
@@ -219,7 +221,6 @@ class PepeGallery extends HTMLElement {
         return
       }
 
-      const gallery = this.shadowRoot.querySelector('.gallery')
       for (const post of posts) {
         const {
           picture_id,
@@ -243,7 +244,7 @@ class PepeGallery extends HTMLElement {
           'data-liked': liked,
           'data-disliked': disliked,
         }
-        gallery.appendChild(createElement('pepe-post', attributes))
+        this.shadowRoot.appendChild(createElement('pepe-post', attributes))
       }
     } catch (error) {
       this._finished = true

@@ -1,23 +1,41 @@
-.gallery {
+:host(.gallery) {
 	gap: 2rem;
 	max-width: 40%;
-	margin: auto;
+	margin: 1rem auto;
 }
 
 pepe-post {
+	gap: 1rem;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	width: 100%;
 }
 
+/*
+pepe-post[full] {
+	box-sizing: border-box;
+	padding: 1rem;
+	border: 0.1rem solid;
+	border-radius: 0.5rem;
+}
+*/
+
 @media only screen and (max-width: 800px) {
-	.gallery {
+	:host(.gallery) {
 		gap: 1rem;
 		max-width: 90%;
+		margin: 0.5rem auto;
 	}
 
 	pepe-post {
 		align-items: center;
+		gap: 0.5rem;
 	}
+
+	/*
+	pepe-post[full] {
+		padding: 0.5rem;
+	}
+	*/
 }

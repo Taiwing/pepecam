@@ -409,3 +409,40 @@ pub async fn delete_picture(
         .await
         .map(|result| result.rows_affected())
 }
+
+/// Get comments for a given picture
+pub async fn comments(
+    db: &mut Connection<PostgresDb>,
+    picture_id: &SqlxUuid,
+) -> Option<Vec<Comment>> {
+    let query = "
+		SELECT
+			comments.picture_id,
+			comments.account_id,
+			comments.creation_ts,
+			comments.content,
+			accounts.username as author
+		FROM comments
+		JOIN accounts ON comments.account_id = accounts.account_id
+		WHERE comments.picture_id = $1
+		ORDER BY creation_ts ASC;
+	";
+
+    let raw_comments = sqlx::query_as::<_, types::DbComment>(query)
+        .bind(picture_id)
+        .fetch_all(&mut **db)
+        .await
+        .unwrap();
+
+    let comments = raw_comments
+        .iter()
+        .map(|raw_comment| Comment {
+            picture_id: from_sqlx_to_serde(&raw_comment.picture_id),
+            account_id: from_sqlx_to_serde(&raw_comment.account_id),
+            creation_ts: raw_comment.creation_ts.unix_timestamp(),
+            content: raw_comment.content.clone(),
+            author: raw_comment.author.clone(),
+        })
+        .collect();
+    Some(comments)
+}

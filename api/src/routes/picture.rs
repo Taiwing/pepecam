@@ -15,6 +15,7 @@ use std::str::FromStr;
 use strum::{self, AsRefStr, EnumString};
 
 pub mod comment;
+pub mod comments;
 pub mod like;
 
 #[derive(EnumString, AsRefStr)] // Convert from &str to Superposable and back

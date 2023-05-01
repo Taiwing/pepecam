@@ -6,11 +6,14 @@ PepePostTemplate.innerHTML = `
     @import "style/pepe-post.css";
     @import "style/pepe-icons.css";
   </style>
+
   <h2>
     <span id="author-span"></span>
     <span id="date-span"></span>
   </h2>
+
   <img id="post-picture" />
+
   <div id="action-bar">
     <div class="post-action">
       <button class="icon" id="like-button">
@@ -30,6 +33,16 @@ PepePostTemplate.innerHTML = `
       </button>
       <span id="comment-count"></span>
     </div>
+  </div>
+
+  <div id="post-comments" hidden>
+    <div id="post-comments-feed"></div>
+    <form id="post-comments-form">
+      <input id="post-comments-input" type="text" placeholder="Type a message..." />
+      <button class="icon" id="send-button" type="submit">
+        <img id="send" />
+      </button>
+    </form>
   </div>
 `
 
@@ -122,8 +135,22 @@ class PepePost extends HTMLElement {
     return this.hasAttribute('full')
   }
 
+  set showComments(value) {
+    const postComments = this.shadowRoot.querySelector('#post-comments')
+    if (value) {
+      postComments.removeAttribute('hidden')
+    } else {
+      postComments.setAttribute('hidden', '')
+    }
+  }
+
+  get showComments() {
+    return this.shadowRoot.querySelector('#post-comments').hasAttribute('hidden')
+  }
+
   toggleFull() {
     this.full = !this.full
+    this.showComments = this.full
   }
 
   // Update like and dislike counts

@@ -35,3 +35,11 @@
 #comment[filled], #comment:hover {
 	content: url('../icons/comment-text-solid-svgrepo-com.svg');
 }
+
+#send, #send[filled]:hover {
+	content: url('../icons/send-svgrepo-com.svg');
+}
+
+#send[filled], #send:hover {
+	content: url('../icons/send-solid-svgrepo-com.svg');
+}

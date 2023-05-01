@@ -25,6 +25,35 @@ img {
 	flex-direction: row;
 }
 
+#post-comments {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+	border-top: 0.1rem solid;
+}
+
+#post-comments[hidden] {
+	display: none;
+}
+
+#post-comments-form {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+#post-comments-input {
+	width: 100%;
+}
+
+.comment {
+	border-bottom: 0.1rem solid;
+}
+
 @media only screen and (max-width: 800px) {
 	h2 > span:nth-child(2) {
 		display: none;
@@ -33,5 +62,9 @@ img {
 	img {
 		margin: auto;
 		max-height: none;
+	}
+
+	#post-comments-form {
+		margin-top: 0.5rem;
 	}
 }

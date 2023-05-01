@@ -91,7 +91,7 @@ class PepePost extends HTMLElement {
     dislikeButton.addEventListener('click', () => this.like(false))
 
     const commentButton = this.shadowRoot.querySelector('#comment-button')
-    commentButton.addEventListener('click', () => this.toggleFull())
+    commentButton.addEventListener('click', async () => this.toggleFull())
 
     this.liked = liked === 'true'
     this.disliked = disliked === 'true'
@@ -148,8 +148,19 @@ class PepePost extends HTMLElement {
     return this.shadowRoot.querySelector('#post-comments').hasAttribute('hidden')
   }
 
-  toggleFull() {
+  async toggleFull() {
     this.full = !this.full
+    if (this.full) {
+      const comments = await this.getComments()
+      const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
+      commentsFeed.innerHTML = ''
+      for (const comment of comments) {
+        const commentElement = document.createElement('div')
+        commentElement.classList.add('comment')
+        commentElement.textContent = `@${comment.author}: ${comment.content}`
+        commentsFeed.appendChild(commentElement)
+      }
+    }
     this.showComments = this.full
   }
 
@@ -201,6 +212,27 @@ class PepePost extends HTMLElement {
       }
 
       this.updateCounts(deleteLike, value)
+    } catch (error) {
+      alert(`Error: ${error}`)
+    }
+  }
+
+  // Get comments
+  async getComments() {
+    const picture_id = this.getAttribute('data-picture-id')
+    const url = `http://localhost:3000/picture/comments?picture=${picture_id}`
+
+    try {
+      const response = await fetch(url, { method: 'GET' })
+
+      if (!response.ok) {
+        const { message, error } = await response.json()
+        const errorMessage = error || message || JSON.stringify(response)
+        alert(`Error: ${errorMessage}`)
+        return
+      }
+
+      return response.json()
     } catch (error) {
       alert(`Error: ${error}`)
     }

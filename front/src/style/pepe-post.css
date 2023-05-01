@@ -50,8 +50,18 @@ img {
 	width: 100%;
 }
 
+#post-comments-feed {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 100%;
+}
+
 .comment {
 	border-bottom: 0.1rem solid;
+	width: 100%;
+	padding: 1rem 0;
+	overflow-wrap: anywhere;
 }
 
 @media only screen and (max-width: 800px) {
@@ -66,5 +76,9 @@ img {
 
 	#post-comments-form {
 		margin-top: 0.5rem;
+	}
+
+	.comment {
+		padding: 0.5rem 0;
 	}
 }

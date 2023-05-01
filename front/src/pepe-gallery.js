@@ -70,6 +70,35 @@ class PepePost extends HTMLElement {
 
     const commentCount = this.shadowRoot.querySelector('#comment-count')
     commentCount.textContent = comment_count
+
+    this.liked = liked
+    this.disliked = disliked
+  }
+
+  set liked(value) {
+    const thumbsUp = this.shadowRoot.querySelector('#thumbs-up')
+    if (value === 'true') {
+      thumbsUp.setAttribute('filled', '')
+    } else {
+      thumbsUp.removeAttribute('filled')
+    }
+  }
+
+  get liked() {
+    return this.shadowRoot.querySelector('#thumbs-up').hasAttribute('filled')
+  }
+
+  set disliked(value) {
+    const thumbsDown = this.shadowRoot.querySelector('#thumbs-down')
+    if (value === 'true') {
+      thumbsDown.setAttribute('filled', '')
+    } else {
+      thumbsDown.removeAttribute('filled')
+    }
+  }
+
+  get disliked() {
+    return this.shadowRoot.querySelector('#thumbs-down').hasAttribute('filled')
   }
 }
 

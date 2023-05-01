@@ -3,7 +3,7 @@
 use crate::uuid::{from_sqlx_to_serde, SqlxUuid};
 use crate::{
     auth::password,
-    payload::{NewUser, Picture},
+    payload::{Comment, NewUser, Picture},
 };
 use rocket_db_pools::sqlx::{self, PgPool};
 use rocket_db_pools::{Connection, Database};
@@ -40,6 +40,16 @@ pub mod types {
     #[derive(sqlx::FromRow)]
     pub struct PictureId {
         pub picture_id: SqlxUuid,
+    }
+
+    /// A comment from the GET comments request
+    #[derive(sqlx::FromRow, Debug)]
+    pub struct DbComment {
+        pub picture_id: SqlxUuid,
+        pub account_id: SqlxUuid,
+        pub creation_ts: OffsetDateTime,
+        pub content: String,
+        pub author: String,
     }
 }
 
@@ -333,19 +343,37 @@ pub async fn comment(
     comment: &str,
     picture_id: &SqlxUuid,
     account_id: &SqlxUuid,
-) -> Result<(), sqlx::Error> {
+) -> Result<Comment, sqlx::Error> {
     let query = "
-		INSERT INTO comments (picture_id, account_id, content)
-		VALUES ($1, $2, $3);
+		WITH new_comment AS (
+			INSERT INTO comments (picture_id, account_id, content)
+			VALUES ($1, $2, $3)
+			RETURNING *
+		)
+		SELECT
+			new_comment.picture_id,
+			new_comment.account_id,
+			new_comment.creation_ts,
+			new_comment.content,
+			accounts.username AS author
+		FROM new_comment
+		JOIN accounts ON new_comment.account_id = accounts.account_id;
 	";
 
-    sqlx::query(query)
+    let new_comment = sqlx::query_as::<_, types::DbComment>(query)
         .bind(picture_id)
         .bind(account_id)
         .bind(comment)
-        .execute(&mut **db)
+        .fetch_one(&mut **db)
         .await?;
-    Ok(())
+
+    Ok(Comment {
+        picture_id: from_sqlx_to_serde(&new_comment.picture_id),
+        account_id: from_sqlx_to_serde(&new_comment.account_id),
+        creation_ts: new_comment.creation_ts.unix_timestamp(),
+        content: new_comment.content,
+        author: new_comment.author,
+    })
 }
 
 /// Create a new picture

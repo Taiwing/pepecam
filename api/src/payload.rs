@@ -55,8 +55,20 @@ pub struct Picture {
     pub disliked: Option<bool>,
 }
 
+/// Picture ID
 #[derive(Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct PictureId {
     pub picture_id: Uuid,
+}
+
+/// Comment data
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct Comment {
+    pub picture_id: Uuid,
+    pub account_id: Uuid,
+    pub creation_ts: i64,
+    pub content: String,
+    pub author: String,
 }

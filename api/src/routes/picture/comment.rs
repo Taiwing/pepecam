@@ -1,5 +1,5 @@
 use crate::auth::session;
-use crate::payload::DefaultResponse;
+use crate::payload::Comment;
 use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
@@ -19,7 +19,7 @@ pub async fn post(
     picture_comment: Json<PictureComment>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
-) -> ApiResult<DefaultResponse> {
+) -> ApiResult<Comment> {
     let picture_comment = picture_comment.into_inner();
     match query::comment(
         &mut db,
@@ -29,11 +29,9 @@ pub async fn post(
     )
     .await
     {
-        Ok(_) => ApiResult::Success {
+        Ok(comment) => ApiResult::Success {
             status: Status::Created,
-            payload: DefaultResponse {
-                response: String::from("Comment successfully set!"),
-            },
+            payload: comment,
         },
         Err(_) => ApiResult::Failure {
             status: Status::BadRequest,

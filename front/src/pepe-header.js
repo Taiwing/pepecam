@@ -156,7 +156,7 @@ class PepeHeader extends HTMLElement {
       'toggle-connected',
       this._onToggleConnected.bind(this)
     )
-    this.shadowRoot.dispatchEvent(toggleConnectedEvent())
+    this._onToggleConnected({ detail: { connected: !!getCookie('session') } })
   }
 
   _onToggleConnected({ detail: { connected } }) {

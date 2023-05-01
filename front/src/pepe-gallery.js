@@ -183,6 +183,9 @@ class PepeGallery extends HTMLElement {
 
     // Get posts on scroll
     window.addEventListener('scroll', this._onScroll.bind(this))
+
+    // Handle login/logout
+    window.addEventListener('toggle-connected', this._onToggleConnected.bind(this))
   }
 
   _onScroll() {
@@ -193,6 +196,13 @@ class PepeGallery extends HTMLElement {
     ) {
       this.getPepePosts()
     }
+  }
+
+  _onToggleConnected() {
+    this._index = -1
+    this._finished = false
+    this.shadowRoot.querySelector('.gallery').innerHTML = ''
+    this.getPepePosts()
   }
 
   // Get posts

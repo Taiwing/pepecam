@@ -71,13 +71,19 @@ class PepePost extends HTMLElement {
     const commentCount = this.shadowRoot.querySelector('#comment-count')
     commentCount.textContent = comment_count
 
-    this.liked = liked
-    this.disliked = disliked
+    const likeButton = this.shadowRoot.querySelector('#like-button')
+    likeButton.addEventListener('click', () => this.like(true))
+
+    const dislikeButton = this.shadowRoot.querySelector('#dislike-button')
+    dislikeButton.addEventListener('click', () => this.like(false))
+
+    this.liked = liked === 'true'
+    this.disliked = disliked === 'true'
   }
 
   set liked(value) {
     const thumbsUp = this.shadowRoot.querySelector('#thumbs-up')
-    if (value === 'true') {
+    if (value) {
       thumbsUp.setAttribute('filled', '')
     } else {
       thumbsUp.removeAttribute('filled')
@@ -90,7 +96,7 @@ class PepePost extends HTMLElement {
 
   set disliked(value) {
     const thumbsDown = this.shadowRoot.querySelector('#thumbs-down')
-    if (value === 'true') {
+    if (value) {
       thumbsDown.setAttribute('filled', '')
     } else {
       thumbsDown.removeAttribute('filled')
@@ -99,6 +105,65 @@ class PepePost extends HTMLElement {
 
   get disliked() {
     return this.shadowRoot.querySelector('#thumbs-down').hasAttribute('filled')
+  }
+
+  // Update like and dislike counts
+  updateCounts(deleteLike, value) {
+    const likeCount = this.shadowRoot.querySelector('#like-count')
+    const dislikeCount = this.shadowRoot.querySelector('#dislike-count')
+
+    console.log({ deleteLike, value })
+
+    // Delete like or dislike
+    if (this.liked && (deleteLike || !value)) {
+      console.log('delete like')
+      this.liked = false
+      likeCount.textContent = Number(likeCount.textContent) - 1
+    } else if (this.disliked && (deleteLike || value)) {
+      console.log('delete dislike')
+      this.disliked = false
+      dislikeCount.textContent = Number(dislikeCount.textContent) - 1
+    }
+
+    // Add like or dislike
+    if (!deleteLike && value) {
+      console.log('add like')
+      this.liked = true
+      likeCount.textContent = Number(likeCount.textContent) + 1
+    } else if (!deleteLike && !value) {
+      console.log('add dislike')
+      this.disliked = true
+      dislikeCount.textContent = Number(dislikeCount.textContent) + 1
+    }
+  }
+
+  // Like or dislike post
+  async like(value) {
+    const deleteLike = (this.liked && value) || (this.disliked && !value)
+    const picture_id = this.getAttribute('data-picture-id')
+    const payload = { picture_id }
+    if (!deleteLike) payload.like = value
+    const url = 'http://localhost:3000/picture/like'
+
+    try {
+      const response = await fetch(url, {
+        method: deleteLike ? 'DELETE' : 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const { message, error } = await response.json()
+        const errorMessage = error || message || JSON.stringify(response)
+        alert(`Error: ${errorMessage}`)
+        return
+      }
+
+      this.updateCounts(deleteLike, value)
+    } catch (error) {
+      alert(`Error: ${error}`)
+    }
   }
 }
 

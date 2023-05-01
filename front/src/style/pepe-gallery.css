@@ -12,14 +12,12 @@ pepe-post {
 	width: 100%;
 }
 
-/*
 pepe-post[full] {
 	box-sizing: border-box;
 	padding: 1rem;
 	border: 0.1rem solid;
 	border-radius: 0.5rem;
 }
-*/
 
 @media only screen and (max-width: 800px) {
 	:host(.gallery) {
@@ -33,9 +31,7 @@ pepe-post[full] {
 		gap: 0.5rem;
 	}
 
-	/*
 	pepe-post[full] {
 		padding: 0.5rem;
 	}
-	*/
 }

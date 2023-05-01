@@ -77,6 +77,9 @@ class PepePost extends HTMLElement {
     const dislikeButton = this.shadowRoot.querySelector('#dislike-button')
     dislikeButton.addEventListener('click', () => this.like(false))
 
+    const commentButton = this.shadowRoot.querySelector('#comment-button')
+    commentButton.addEventListener('click', () => this.toggleFull())
+
     this.liked = liked === 'true'
     this.disliked = disliked === 'true'
   }
@@ -105,6 +108,22 @@ class PepePost extends HTMLElement {
 
   get disliked() {
     return this.shadowRoot.querySelector('#thumbs-down').hasAttribute('filled')
+  }
+
+  set full(value) {
+    if (value) {
+      this.setAttribute('full', '')
+    } else {
+      this.removeAttribute('full')
+    }
+  }
+
+  get full() {
+    return this.hasAttribute('full')
+  }
+
+  toggleFull() {
+    this.full = !this.full
   }
 
   // Update like and dislike counts

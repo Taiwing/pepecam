@@ -112,26 +112,20 @@ class PepePost extends HTMLElement {
     const likeCount = this.shadowRoot.querySelector('#like-count')
     const dislikeCount = this.shadowRoot.querySelector('#dislike-count')
 
-    console.log({ deleteLike, value })
-
     // Delete like or dislike
     if (this.liked && (deleteLike || !value)) {
-      console.log('delete like')
       this.liked = false
       likeCount.textContent = Number(likeCount.textContent) - 1
     } else if (this.disliked && (deleteLike || value)) {
-      console.log('delete dislike')
       this.disliked = false
       dislikeCount.textContent = Number(dislikeCount.textContent) - 1
     }
 
     // Add like or dislike
     if (!deleteLike && value) {
-      console.log('add like')
       this.liked = true
       likeCount.textContent = Number(likeCount.textContent) + 1
     } else if (!deleteLike && !value) {
-      console.log('add dislike')
       this.disliked = true
       dislikeCount.textContent = Number(dislikeCount.textContent) + 1
     }

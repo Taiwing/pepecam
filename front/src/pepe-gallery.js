@@ -137,10 +137,13 @@ class PepePost extends HTMLElement {
 
   set showComments(value) {
     const postComments = this.shadowRoot.querySelector('#post-comments')
+    const commentIcon = this.shadowRoot.querySelector('#comment')
     if (value) {
       postComments.removeAttribute('hidden')
+      commentIcon.setAttribute('filled', '')
     } else {
       postComments.setAttribute('hidden', '')
+      commentIcon.removeAttribute('filled')
     }
   }
 

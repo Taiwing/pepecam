@@ -1,11 +1,22 @@
-#app-name {
+a {
 	color: #03f200;
-	font-size: 2rem;
 	text-decoration: none;
+}
+
+#app-name {
+	font-size: 2rem;
+	font-weight: bold;
 }
 
 #app-name:before {
 	content: "Pepecam";
+}
+
+.nav-menu {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 2rem;
 }
 
 button {
@@ -73,6 +84,10 @@ dialog {
 
 	#app-name:before {
 		content: "P";
+	}
+
+	.nav-menu {
+		display: none;
 	}
 
 	.form {

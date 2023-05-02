@@ -47,6 +47,11 @@ const PepeHeaderTemplate = document.createElement('template')
 PepeHeaderTemplate.innerHTML = `
   <link rel="stylesheet" href="style/pepe-header.css" />
   <a id="app-name" href="/"></a>
+  <nav class="nav-menu">
+    <a href="/index.html">Gallery</a>
+    <a href="/upload.html">Upload</a>
+    <a href="/profile.html">Profile</a>
+  </nav>
   <div id="unconnected" class="user-actions" hidden>
     <button id="login">login</button>
     <button id="signup">signup</button>

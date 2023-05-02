@@ -9,7 +9,6 @@ header {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	font-weight: bold;
 	font-size: 1rem;
 	padding: 2rem 0.75rem;
 	background-color: #0b0b0b;
@@ -28,6 +27,7 @@ main {
 footer {
 	display: flex;
 	flex-direction: row;
+	box-sizing: border-box;
 	padding: 2rem 0.75rem;
 	color: #b1b1b1;
 	background-color: #121212;
@@ -50,7 +50,7 @@ footer:before {
 		font-size: 1.5rem;
 	}
 
-	footer {
-		display: none;
+	footer:before {
+		content: none;
 	}
 }

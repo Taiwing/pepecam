@@ -31,8 +31,9 @@ footer {
 	padding: 2rem 0.75rem;
 	color: #b1b1b1;
 	background-color: #121212;
-	position: sticky;
+	position: fixed;
 	bottom: 0px;
+	width: 100%;
 }
 
 footer:before {

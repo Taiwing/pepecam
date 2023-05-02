@@ -1,10 +1,10 @@
-a {
-	text-decoration: none;
+#app-name {
 	color: #03f200;
 	font-size: 2rem;
+	text-decoration: none;
 }
 
-a:before {
+#app-name:before {
 	content: "Pepecam";
 }
 
@@ -17,6 +17,11 @@ button {
 	text-align: center;
 	display: inline-block;
 	font-size: inherit;
+}
+
+button:hover {
+	color: #0b0b0b;
+	background-color: #03f200;
 	transition-duration: 0.4s;
 }
 
@@ -24,11 +29,6 @@ input {
 	background-color: inherit;
 	color: inherit;
 	font-size: inherit;
-}
-
-button:hover {
-	background-color: #03f200;
-	color: #0b0b0b;
 }
 
 .user-actions {
@@ -67,11 +67,11 @@ dialog {
 }
 
 @media only screen and (max-width: 800px) {
-	a {
+	#app-name {
 		font-size: 2.5rem;
 	}
 
-	a:before {
+	#app-name:before {
 		content: "P";
 	}
 

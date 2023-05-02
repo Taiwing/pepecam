@@ -45,8 +45,8 @@ async function dialogSubmit() {
 
 const PepeHeaderTemplate = document.createElement('template')
 PepeHeaderTemplate.innerHTML = `
-  <style>@import "style/pepe-header.css"</style>
-  <a href="/"></a>
+  <link rel="stylesheet" href="style/pepe-header.css" />
+  <a id="app-name" href="/"></a>
   <div id="unconnected" class="user-actions" hidden>
     <button id="login">login</button>
     <button id="signup">signup</button>

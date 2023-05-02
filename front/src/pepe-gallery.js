@@ -2,10 +2,8 @@ import { createElement } from './utils.js'
 
 const PepePostTemplate = document.createElement('template')
 PepePostTemplate.innerHTML = `
-  <style>
-    @import "style/pepe-post.css";
-    @import "style/pepe-icons.css";
-  </style>
+  <link rel="stylesheet" href="style/pepe-post.css" />
+  <link rel="stylesheet" href="style/pepe-icons.css" />
 
   <h2>
     <span id="author-span"></span>
@@ -288,7 +286,7 @@ customElements.define('pepe-post', PepePost)
 
 const PepeGalleryTemplate = document.createElement('template')
 PepeGalleryTemplate.innerHTML = `
-  <style>@import "style/pepe-gallery.css"</style>
+  <link rel="stylesheet" href="style/pepe-gallery.css">
 `
 
 // PepeGallery element

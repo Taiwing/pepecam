@@ -40,6 +40,47 @@ footer:before {
 	content: "Deved by Me. All rights reserved ? How does it work really ?";
 }
 
+input {
+	background-color: inherit;
+	color: inherit;
+	font-size: inherit;
+}
+
+button {
+	background-color: inherit;
+	color: inherit;
+	padding: 0.5rem 1rem;
+	border: 0.1rem solid inherit;
+	border-radius: 0.5rem;
+	text-align: center;
+	display: inline-block;
+	font-size: inherit;
+}
+
+button:hover {
+	color: #171717;
+	background-color: #b1b1b1;
+	transition-duration: 0.4s;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.form-field {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+.form-field:last-child {
+	margin-top: 0.75rem;
+	justify-content: space-around;
+}
+
 @media only screen and (max-width: 800px) {
 	header {
 		font-size: 1.5rem;
@@ -52,5 +93,13 @@ footer:before {
 
 	footer:before {
 		content: none;
+	}
+
+	.form {
+		gap: 0.25rem;
+	}
+
+	.form-field {
+		flex-direction: column;
 	}
 }

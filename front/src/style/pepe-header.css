@@ -22,24 +22,12 @@ a {
 button {
 	background-color: inherit;
 	color: #03f200;
-	padding: 0.5rem 1rem;
 	border: 0.1rem solid #03f200;
-	border-radius: 0.5rem;
-	text-align: center;
-	display: inline-block;
-	font-size: inherit;
 }
 
 button:hover {
 	color: #0b0b0b;
 	background-color: #03f200;
-	transition-duration: 0.4s;
-}
-
-input {
-	background-color: inherit;
-	color: inherit;
-	font-size: inherit;
 }
 
 .user-actions {
@@ -59,24 +47,6 @@ dialog {
 	color: inherit;
 }
 
-.form {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-}
-
-.form-field {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	gap: 0.5rem;
-}
-
-.form-field:last-child {
-	margin-top: 0.75rem;
-	justify-content: space-around;
-}
-
 @media only screen and (max-width: 800px) {
 	#app-name {
 		font-size: 2.5rem;
@@ -88,13 +58,5 @@ dialog {
 
 	.nav-menu {
 		display: none;
-	}
-
-	.form {
-		gap: 0.25rem;
-	}
-
-	.form-field {
-		flex-direction: column;
 	}
 }

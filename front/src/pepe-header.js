@@ -45,6 +45,7 @@ async function dialogSubmit() {
 
 const PepeHeaderTemplate = document.createElement('template')
 PepeHeaderTemplate.innerHTML = `
+  <link rel="stylesheet" href="style/global.css" />
   <link rel="stylesheet" href="style/pepe-header.css" />
   <a id="app-name" href="/"></a>
   <nav class="nav-menu">

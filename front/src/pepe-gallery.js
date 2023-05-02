@@ -285,6 +285,7 @@ class PepeGallery extends HTMLElement {
     this._index = -1
     this._finished = false
     this.shadowRoot.innerHTML = ''
+    this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
     this.getPepePosts()
   }
 

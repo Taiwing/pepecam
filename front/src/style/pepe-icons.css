@@ -43,3 +43,11 @@
 #send[filled], #send:hover {
 	content: url('../icons/send-solid-svgrepo-com.svg');
 }
+
+@media only screen and (max-width: 800px) {
+	.icon > img {
+		width: 2.5rem;
+		height: 2.5rem;
+		padding: 0.25rem;
+	}
+}

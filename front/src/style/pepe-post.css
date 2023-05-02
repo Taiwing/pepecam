@@ -47,6 +47,9 @@ img {
 
 #post-comments-input {
 	width: 100%;
+	font-size: inherit;
+	color: inherit;
+	background-color: inherit;
 }
 
 #post-comments-feed {
@@ -78,5 +81,6 @@ img {
 
 	#post-comments-form {
 		padding-top: 0.5rem;
+		gap: 0.25rem;
 	}
 }

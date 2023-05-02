@@ -1,3 +1,28 @@
+--- TODO ---
+
+GLOBAL:
+- implement mail logic (find a way to send mail from the backend)
+
+FRONT:
+- also add a settings button to change account parameters (email, password,
+  notfications, etc...)
+- create edition page (studio, pepe's lair, or something cool idk) with current
+  webcam view or an uploaded picture and a pepe selector, and also a side
+  section for previously created pictures
+
+FIX:
+- panic when trying to connect with generated users (I think this is because
+  the password hash is wrong)
+
+--- MAYBE ---
+
+GLOBAL:
+- create "filters" for the feed (like the superposable, the date, the user,
+  etc...)
+- add documentation about the populate scripts in README (maybe "clean" the
+  logic so that it is simpler to use)
+- maybe try and find a way to use an ENV variable to populate the database
+
 API:
 - implement tests for every route and structures
 - try and use environment variables for some constants (maybe create a config
@@ -9,23 +34,6 @@ API:
   value instead of returning an Ok(()))
 - create superposable enum in db and add this information to pictures table
 
-GLOBAL:
-- create "filters" for the feed (like the superposable, the date, the user,
-  etc...)
-- add documentation about the populate scripts in README (maybe "clean" the
-  logic so that it is simpler to use)
-- maybe try and find a way to use an ENV variable to populate the database
-- implement mail logic (find a way to send mail from the backend)
-
 FRONT:
-- also add a settings button to change account parameters (email, password,
-  notfications, etc...)
-- create edition page (studio, pepe's lair, or something cool idk) with current
-  webcam view or an uploaded picture and a pepe selector, and also a side
-  section for previously created pictures
 - make sure this shit looks good on mobile ("displays correctly")
 - use classes and ids instead of tags for the styling (more reliable)
-
-FIX:
-- panic when trying to connect with generated users (I think this is because
-  the password hash is wrong)

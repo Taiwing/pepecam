@@ -37,12 +37,16 @@ PepePostTemplate.innerHTML = `
 
   <div id="post-comments" hidden>
     <div id="post-comments-feed"></div>
-    <form id="post-comments-form">
-      <input id="post-comments-input" type="text" placeholder="Type a message..." />
+    <div id="post-comments-form">
+      <input
+        id="post-comments-input"
+        type="text"
+        placeholder="Type a message..."
+      />
       <button class="icon" id="send-button" type="submit">
         <img id="send" />
       </button>
-    </form>
+    </div>
   </div>
 `
 
@@ -92,6 +96,9 @@ class PepePost extends HTMLElement {
 
     const commentButton = this.shadowRoot.querySelector('#comment-button')
     commentButton.addEventListener('click', async () => this.toggleFull())
+
+    const sendButton = this.shadowRoot.querySelector('#send-button')
+    sendButton.addEventListener('click', async () => this.sendComment())
 
     this.liked = liked === 'true'
     this.disliked = disliked === 'true'
@@ -151,24 +158,26 @@ class PepePost extends HTMLElement {
     return this.shadowRoot.querySelector('#post-comments').hasAttribute('hidden')
   }
 
+  createComment(feed, { author, content }) {
+    const commentElement = document.createElement('div')
+    commentElement.classList.add('comment')
+    commentElement.textContent = `@${author}: ${content}`
+    feed.appendChild(commentElement)
+  }
+
   async toggleFull() {
     this.full = !this.full
     if (this.full) {
       const comments = await this.getComments()
       const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
       commentsFeed.innerHTML = ''
-      for (const comment of comments) {
-        const commentElement = document.createElement('div')
-        commentElement.classList.add('comment')
-        commentElement.textContent = `@${comment.author}: ${comment.content}`
-        commentsFeed.appendChild(commentElement)
-      }
+      for (const comment of comments) this.createComment(commentsFeed, comment)
     }
     this.showComments = this.full
   }
 
   // Update like and dislike counts
-  updateCounts(deleteLike, value) {
+  updateLikeCounts(deleteLike, value) {
     const likeCount = this.shadowRoot.querySelector('#like-count')
     const dislikeCount = this.shadowRoot.querySelector('#dislike-count')
 
@@ -214,7 +223,7 @@ class PepePost extends HTMLElement {
         return
       }
 
-      this.updateCounts(deleteLike, value)
+      this.updateLikeCounts(deleteLike, value)
     } catch (error) {
       alert(`Error: ${error}`)
     }
@@ -236,6 +245,38 @@ class PepePost extends HTMLElement {
       }
 
       return response.json()
+    } catch (error) {
+      alert(`Error: ${error}`)
+    }
+  }
+
+  // Send comment
+  async sendComment() {
+    const url = 'http://localhost:3000/picture/comment'
+    const picture_id = this.getAttribute('data-picture-id')
+    const content = this.shadowRoot.querySelector('#post-comments-input').value
+    const payload = { picture_id, comment: content }
+
+    try {
+      if (!content) return
+      const response = await fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (response.ok) {
+        this.shadowRoot.querySelector('#post-comments-input').value = ''
+        const comment = await response.json()
+        const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
+        this.createComment(commentsFeed, comment)
+        const commentCount = this.shadowRoot.querySelector('#comment-count')
+        commentCount.textContent = Number(commentCount.textContent) + 1
+      } else {
+        const { message, error } = await response.json()
+        const errorMessage = message || error || JSON.stringify(response)
+        alert(`Error: ${errorMessage}`)
+      }
     } catch (error) {
       alert(`Error: ${error}`)
     }

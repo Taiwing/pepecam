@@ -1,9 +1,10 @@
 .upload {
-	max-width: 70%;
+	width: 70%;
 	margin: 1rem auto;
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
+	flex-grow: 1;
 }
 
 .upload-edition {

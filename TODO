@@ -14,6 +14,7 @@ FIX:
 --- MAYBE ---
 
 GLOBAL:
+- better notifications (maybe replace alerts)
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
 - add documentation about the populate scripts in README (maybe "clean" the

@@ -1,0 +1,41 @@
+.upload {
+	max-width: 70%;
+	margin: 1rem auto;
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+}
+
+.upload-edition {
+	box-sizing: border-box;
+	min-width: 70%;
+	background-color: orange;
+	padding: 1rem;
+}
+
+.upload-sidebar {
+	box-sizing: border-box;
+	flex-grow: 1;
+	background-color: blue;
+	padding: 1rem;
+}
+
+@media only screen and (max-width: 800px) {
+	.upload {
+		width: 100%;
+		max-width: none;
+		flex-direction: column;
+	}
+
+	.upload-edition {
+		width: 100%;
+		min-width: none;
+		padding: 0.5rem;
+	}
+
+	.upload-sidebar {
+		width: 100%;
+		flex-grow: 0;
+		padding: 0.5rem;
+	}
+}

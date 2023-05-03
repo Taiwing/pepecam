@@ -31,14 +31,12 @@ const profileSubmit = async (event) => {
       formData.set('email_notifications', 'off')
     }
     const response = await submitForm(formData, 'PUT', url)
-    if (response.ok) {
-      alert('Profile updated')
-      window.location.href = '/'
-    } else {
+    if (!response.ok) {
       const { message, error } = await response.json()
-      const errorMessage = message || error || JSON.stringify(response)
-      alert(`Error: ${errorMessage}`)
+      throw message || error || JSON.stringify(response)
     }
+    alert('Profile updated')
+    window.location.href = '/'
   } catch (error) {
     alert(`Error: ${error}`)
   }

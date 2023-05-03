@@ -8,15 +8,11 @@ async function dialogSubmit() {
   try {
     if (form.reportValidity() === false) return
     const response = await submitForm(new FormData(form), 'POST', url)
-    if (response.ok) {
-      const message = await response.json()
-      alert(`Success: ${JSON.stringify(message)}`) //TEMP
-      submit.dispatchEvent(toggleConnectedEvent())
-    } else {
+    if (!response.ok) {
       const { message, error } = await response.json()
-      const errorMessage = message || error || JSON.stringify(response)
-      alert(`Error: ${errorMessage}`)
+      throw message || error || JSON.stringify(response)
     }
+    submit.dispatchEvent(toggleConnectedEvent())
   } catch (error) {
     alert(`Error: ${error}`)
   }
@@ -164,13 +160,9 @@ class PepeHeader extends HTMLElement {
         credentials: 'include',
       })
 
-      if (response.ok) {
-        const message = await response.json()
-        alert(`Success: ${JSON.stringify(message)}`) //TEMP
-      } else {
+      if (!response.ok) {
         const { message, error } = await response.json()
-        const errorMessage = message || error || JSON.stringify(response)
-        alert(`Error: ${errorMessage}`)
+        throw message || error || JSON.stringify(response)
       }
     } catch (error) {
       alert(`Error: ${error}`)

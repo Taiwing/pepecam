@@ -216,9 +216,7 @@ class PepePost extends HTMLElement {
 
       if (!response.ok) {
         const { message, error } = await response.json()
-        const errorMessage = error || message || JSON.stringify(response)
-        alert(`Error: ${errorMessage}`)
-        return
+        throw error || message || JSON.stringify(response)
       }
 
       this.updateLikeCounts(deleteLike, value)
@@ -237,9 +235,7 @@ class PepePost extends HTMLElement {
 
       if (!response.ok) {
         const { message, error } = await response.json()
-        const errorMessage = error || message || JSON.stringify(response)
-        alert(`Error: ${errorMessage}`)
-        return
+        throw error || message || JSON.stringify(response)
       }
 
       return response.json()
@@ -263,18 +259,18 @@ class PepePost extends HTMLElement {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (response.ok) {
-        this.shadowRoot.querySelector('#post-comments-input').value = ''
-        const comment = await response.json()
-        const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
-        this.createComment(commentsFeed, comment)
-        const commentCount = this.shadowRoot.querySelector('#comment-count')
-        commentCount.textContent = Number(commentCount.textContent) + 1
-      } else {
+
+      if (!response.ok) {
         const { message, error } = await response.json()
-        const errorMessage = message || error || JSON.stringify(response)
-        alert(`Error: ${errorMessage}`)
+        throw message || error || JSON.stringify(response)
       }
+
+      this.shadowRoot.querySelector('#post-comments-input').value = ''
+      const comment = await response.json()
+      const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
+      this.createComment(commentsFeed, comment)
+      const commentCount = this.shadowRoot.querySelector('#comment-count')
+      commentCount.textContent = Number(commentCount.textContent) + 1
     } catch (error) {
       alert(`Error: ${error}`)
     }

@@ -15,6 +15,13 @@ export const getCookie = (name) => {
   return cookies[name] ? JSON.parse(cookies[name]) : undefined
 }
 
+export const forbidUnconnected = () => {
+  if (!getCookie('session')) {
+    alert('You must be connected to access this page')
+    window.location.href = '/'
+  }
+}
+
 export const toggleConnectedEvent = () =>
   new CustomEvent('toggle-connected', {
     bubbles: true,

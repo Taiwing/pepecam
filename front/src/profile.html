@@ -7,6 +7,7 @@
 			content="width=device-width, initial-scale=1.0, user-scalable=yes"
 		/>
 		<title>Pepecam - Profile</title>
+		<script src="profile.js" type="module"></script>
 		<script src="pepe-header.js" type="module"></script>
 		<script src="pepe-footer.js" type="module"></script>
 		<link rel="stylesheet" href="style/global.css" />
@@ -30,7 +31,13 @@
 				  password
 				  <input type="password" name="password" placeholder="password">
 				</label>
-				<button type="submit" class="form-field">Update Profile</button>
+				<button
+					id="profile-submit-button"
+					type="submit"
+					class="form-field"
+				>
+					Update Profile
+				</button>
 			</form>
 		</main>
 		<footer is="pepe-footer"></footer>

@@ -1,5 +1,12 @@
+html {
+	height: 100vh;
+}
+
 body {
+	display: flex;
+	flex-direction: column;
 	margin: 0;
+	height: 100%;
 	color: #b1b1b1;
 	background: #171717;
 	font-family: sans-serif;
@@ -12,16 +19,17 @@ header {
 	font-size: 1rem;
 	padding: 2rem 0.75rem;
 	background-color: #0b0b0b;
-	position: sticky;
-	z-index: 1;
-	top: 0px;
+	flex-grow: 0;
+	flex-shrink: 0;
 }
 
 main {
 	display: flex;
 	flex-direction: column;
-	flex-wrap: wrap;
 	align-items: center;
+	flex-grow: 1;
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
 
 footer {
@@ -31,9 +39,9 @@ footer {
 	padding: 2rem 0.75rem;
 	color: #b1b1b1;
 	background-color: #121212;
-	position: fixed;
-	bottom: 0px;
 	width: 100%;
+	flex-grow: 0;
+	flex-shrink: 0;
 }
 
 footer:before {

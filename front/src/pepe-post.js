@@ -89,6 +89,9 @@ class PepePost extends HTMLElement {
         const picture = this.shadowRoot.querySelector('#post-picture')
         picture.src = `http://localhost:8080/pictures/${newValue}.jpg`
         picture.alt = `Picture ${newValue}`
+        this.full = false
+        const comments = this.shadowRoot.querySelector('#post-comments-feed')
+        comments.innerHTML = ''
         break
       case 'data-creation-ts':
         const dateSpan = this.shadowRoot.querySelector('#date-span')

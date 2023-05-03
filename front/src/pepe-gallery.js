@@ -33,11 +33,7 @@ class PepeGallery extends HTMLElement {
     if (this._finished) return
 
     const { scrollTop, scrollHeight } = event.target
-    console.log(`${scrollTop} / ${scrollHeight}`)
-
-    if (scrollTop >= scrollHeight * 0.75) {
-      this.getPepePosts()
-    }
+    if (scrollTop >= scrollHeight * 0.75) this.getPepePosts()
   }
 
   _onToggleConnected() {

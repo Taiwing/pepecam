@@ -40,6 +40,15 @@ pub struct NewUser {
     pub email: String,
 }
 
+/// User profile data
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct UserProfile {
+    pub username: String,
+    pub email: String,
+    pub email_notifications: bool,
+}
+
 /// Picture data
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]

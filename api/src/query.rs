@@ -243,6 +243,20 @@ pub async fn get_user_by_username(
         .unwrap()
 }
 
+/// Get user by account_id
+pub async fn get_user_by_account_id(
+    account_id: &SqlxUuid,
+    db: &mut Connection<PostgresDb>,
+) -> Option<types::Account> {
+    let query = "SELECT * FROM accounts WHERE account_id = $1;";
+
+    sqlx::query_as(query)
+        .bind(account_id)
+        .fetch_optional(&mut **db)
+        .await
+        .unwrap()
+}
+
 /// Modify user account
 ///
 /// Note: This implementation is really dumb. It executes one query per

@@ -5,8 +5,8 @@ pub mod register;
 pub mod reset;
 
 use crate::auth::session;
-use crate::payload::DefaultResponse;
-use crate::query::{put_user, PostgresDb};
+use crate::payload::{DefaultResponse, UserProfile};
+use crate::query::{get_user_by_account_id, put_user, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
 use crate::validation;
@@ -91,5 +91,22 @@ pub async fn put(
             status: Status::Conflict,
             message: String::from("Failed to update user account."),
         },
+    }
+}
+
+#[get("/")]
+pub async fn get(
+    sess: session::Connected,
+    mut db: Connection<PostgresDb>,
+) -> Option<Json<UserProfile>> {
+    let account_id = from_serde_to_sqlx(&sess.account_id);
+
+    match get_user_by_account_id(&account_id, &mut db).await {
+        Some(user) => Some(Json(UserProfile {
+            username: user.username,
+            email: user.email,
+            email_notifications: user.email_notifications,
+        })),
+        None => None,
     }
 }

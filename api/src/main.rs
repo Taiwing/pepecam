@@ -65,6 +65,7 @@ fn rocket() -> _ {
         .mount("/user", routes![routes::user::reset::get])
         .mount("/user", routes![routes::user::reset::post])
         .mount("/user", routes![routes::user::put])
+        .mount("/user", routes![routes::user::get])
         .mount("/picture", routes![routes::picture::like::put])
         .mount("/picture", routes![routes::picture::like::delete])
         .mount("/picture", routes![routes::picture::comment::post])

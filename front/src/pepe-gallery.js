@@ -3,6 +3,7 @@ import { createElement } from './utils.js'
 const PepeGalleryTemplate = document.createElement('template')
 PepeGalleryTemplate.innerHTML = `
   <link rel="stylesheet" href="style/pepe-gallery.css">
+  <div class="gallery"></div>
 `
 
 // PepeGallery element
@@ -58,6 +59,7 @@ class PepeGallery extends HTMLElement {
         return
       }
 
+      const gallery = this.shadowRoot.querySelector('.gallery')
       for (const post of posts) {
         const {
           picture_id,
@@ -81,7 +83,7 @@ class PepeGallery extends HTMLElement {
           'data-liked': liked,
           'data-disliked': disliked,
         }
-        this.shadowRoot.appendChild(createElement('pepe-post', attributes))
+        gallery.appendChild(createElement('pepe-post', attributes))
       }
     } catch (error) {
       this._finished = true

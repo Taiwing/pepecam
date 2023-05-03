@@ -18,7 +18,9 @@ class PepeGallery extends HTMLElement {
     this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
 
     // Get posts on scroll
-    window.addEventListener('scroll', this._onScroll.bind(this))
+    document
+      .querySelector('main')
+      .addEventListener('scroll', this._onScroll.bind(this))
 
     // Handle login/logout
     window.addEventListener(
@@ -27,12 +29,13 @@ class PepeGallery extends HTMLElement {
     )
   }
 
-  _onScroll() {
+  _onScroll(event) {
     if (this._finished) return
 
-    if (
-      window.innerHeight + window.scrollY >= document.body.offsetHeight * 0.75
-    ) {
+    const { scrollTop, scrollHeight } = event.target
+    console.log(`${scrollTop} / ${scrollHeight}`)
+
+    if (scrollTop >= scrollHeight * 0.75) {
       this.getPepePosts()
     }
   }

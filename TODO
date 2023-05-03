@@ -3,9 +3,6 @@
 GLOBAL:
 - implement mail logic (find a way to send mail from the backend)
 
-API:
-- implement GET /user route for the profile page
-
 FRONT:
 - get and show user data in profile
 - add an email notification checkbox in the profile

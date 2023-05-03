@@ -1,25 +1,4 @@
-import { getCookie, toggleConnectedEvent } from './utils.js'
-
-const postForm = (form, url) => {
-  const formData = new FormData(form)
-
-  const data = {}
-  for (const [key, value] of formData.entries()) {
-    if (key !== 'password-confirm') {
-      data[key] = value
-    }
-  }
-
-  const headers = new Headers()
-  headers.append('Content-Type', 'application/json')
-
-  return fetch(url, {
-    method: 'POST',
-    headers,
-    credentials: 'include',
-    body: JSON.stringify(data),
-  })
-}
+import { getCookie, toggleConnectedEvent, submitForm } from './utils.js'
 
 async function dialogSubmit() {
   const url = this.getAttribute('url')
@@ -28,7 +7,7 @@ async function dialogSubmit() {
 
   try {
     if (form.reportValidity() === false) return
-    const response = await postForm(form, url)
+    const response = await submitForm(form, 'POST', url)
     if (response.ok) {
       const message = await response.json()
       alert(`Success: ${JSON.stringify(message)}`) //TEMP
@@ -118,8 +97,11 @@ class PepeHeader extends HTMLElement {
     this.attachShadow({ mode: 'open' })
     this.shadowRoot.appendChild(PepeHeaderTemplate.content.cloneNode(true))
 
-    const passwordField = this.shadowRoot.querySelector('input[name="password"]')
-    const confirmPasswordField = this.shadowRoot.querySelector(
+    const loginDialog = this.shadowRoot.querySelector('#login-dialog')
+    const signupDialog = this.shadowRoot.querySelector('#signup-dialog')
+
+    const passwordField = signupDialog.querySelector('input[name="password"]')
+    const confirmPasswordField = signupDialog.querySelector(
       'input[name="password-confirm"]',
     )
     const validatePassword = () => {
@@ -131,9 +113,6 @@ class PepeHeader extends HTMLElement {
     }
     passwordField.addEventListener('change', validatePassword)
     confirmPasswordField.addEventListener('keyup', validatePassword)
-
-    const loginDialog = this.shadowRoot.querySelector('#login-dialog')
-    const signupDialog = this.shadowRoot.querySelector('#signup-dialog')
 
     const loginButton = this.shadowRoot.querySelector('#login')
     loginButton.addEventListener('click', () => loginDialog.showModal())

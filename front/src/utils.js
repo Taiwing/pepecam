@@ -36,3 +36,21 @@ export const createElement = (tag, attributes = {}) => {
   )
   return element
 }
+
+export const submitForm = (form, method, url) => {
+  const formData = new FormData(form)
+
+  const data = {}
+  for (const [key, value] of formData.entries()) {
+    if (key !== 'password-confirm' && value) {
+      data[key] = value
+    }
+  }
+
+  return fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  })
+}

@@ -37,12 +37,12 @@ export const createElement = (tag, attributes = {}) => {
   return element
 }
 
-export const submitForm = (form, method, url) => {
-  const formData = new FormData(form)
-
+export const submitForm = (formData, method, url) => {
   const data = {}
   for (const [key, value] of formData.entries()) {
-    if (key !== 'password-confirm' && value) {
+    if (key === 'email_notifications') {
+      data[key] = value === 'on'
+    } else if (key !== 'password-confirm' && value) {
       data[key] = value
     }
   }

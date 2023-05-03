@@ -4,8 +4,6 @@ GLOBAL:
 - implement mail logic (find a way to send mail from the backend)
 
 FRONT:
-- get and show user data in profile
-- add an email notification checkbox in the profile
 - create edition page with current webcam view or an uploaded picture and a pepe
   selector, and also a side section for previously created pictures
 

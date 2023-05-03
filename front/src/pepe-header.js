@@ -7,7 +7,7 @@ async function dialogSubmit() {
 
   try {
     if (form.reportValidity() === false) return
-    const response = await submitForm(form, 'POST', url)
+    const response = await submitForm(new FormData(form), 'POST', url)
     if (response.ok) {
       const message = await response.json()
       alert(`Success: ${JSON.stringify(message)}`) //TEMP

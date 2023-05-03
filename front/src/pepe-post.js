@@ -50,6 +50,19 @@ PepePostTemplate.innerHTML = `
 
 // PepePost element
 class PepePost extends HTMLElement {
+  static get observedAttributes() {
+    return [
+      'data-picture-id',
+      'data-creation-ts',
+      'data-author',
+      'data-like-count',
+      'data-dislike-count',
+      'data-comment-count',
+      'data-liked',
+      'data-disliked',
+    ]
+  }
+
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
@@ -57,35 +70,6 @@ class PepePost extends HTMLElement {
   }
 
   connectedCallback() {
-    const picture_id = this.getAttribute('data-picture-id')
-    const creation_ts = this.getAttribute('data-creation-ts')
-    const author = this.getAttribute('data-author')
-    const like_count = this.getAttribute('data-like-count')
-    const dislike_count = this.getAttribute('data-dislike-count')
-    const comment_count = this.getAttribute('data-comment-count')
-    const liked = this.getAttribute('data-liked')
-    const disliked = this.getAttribute('data-disliked')
-
-    const authorSpan = this.shadowRoot.querySelector('#author-span')
-    authorSpan.textContent = `@${author}`
-
-    const dateSpan = this.shadowRoot.querySelector('#date-span')
-    const date = new Date(Number(creation_ts) * 1000)
-    dateSpan.textContent = ` at ${date.toLocaleString()}`
-
-    const picture = this.shadowRoot.querySelector('#post-picture')
-    picture.src = `http://localhost:8080/pictures/${picture_id}.jpg`
-    picture.alt = `Picture ${picture_id}`
-
-    const likeCount = this.shadowRoot.querySelector('#like-count')
-    likeCount.textContent = like_count
-
-    const dislikeCount = this.shadowRoot.querySelector('#dislike-count')
-    dislikeCount.textContent = dislike_count
-
-    const commentCount = this.shadowRoot.querySelector('#comment-count')
-    commentCount.textContent = comment_count
-
     const likeButton = this.shadowRoot.querySelector('#like-button')
     likeButton.addEventListener('click', () => this.like(true))
 
@@ -97,9 +81,43 @@ class PepePost extends HTMLElement {
 
     const sendButton = this.shadowRoot.querySelector('#send-button')
     sendButton.addEventListener('click', async () => this.sendComment())
+  }
 
-    this.liked = liked === 'true'
-    this.disliked = disliked === 'true'
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch (name) {
+      case 'data-picture-id':
+        const picture = this.shadowRoot.querySelector('#post-picture')
+        picture.src = `http://localhost:8080/pictures/${newValue}.jpg`
+        picture.alt = `Picture ${newValue}`
+        break
+      case 'data-creation-ts':
+        const dateSpan = this.shadowRoot.querySelector('#date-span')
+        const date = new Date(Number(newValue) * 1000)
+        dateSpan.textContent = ` at ${date.toLocaleString()}`
+        break
+      case 'data-author':
+        const authorSpan = this.shadowRoot.querySelector('#author-span')
+        authorSpan.textContent = `@${newValue}`
+        break
+      case 'data-like-count':
+        const likeCount = this.shadowRoot.querySelector('#like-count')
+        likeCount.textContent = newValue
+        break
+      case 'data-dislike-count':
+        const dislikeCount = this.shadowRoot.querySelector('#dislike-count')
+        dislikeCount.textContent = newValue
+        break
+      case 'data-comment-count':
+        const commentCount = this.shadowRoot.querySelector('#comment-count')
+        commentCount.textContent = newValue
+        break
+      case 'data-liked':
+        this.liked = newValue === 'true'
+        break
+      case 'data-disliked':
+        this.disliked = newValue === 'true'
+        break
+    }
   }
 
   set liked(value) {

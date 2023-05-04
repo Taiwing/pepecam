@@ -18,9 +18,7 @@ class PepeGallery extends HTMLElement {
     this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
 
     // Get posts on scroll
-    document
-      .querySelector('main')
-      .addEventListener('scroll', this._onScroll.bind(this))
+    this.shadowRoot.host.addEventListener('scroll', this._onScroll.bind(this))
 
     // Handle login/logout
     window.addEventListener(

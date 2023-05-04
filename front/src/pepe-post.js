@@ -197,25 +197,25 @@ class PepePost extends HTMLElement {
 
   // Update like and dislike counts
   updateLikeCounts(deleteLike, value) {
-    const likeCount = this.shadowRoot.querySelector('#like-count')
-    const dislikeCount = this.shadowRoot.querySelector('#dislike-count')
+    const likeCount = this.getAttribute('data-like-count')
+    const dislikeCount = this.getAttribute('data-dislike-count')
 
     // Delete like or dislike
     if (this.liked && (deleteLike || !value)) {
       this.liked = false
-      likeCount.textContent = Number(likeCount.textContent) - 1
+      this.setAttribute('data-like-count', Number(likeCount) - 1)
     } else if (this.disliked && (deleteLike || value)) {
       this.disliked = false
-      dislikeCount.textContent = Number(dislikeCount.textContent) - 1
+      this.setAttribute('data-dislike-count', Number(dislikeCount) - 1)
     }
 
     // Add like or dislike
     if (!deleteLike && value) {
       this.liked = true
-      likeCount.textContent = Number(likeCount.textContent) + 1
+      this.setAttribute('data-like-count', Number(likeCount) + 1)
     } else if (!deleteLike && !value) {
       this.disliked = true
-      dislikeCount.textContent = Number(dislikeCount.textContent) + 1
+      this.setAttribute('data-dislike-count', Number(dislikeCount) + 1)
     }
   }
 
@@ -290,8 +290,8 @@ class PepePost extends HTMLElement {
       const comment = await response.json()
       const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
       this.createComment(commentsFeed, comment)
-      const commentCount = this.shadowRoot.querySelector('#comment-count')
-      commentCount.textContent = Number(commentCount.textContent) + 1
+      const commentCount = this.getAttribute('data-comment-count')
+      this.setAttribute('data-comment-count', Number(commentCount) + 1)
     } catch (error) {
       alert(`Error: ${error}`)
     }

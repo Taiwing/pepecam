@@ -44,6 +44,10 @@ class PepeGallery extends HTMLElement {
     this.getPepePosts()
   }
 
+  get thumbnail() {
+    return this.hasAttribute('thumbnail')
+  }
+
   // Get posts
   async getPepePosts() {
     try {
@@ -81,7 +85,11 @@ class PepeGallery extends HTMLElement {
           'data-liked': liked,
           'data-disliked': disliked,
         }
-        this.shadowRoot.appendChild(createElement('pepe-post', attributes))
+        if (this.thumbnail) {
+          this.shadowRoot.appendChild(createElement('pepe-thumbnail', attributes))
+        } else {
+          this.shadowRoot.appendChild(createElement('pepe-post', attributes))
+        }
       }
     } catch (error) {
       this._finished = true
@@ -95,5 +103,5 @@ class PepeGallery extends HTMLElement {
   }
 }
 
-// Register the PepeHeader element
+// Register the PepeGallery element
 customElements.define('pepe-gallery', PepeGallery)

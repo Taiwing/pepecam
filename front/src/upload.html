@@ -10,6 +10,8 @@
 		<script src="pepe-header.js" type="module"></script>
 		<script src="pepe-footer.js" type="module"></script>
 		<script src="upload.js" type="module"></script>
+		<script src="pepe-post.js" type="module"></script>
+		<script src="pepe-gallery.js" type="module"></script>
 		<link rel="stylesheet" href="style/global.css" />
 		<link rel="stylesheet" href="style/upload.css" />
 		<link rel="preload" href="style/pepe-header.css" as="style" />
@@ -21,9 +23,11 @@
 			<div class="upload">
 				<div class="upload-edition">
 					<h2>Upload</h2>
+					<pepe-post hidden />
 				</div>
 				<aside class="upload-sidebar">
 					<h2>Sidebar</h2>
+					<pepe-gallery />
 				</aside>
 			</div>
 		</main>

@@ -3,7 +3,6 @@ import { createElement } from './utils.js'
 const PepeGalleryTemplate = document.createElement('template')
 PepeGalleryTemplate.innerHTML = `
   <link rel="stylesheet" href="style/pepe-gallery.css">
-  <div class="gallery"></div>
 `
 
 // PepeGallery element
@@ -18,7 +17,10 @@ class PepeGallery extends HTMLElement {
     this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
 
     // Get posts on scroll
-    this.shadowRoot.host.addEventListener('scroll', this._onScroll.bind(this))
+    this.shadowRoot
+      .host
+      .parentElement
+      .addEventListener('scroll', this._onScroll.bind(this))
 
     // Handle login/logout
     window.addEventListener(
@@ -56,7 +58,6 @@ class PepeGallery extends HTMLElement {
         return
       }
 
-      const gallery = this.shadowRoot.querySelector('.gallery')
       for (const post of posts) {
         const {
           picture_id,
@@ -80,7 +81,7 @@ class PepeGallery extends HTMLElement {
           'data-liked': liked,
           'data-disliked': disliked,
         }
-        gallery.appendChild(createElement('pepe-post', attributes))
+        this.shadowRoot.appendChild(createElement('pepe-post', attributes))
       }
     } catch (error) {
       this._finished = true
@@ -95,4 +96,4 @@ class PepeGallery extends HTMLElement {
 }
 
 // Register the PepeHeader element
-customElements.define('pepe-gallery', PepeGallery, { extends: 'main' })
+customElements.define('pepe-gallery', PepeGallery)

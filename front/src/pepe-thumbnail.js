@@ -26,13 +26,23 @@ class PepeThumbnail extends HTMLElement {
   }
 
   onClick() {
-    //TODO: get every attribute from the picture
+    const detail = {
+      'data-picture-id': this.getAttribute('data-picture-id'),
+      'data-account-id': this.getAttribute('data-account-id'),
+      'data-creation-ts': this.getAttribute('data-creation-ts'),
+      'data-author': this.getAttribute('data-author'),
+      'data-like-count': this.getAttribute('data-like-count'),
+      'data-dislike-count': this.getAttribute('data-dislike-count'),
+      'data-comment-count': this.getAttribute('data-comment-count'),
+      'data-liked': this.getAttribute('data-liked'),
+      'data-disliked': this.getAttribute('data-disliked'),
+    }
     const event = new CustomEvent('pepe-thumbnail-click', {
       bubbles: true,
-      detail: { pictureId: this.getAttribute('data-picture-id') }
+      composed: true,
+      detail,
     })
     this.dispatchEvent(event)
-    console.log('Thumbnail clicked!')
   }
 
   attributeChangedCallback(name, oldValue, newValue) {

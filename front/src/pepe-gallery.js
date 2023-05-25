@@ -9,6 +9,10 @@ PepeGalleryTemplate.innerHTML = `
 class PepeGallery extends HTMLElement {
   count = 10 // Number of posts to get
 
+  static get observedAttributes() {
+    return ['data-username']
+  }
+
   constructor() {
     super()
     this._index = -1
@@ -25,7 +29,7 @@ class PepeGallery extends HTMLElement {
     // Handle login/logout
     window.addEventListener(
       'toggle-connected',
-      this._onToggleConnected.bind(this),
+      this._reset.bind(this),
     )
   }
 
@@ -36,7 +40,7 @@ class PepeGallery extends HTMLElement {
     if (scrollTop >= scrollHeight * 0.75) this.getPepePosts()
   }
 
-  _onToggleConnected() {
+  _reset() {
     this._index = -1
     this._finished = false
     this.shadowRoot.innerHTML = ''
@@ -44,8 +48,16 @@ class PepeGallery extends HTMLElement {
     this.getPepePosts()
   }
 
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'data-username') this._reset()
+  }
+
   get thumbnail() {
     return this.hasAttribute('thumbnail')
+  }
+
+  get username() {
+    return this.getAttribute('data-username')
   }
 
   // Get posts
@@ -54,6 +66,7 @@ class PepeGallery extends HTMLElement {
       this._index += 1
       const url =
         `http://localhost:3000/pictures?index=${this._index}&count=${this.count}`
+      if (this.username) url += `&username=${this.username}`
       const response = await fetch(url, { method: 'GET', credentials: 'include' })
       const posts = await response.json()
 

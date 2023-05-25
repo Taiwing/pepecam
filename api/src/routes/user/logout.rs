@@ -10,11 +10,13 @@ use rocket::{
 /// Log out of the application.
 #[post("/logout")]
 pub fn post(
-    sess: session::Connected,
     cookies: &CookieJar<'_>,
+    is_connected: session::IsConnected,
     sessions: &State<Cache<session::Connected>>,
 ) -> ApiResult<DefaultResponse> {
-    sessions.del(&sess.account_id.to_string());
+    if let Some(sess) = is_connected.0 {
+        sessions.del(&sess.account_id.to_string());
+    }
     cookies.remove(Cookie::named("session"));
     ApiResult::Success {
         status: Status::Ok,

@@ -49,6 +49,8 @@ pub mod session {
         pub account_id: SerdeUuid,
         /// unique session identifier
         pub session_id: SerdeUuid,
+        /// username
+        pub username: String,
     }
 
     /// The user may or may not be logged in to use the given route.
@@ -56,9 +58,10 @@ pub mod session {
 
     impl Connected {
         /// Create a new connected session for the given user
-        pub fn new(account_id: SerdeUuid) -> Self {
+        pub fn new(account_id: SerdeUuid, username: &str) -> Self {
             Connected {
                 account_id,
+                username: username.to_string(),
                 session_id: SerdeUuid::new_v4(),
             }
         }

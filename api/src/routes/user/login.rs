@@ -33,9 +33,10 @@ pub async fn login(
     {
         if auth::password::verify(&credentials.password, &account.password_hash)
         {
-            let session = session::Connected::new(from_sqlx_to_serde(
-                &account.account_id,
-            ));
+            let session = session::Connected::new(
+                from_sqlx_to_serde(&account.account_id),
+                &account.username,
+            );
             sessions.set(
                 &session.account_id.to_string(),
                 &session,

@@ -64,7 +64,7 @@ class PepeGallery extends HTMLElement {
   async getPepePosts() {
     try {
       this._index += 1
-      const url =
+      let url =
         `http://localhost:3000/pictures?index=${this._index}&count=${this.count}`
       if (this.username) url += `&username=${this.username}`
       const response = await fetch(url, { method: 'GET', credentials: 'include' })

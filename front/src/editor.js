@@ -1,4 +1,4 @@
-import { forbidUnconnected } from './utils.js'
+import { getCookie, forbidUnconnected } from './utils.js'
 
 // Handle thumbnail click event
 const onThumbnailClick = (event) => {
@@ -11,8 +11,13 @@ const onThumbnailClick = (event) => {
 
 const initEditor = async () => {
   // Check if user is connected
-  //forbidUnconnected()
-  //window.addEventListener('toggle-connected', forbidUnconnected)
+  forbidUnconnected()
+  window.addEventListener('toggle-connected', forbidUnconnected)
+
+  // Set username for gallery
+  const gallery = document.querySelector('pepe-gallery')
+  const { username } = getCookie('session')
+  gallery.setAttribute('data-username', username)
 
   // Register thumbnail click event
   window.addEventListener('pepe-thumbnail-click', onThumbnailClick)

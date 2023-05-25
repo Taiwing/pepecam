@@ -14,16 +14,16 @@ cd ..
 ./link_pepes.bash
 
 # test api
-#./test_api.bash
+./test_api.bash
 
 # replace default password_hash
-#PASSWORD_HASH=$(
-#	docker exec camagru-db-1 psql -U postgres postgres \
-#	-c \
-#	"SELECT password_hash FROM accounts WHERE password_hash IS NOT 'toto' LIMIT 1;"
-#)
-#
-#echo "PASSWORD_HASH: $PASSWORD_HASH"
+PASSWORD_HASH=$(
+	docker exec camagru-db-1 psql -U postgres postgres -t -c \
+	"SELECT password_hash FROM accounts WHERE password_hash != 'toto' LIMIT 1;" \
+	| tr -d '[:space:]'
+)
+docker exec camagru-db-1 psql -U postgres postgres -c \
+	"UPDATE accounts SET password_hash = '$PASSWORD_HASH' WHERE password_hash = 'toto';"
 
 # wait for input
 read

@@ -5,7 +5,7 @@ SET SESSION test.n_likes = '8000';
 SET SESSION test.n_comments = '5000';
 SET SESSION test.date_min = '2022-01-01 00:00:00';
 SET SESSION test.date_max = '2023-04-18 00:00:00';
-SET SESSION test.password_hash = '1e623de0d44a6e7443ab927559c02452';
+SET SESSION test.password_hash = 'toto';
 
 -- Generate Users
 INSERT INTO accounts

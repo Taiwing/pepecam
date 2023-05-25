@@ -1,10 +1,5 @@
 #!/bin/bash
 
-echo get pictures
-curl -X GET 'http://localhost:3000/pictures?index=0&count=10' \
-	-H 'Content-Type: application/json'
-echo
-
 echo register user
 ID=$(echo $RANDOM | md5sum | head -c 20)
 echo USERNAME: $ID

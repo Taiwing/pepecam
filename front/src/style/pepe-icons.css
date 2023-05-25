@@ -44,6 +44,14 @@
 	content: url('../icons/send-solid-svgrepo-com.svg');
 }
 
+#trash, #trash[filled]:hover {
+	content: url('../icons/trash-svgrepo-com.svg');
+}
+
+#trash[filled], #trash:hover {
+	content: url('../icons/trash-solid-svgrepo-com.svg');
+}
+
 @media only screen and (max-width: 800px) {
 	.icon > img {
 		width: 2.5rem;

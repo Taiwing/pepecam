@@ -31,6 +31,11 @@ PepePostTemplate.innerHTML = `
       </button>
       <span id="comment-count"></span>
     </div>
+    <div id="delete-button-div" class="post-action" hidden>
+      <button class="icon" id="delete-button">
+        <img id="trash" />
+      </button>
+    </div>
   </div>
 
   <div id="post-comments" hidden>
@@ -81,6 +86,12 @@ class PepePost extends HTMLElement {
 
     const sendButton = this.shadowRoot.querySelector('#send-button')
     sendButton.addEventListener('click', async () => this.sendComment())
+
+    if (this.hasAttribute('show-delete-button')) {
+      this.shadowRoot.querySelector('#delete-button-div').removeAttribute('hidden')
+      const deleteButton = this.shadowRoot.querySelector('#delete-button')
+      deleteButton.addEventListener('click', async () => this.deletePost())
+    }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -292,6 +303,31 @@ class PepePost extends HTMLElement {
       this.createComment(commentsFeed, comment)
       const commentCount = this.getAttribute('data-comment-count')
       this.setAttribute('data-comment-count', Number(commentCount) + 1)
+    } catch (error) {
+      alert(`Error: ${error}`)
+    }
+  }
+
+  // Delete post
+  async deletePost() {
+    const picture_id = this.getAttribute('data-picture-id')
+    const url = 'http://localhost:3000/picture'
+
+    try {
+      const response = await fetch(url, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ picture_id }),
+      })
+
+      if (!response.ok) {
+        const { message, error } = await response.json()
+        throw error || message || JSON.stringify(response)
+      }
+
+      //TODO: Remove post from feed with an event
+      //this.remove()
     } catch (error) {
       alert(`Error: ${error}`)
     }

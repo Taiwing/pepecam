@@ -6,27 +6,27 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0, user-scalable=yes"
 		/>
-		<title>Pepecam - Upload</title>
+		<title>Pepecam - Editor</title>
 		<script src="pepe-header.js" type="module"></script>
 		<script src="pepe-footer.js" type="module"></script>
-		<script src="upload.js" type="module"></script>
+		<script src="editor.js" type="module"></script>
 		<script src="pepe-post.js" type="module"></script>
 		<script src="pepe-thumbnail.js" type="module"></script>
 		<script src="pepe-gallery.js" type="module"></script>
 		<link rel="stylesheet" href="style/global.css" />
-		<link rel="stylesheet" href="style/upload.css" />
+		<link rel="stylesheet" href="style/editor.css" />
 		<link rel="preload" href="style/pepe-header.css" as="style" />
 		<link rel="preload" href="style/pepe-footer.css" as="style" />
 	</head>
 	<body>
 		<header is="pepe-header"></header>
 		<main>
-			<div class="upload">
-				<div class="upload-edition">
-					<h2>Upload</h2>
+			<div class="editor">
+				<div class="editor-main">
+					<h2>Editor</h2>
 					<pepe-post hidden />
 				</div>
-				<aside class="upload-sidebar">
+				<aside class="editor-sidebar">
 					<h2>Sidebar</h2>
 					<pepe-gallery thumbnail />
 				</aside>

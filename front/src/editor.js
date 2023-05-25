@@ -9,7 +9,7 @@ const onThumbnailClick = (event) => {
   post.removeAttribute('hidden')
 }
 
-const initUpload = async () => {
+const initEditor = async () => {
   // Check if user is connected
   //forbidUnconnected()
   //window.addEventListener('toggle-connected', forbidUnconnected)
@@ -18,4 +18,4 @@ const initUpload = async () => {
   window.addEventListener('pepe-thumbnail-click', onThumbnailClick)
 }
 
-initUpload()
+initEditor()

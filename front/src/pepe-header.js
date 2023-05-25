@@ -25,7 +25,7 @@ PepeHeaderTemplate.innerHTML = `
   <a id="app-name" href="/"></a>
   <nav class="nav-menu">
     <a href="/index.html">Gallery</a>
-    <a href="/upload.html">Upload</a>
+    <a href="/editor.html">Editor</a>
     <a href="/profile.html">Profile</a>
   </nav>
   <div id="unconnected" class="user-actions" hidden>

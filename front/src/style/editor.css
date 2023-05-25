@@ -1,4 +1,4 @@
-.upload {
+.editor {
 	box-sizing: border-box;
 	height: 100%;
 	width: 70%;
@@ -9,7 +9,7 @@
 	flex-grow: 1;
 }
 
-.upload-edition {
+.editor-main {
 	box-sizing: border-box;
 	height: fit-content;
 	min-width: 70%;
@@ -17,7 +17,7 @@
 	padding: 1rem;
 }
 
-.upload-sidebar {
+.editor-sidebar {
 	box-sizing: border-box;
 	background-color: blue;
 	padding: 1rem;
@@ -27,19 +27,19 @@
 }
 
 @media only screen and (max-width: 800px) {
-	.upload {
+	.editor {
 		width: 100%;
 		max-width: none;
 		flex-direction: column;
 	}
 
-	.upload-edition {
+	.editor-main {
 		width: 100%;
 		min-width: none;
 		padding: 0.5rem;
 	}
 
-	.upload-sidebar {
+	.editor-sidebar {
 		width: 100%;
 		flex-grow: 0;
 		padding: 0.5rem;

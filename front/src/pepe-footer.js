@@ -3,7 +3,7 @@ PepeFooterTemplate.innerHTML = `
   <link rel="stylesheet" href="style/pepe-footer.css" />
   <nav class="nav-menu">
     <a href="/index.html">Gallery</a>
-    <a href="/upload.html">Upload</a>
+    <a href="/editor.html">Editor</a>
     <a href="/profile.html">Profile</a>
   </nav>
 `

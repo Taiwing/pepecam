@@ -6,10 +6,15 @@ GLOBAL:
 FRONT:
 - create edition page with current webcam view or an uploaded picture and a pepe
   selector, and also a side section for previously created pictures
+- show the 'empty-gallery' div when deleting there is no picture left in the
+  sidebar (simply add this in the onDeletePost handler)
 
 FIX:
-- panic when trying to connect with generated users (I think this is because the
-  password hash is wrong)
+- Some pictures can be missing from the sidebar in the editor. I have seen this
+  by manually removing every picture and then refreshing the page, two 'new'
+  pictures appeared. After deleting them and reloading the list was indeed
+  empty. This is the gallery scroll that does not work or is not implemented
+  correctly.
 
 --- MAYBE ---
 

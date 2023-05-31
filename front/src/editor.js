@@ -1,26 +1,30 @@
 import { getCookie, forbidUnconnected } from './utils.js'
 
+// Switch between upload and editor
+const toggleUploadEditor = () => {
+  const upload = document.querySelector('#editor-upload')
+  upload.toggleAttribute('hidden')
+  const editor = document.querySelector('#editor-editor')
+  editor.toggleAttribute('hidden')
+}
+
 // Handle thumbnail click event
 const onThumbnailClick = (event) => {
   const post = document.querySelector('pepe-post')
   Object.entries(event.detail).forEach(([key, value]) =>
     post.setAttribute(key, value)
   )
-  post.removeAttribute('hidden')
-}
-
-const onPostClose = () => {
-  const post = document.querySelector('pepe-post')
-  post.setAttribute('hidden', '')
+  const editor = document.querySelector('#editor-editor')
+  if (editor.hasAttribute('hidden')) toggleUploadEditor()
 }
 
 const onPostDelete = (event) => {
-  onPostClose()
   const { picture_id } = event.detail
   const gallery = document.querySelector('pepe-gallery')
   const selector = `pepe-thumbnail[data-picture-id="${picture_id}"]`
   const thumbnail = gallery.shadowRoot.querySelector(selector)
   thumbnail.remove()
+  toggleUploadEditor()
 }
 
 const initEditor = async () => {
@@ -38,7 +42,7 @@ const initEditor = async () => {
 
   //TODO: implement close button for pepe posts
   // Register post close event
-  //window.addEventListener('pepe-post-close', onPostClose)
+  //window.addEventListener('editor-close', toggleUploadEditor)
 
   // Register post delete event
   window.addEventListener('pepe-post-delete', onPostDelete)

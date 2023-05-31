@@ -9,6 +9,20 @@ const onThumbnailClick = (event) => {
   post.removeAttribute('hidden')
 }
 
+const onPostClose = () => {
+  const post = document.querySelector('pepe-post')
+  post.setAttribute('hidden', '')
+}
+
+const onPostDelete = (event) => {
+  onPostClose()
+  const { picture_id } = event.detail
+  const gallery = document.querySelector('pepe-gallery')
+  const selector = `pepe-thumbnail[data-picture-id="${picture_id}"]`
+  const thumbnail = gallery.shadowRoot.querySelector(selector)
+  thumbnail.remove()
+}
+
 const initEditor = async () => {
   // Check if user is connected
   forbidUnconnected()
@@ -21,6 +35,13 @@ const initEditor = async () => {
 
   // Register thumbnail click event
   window.addEventListener('pepe-thumbnail-click', onThumbnailClick)
+
+  //TODO: implement close button for pepe posts
+  // Register post close event
+  //window.addEventListener('pepe-post-close', onPostClose)
+
+  // Register post delete event
+  window.addEventListener('pepe-post-delete', onPostDelete)
 }
 
 initEditor()

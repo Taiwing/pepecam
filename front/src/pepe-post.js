@@ -326,8 +326,12 @@ class PepePost extends HTMLElement {
         throw error || message || JSON.stringify(response)
       }
 
-      //TODO: Remove post from feed with an event
-      //this.remove()
+      const event = new CustomEvent('pepe-post-delete', {
+        bubbles: true,
+        composed: true,
+        detail: { picture_id },
+      })
+      this.dispatchEvent(event)
     } catch (error) {
       alert(`Error: ${error}`)
     }

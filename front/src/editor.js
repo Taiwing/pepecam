@@ -46,7 +46,6 @@ const initEditor = async () => {
 
   // Register post delete event
   window.addEventListener('pepe-post-delete', onPostDelete)
-
 }
 
 initEditor()

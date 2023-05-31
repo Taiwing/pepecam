@@ -24,6 +24,7 @@
 	overflow-y: scroll;
 	overflow-x: hidden;
 	height: 100%;
+	width: 100%;
 }
 
 @media only screen and (max-width: 800px) {
@@ -40,7 +41,6 @@
 	}
 
 	.editor-sidebar {
-		width: 100%;
 		flex-grow: 0;
 		padding: 0.5rem;
 	}

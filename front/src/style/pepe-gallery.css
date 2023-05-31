@@ -19,6 +19,21 @@ pepe-post[full] {
 	border-radius: 0.5rem;
 }
 
+#empty-gallery {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+#empty-gallery > img {
+	width: 90%;
+}
+
+#empty-gallery[hidden] {
+	display: none;
+}
+
 @media only screen and (max-width: 800px) {
 	:host {
 		gap: 1rem;

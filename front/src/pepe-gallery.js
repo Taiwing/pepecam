@@ -68,6 +68,11 @@ class PepeGallery extends HTMLElement {
   async getPepePosts() {
     try {
       this._index += 1
+      //TODO: This is a dirty hack so that the gallery is empty when needed.
+      // The root cause of the problem is that this method is called twice
+      // when loading the editor page, once when the gallery is connected
+      // and once when data-username property is set. Fix this.
+      const index = this._index
       let url =
         `http://localhost:3000/pictures?index=${this._index}&count=${this.count}`
       if (this.username) url += `&username=${this.username}`
@@ -76,6 +81,12 @@ class PepeGallery extends HTMLElement {
 
       if (response.status !== 200 || !posts || posts.length === 0) {
         this._finished = true
+        //TODO: replace index by this._index when root cause is fixed
+        if (index === 0) {
+          this.shadowRoot
+            .getElementById('empty-gallery')
+            .removeAttribute('hidden')
+        }
         return
       }
 

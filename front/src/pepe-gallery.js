@@ -4,8 +4,8 @@ const PepeGalleryTemplate = document.createElement('template')
 PepeGalleryTemplate.innerHTML = `
   <link rel="stylesheet" href="style/pepe-gallery.css">
   <div id="empty-gallery" hidden>
-    <img src="pictures/superposables/sad.png" alt="Pepe sad">
     <p>There is no post yet</p>
+    <img src="pictures/superposables/sad.png" alt="Pepe sad">
   </div>
 `
 

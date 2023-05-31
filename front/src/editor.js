@@ -40,12 +40,13 @@ const initEditor = async () => {
   // Register thumbnail click event
   window.addEventListener('pepe-thumbnail-click', onThumbnailClick)
 
-  //TODO: implement close button for pepe posts
-  // Register post close event
-  //window.addEventListener('editor-close', toggleUploadEditor)
+  // Register editor close event
+  const close = document.querySelector('#editor-editor-close')
+  close.addEventListener('click', toggleUploadEditor)
 
   // Register post delete event
   window.addEventListener('pepe-post-delete', onPostDelete)
+
 }
 
 initEditor()

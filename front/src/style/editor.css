@@ -15,7 +15,6 @@
 	flex-direction: column;
 	height: fit-content;
 	min-width: 70%;
-	background-color: orange;
 	padding: 1rem;
 }
 
@@ -25,12 +24,18 @@
 
 .editor-sidebar {
 	box-sizing: border-box;
-	background-color: blue;
 	padding: 1rem;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	height: 100%;
 	width: 100%;
+}
+
+#editor-editor-bar {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }
 
 @media only screen and (max-width: 800px) {

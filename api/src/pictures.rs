@@ -1,9 +1,9 @@
 //! Constants and enums used to manipulate pictures and superposables
 
-use strum::{self, AsRefStr, EnumString};
+use strum::{self, AsRefStr, EnumIter, EnumString};
 
 // Superposable picture names
-#[derive(EnumString, AsRefStr)] // Convert from &str to Superposable and back
+#[derive(EnumString, AsRefStr, EnumIter)]
 #[strum(serialize_all = "lowercase")] // Every Superposable name is in lowercase
 pub enum Superposable {
     Chic,

@@ -5,6 +5,8 @@ use crate::uuid::from_serde_to_sqlx;
 use rocket::serde::json::Json;
 use rocket_db_pools::Connection;
 
+pub mod superposable;
+
 #[get("/?<index>&<count>&<username>")]
 pub async fn get(
     index: u32,

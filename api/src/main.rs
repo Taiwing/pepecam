@@ -73,6 +73,7 @@ fn rocket() -> _ {
         .mount("/picture", routes![routes::picture::comments::get])
         .mount("/picture", routes![routes::picture::post])
         .mount("/picture", routes![routes::picture::delete])
+        .mount("/pictures", routes![routes::pictures::superposable::get])
         .mount("/pictures", routes![routes::pictures::get])
         .register("/", catchers![result::default])
         .register("/", catchers![result::bad_request])

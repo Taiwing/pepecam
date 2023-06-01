@@ -20,9 +20,9 @@ PepeUploadTemplate.innerHTML = `
       <select id="pepe-upload-toolbar-select">
         <option value="">--Select a superposable--</option>
       </select>
-      <label class="button">
+      <label id="pepe-import-button" class="button" disabled="">
         Import Picture
-        <input type="file">
+        <input type="file" disabled>
       </label>
       <button id="pepe-capture-button" disabled>Capture</button>
       <button id="pepe-upload-button" disabled>Upload</button>
@@ -72,13 +72,47 @@ class PepeUpload extends HTMLElement {
   attributeChangedCallback (name, oldValue, newValue) {
     switch (name) {
       case 'data-superposable':
-        console.log(this.superposable)
+        this.disableImportButton(!newValue)
+        this.captureButton.disabled = !newValue
+        if (!newValue) {
+          this.uploadButton.disabled = true
+          this.cancelButton.disabled = true
+        }
         break
     }
   }
 
+  disableImportButton(disabled) {
+    if (disabled) {
+      this.importButton.setAttribute('disabled', '')
+    } else {
+      this.importButton.removeAttribute('disabled')
+    }
+    this.importInput.disabled = disabled
+  }
+
   get superposable () {
     return this.getAttribute('data-superposable')
+  }
+
+  get importButton () {
+    return this.shadowRoot.querySelector('#pepe-import-button')
+  }
+
+  get importInput () {
+    return this.shadowRoot.querySelector('#pepe-import-button input')
+  }
+
+  get captureButton () {
+    return this.shadowRoot.querySelector('#pepe-capture-button')
+  }
+
+  get uploadButton () {
+    return this.shadowRoot.querySelector('#pepe-upload-button')
+  }
+
+  get cancelButton () {
+    return this.shadowRoot.querySelector('#pepe-cancel-button')
   }
 
   connectedCallback () {

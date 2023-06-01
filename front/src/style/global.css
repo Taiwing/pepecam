@@ -67,13 +67,13 @@ button, .button {
 	font-size: inherit;
 }
 
-button:hover:not(:disabled), .button:hover:not(:disabled) {
+button:hover:not([disabled]), .button:hover:not([disabled]) {
 	color: #171717;
 	background-color: #b1b1b1;
 	transition-duration: 0.4s;
 }
 
-button:disabled, .button:disabled {
+button[disabled], .button[disabled] {
 	filter: opacity(0.3);
 }
 

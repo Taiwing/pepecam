@@ -5,23 +5,28 @@ const PepeUploadTemplate = document.createElement('template')
     <div id="pepe-upload-dropzone">
       <p>Drop files here</p>
     </div>
-    <div id="pepe-upload-capture">
-      <video id="pepe-upload-capture-video" autoplay></video>
-      <button id="pepe-upload-capture-button">Capture</button>
-    </div>
 */
 PepeUploadTemplate.innerHTML = `
   <link rel="stylesheet" href="style/global.css">
   <link rel="stylesheet" href="style/pepe-upload.css">
   <div id="pepe-upload">
-    <div id="pepe-upload-import">
-      <input type="file" id="pepe-upload-input">
+    <div id="pepe-upload-capture" hidden>
+      <video id="pepe-upload-capture-video" autoplay></video>
+    </div>
+    <div id="pepe-upload-preview" hidden>
+      <canvas id="pepe-upload-preview-canvas"></canvas>
     </div>
     <div id="pepe-upload-toolbar">
       <select id="pepe-upload-toolbar-select">
         <option value="">--Select a superposable--</option>
       </select>
-      <button id="pepe-upload-toolbar-button">Upload</button>
+      <label class="button">
+        Import Picture
+        <input type="file">
+      </label>
+      <button id="pepe-capture-button" disabled>Capture</button>
+      <button id="pepe-upload-button" disabled>Upload</button>
+      <button id="pepe-cancel-button" disabled>Cancel</button>
     </div>
   </div>
 `

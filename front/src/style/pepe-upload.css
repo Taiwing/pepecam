@@ -5,7 +5,20 @@
 
 #pepe-upload-toolbar {
 	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+	flex-direction: column;
 	align-items: center;
+	gap: 1rem;
+	margin: auto;
+}
+
+input[type="file"] {
+	display: none;
+}
+
+label.button {
+	box-sizing: border-box;
+}
+
+button, .button {
+	width: 100%;
 }

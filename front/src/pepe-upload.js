@@ -33,10 +33,15 @@ PepeUploadTemplate.innerHTML = `
 
 // PepeUpload element
 class PepeUpload extends HTMLElement {
+  static get observedAttributes() {
+    return ['data-superposable']
+  }
+
   constructor () {
     super()
     this.attachShadow({ mode: 'open' })
     this.shadowRoot.appendChild(PepeUploadTemplate.content.cloneNode(true))
+    this.setAttribute('data-superposable', '')
   }
 
   async getSuperposables () {
@@ -64,8 +69,25 @@ class PepeUpload extends HTMLElement {
     }
   }
 
+  attributeChangedCallback (name, oldValue, newValue) {
+    switch (name) {
+      case 'data-superposable':
+        console.log(this.superposable)
+        break
+    }
+  }
+
+  get superposable () {
+    return this.getAttribute('data-superposable')
+  }
+
   connectedCallback () {
     this.getSuperposables()
+    const select = this.shadowRoot.querySelector('#pepe-upload-toolbar-select')
+    select.addEventListener('input', (event) => {
+      const { value } = event.target
+      this.setAttribute('data-superposable', value)
+    })
   }
 }
 

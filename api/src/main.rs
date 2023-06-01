@@ -10,6 +10,7 @@ mod auth;
 mod cache;
 mod cors;
 mod payload;
+mod pictures;
 mod query;
 mod result;
 mod routes;

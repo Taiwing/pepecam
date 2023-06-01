@@ -1,6 +1,7 @@
 use crate::auth::session;
 use crate::payload::DefaultResponse;
 use crate::payload::PictureId;
+use crate::pictures;
 use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
@@ -12,38 +13,10 @@ use rocket::serde::json::Json;
 use rocket_db_pools::Connection;
 use std::fs;
 use std::str::FromStr;
-use strum::{self, AsRefStr, EnumString};
 
 pub mod comment;
 pub mod comments;
 pub mod like;
-
-#[derive(EnumString, AsRefStr)] // Convert from &str to Superposable and back
-#[strum(serialize_all = "lowercase")] // Every Superposable name is in lowercase
-pub enum Superposable {
-    Chic,
-    Cry,
-    Honk,
-    Rage,
-    Sad,
-    Smirk,
-    Stoned,
-    Sweat,
-}
-
-//TODO: remove the relative PATH when the API is containerized
-//TODO: also maybe use an env variable for the picture directory location
-const PICTURE_PATH: &str = "../front/pictures";
-//const PICTURE_PATH: &str = "/pictures";
-
-//TODO: same as above, replace by containerized version
-const SUPERPOSABLE_PATH: &str = concat!("../front/pictures", "/superposables");
-//const SUPERPOSABLE_PATH: &str = concat!("/pictures", "/superposables");
-
-// Superposable picture width and height in pixels
-const SUPERPOSABLE_SIDE: u32 = 512;
-
-const PICTURE_SIZEMAX: usize = 10;
 
 fn load_user_picture(raw_bytes: Vec<u8>) -> Result<PhotonImage, String> {
     let user_picture = match native::open_image_from_bytes(raw_bytes.as_slice())
@@ -54,8 +27,8 @@ fn load_user_picture(raw_bytes: Vec<u8>) -> Result<PhotonImage, String> {
         Ok(user_picture) => user_picture,
     };
 
-    if user_picture.get_width() < SUPERPOSABLE_SIDE
-        || user_picture.get_height() < SUPERPOSABLE_SIDE
+    if user_picture.get_width() < pictures::SUPERPOSABLES_SIDE
+        || user_picture.get_height() < pictures::SUPERPOSABLES_SIDE
     {
         return Err(String::from("user picture too small"));
     }
@@ -65,21 +38,22 @@ fn load_user_picture(raw_bytes: Vec<u8>) -> Result<PhotonImage, String> {
 
 async fn create_picture(
     mut user_picture: PhotonImage,
-    superposable: Superposable,
+    superposable: pictures::Superposable,
     account_id: &SqlxUuid,
     db: &mut Connection<PostgresDb>,
 ) -> Result<SqlxUuid, ()> {
     let filename = &format!("{}.png", superposable.as_ref());
     let superposable_picture = match native::open_image(&format!(
         "{}/{}",
-        SUPERPOSABLE_PATH, filename
+        pictures::SUPERPOSABLES_PATH,
+        filename
     )) {
         Err(_) => {
             return Err(());
         }
         Ok(image) => image,
     };
-    let y: u32 = user_picture.get_height() - SUPERPOSABLE_SIDE;
+    let y: u32 = user_picture.get_height() - pictures::SUPERPOSABLES_SIDE;
     multiple::watermark(&mut user_picture, &superposable_picture, 0, y);
     let picture_id = match query::post_picture(db, account_id).await {
         Err(_) => {
@@ -88,7 +62,7 @@ async fn create_picture(
         Ok(picture_id) => picture_id,
     };
     let filename =
-        format!("{}/{}.jpg", PICTURE_PATH, picture_id.to_hyphenated());
+        format!("{}/{}.jpg", pictures::PATH, picture_id.to_hyphenated());
     native::save_image(user_picture, &filename);
     Ok(picture_id)
 }
@@ -100,7 +74,7 @@ pub async fn post(
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
-    let superposable = match Superposable::from_str(superposable) {
+    let superposable = match pictures::Superposable::from_str(superposable) {
         Err(_) => {
             return ApiResult::Failure {
                 status: Status::NotFound,
@@ -110,14 +84,18 @@ pub async fn post(
         Ok(superposable) => superposable,
     };
 
-    match picture.open(PICTURE_SIZEMAX.mebibytes()).into_bytes().await {
+    match picture
+        .open(pictures::SIZEMAX.mebibytes())
+        .into_bytes()
+        .await
+    {
         Err(_) => ApiResult::Failure {
             status: Status::BadRequest,
             message: String::from("file upload failure"),
         },
         Ok(transfer) if !transfer.is_complete() => ApiResult::Failure {
             status: Status::BadRequest,
-            message: format!("file too big ({} MiB max)", PICTURE_SIZEMAX),
+            message: format!("file too big ({} MiB max)", pictures::SIZEMAX),
         },
         Ok(transfer) => {
             let user_picture = match load_user_picture(transfer.into_inner()) {
@@ -162,7 +140,8 @@ pub async fn delete(
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<DefaultResponse> {
     let picture_id = picture.into_inner().picture_id;
-    let filename = format!("{}/{}.jpg", PICTURE_PATH, picture_id.hyphenated());
+    let filename =
+        format!("{}/{}.jpg", pictures::PATH, picture_id.hyphenated());
     match query::delete_picture(
         &mut db,
         &from_serde_to_sqlx(&picture_id),

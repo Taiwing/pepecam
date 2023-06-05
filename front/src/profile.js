@@ -19,7 +19,7 @@ let user
 
 const profileSubmit = async (event) => {
   event.preventDefault()
-  const url = 'http://localhost:3000/user'
+  const url = `http://${window.location.hostname}:3000/user`
 
   try {
     if (!user || form.reportValidity() === false) return
@@ -43,7 +43,7 @@ const profileSubmit = async (event) => {
 }
 
 const getUser = async () => {
-  const url = 'http://localhost:3000/user'
+  const url = `http://${window.location.hostname}:3000/user`
   const response = await fetch(url, { credentials: 'include' })
   if (!response.ok) {
     const { message, error } = await response.json()

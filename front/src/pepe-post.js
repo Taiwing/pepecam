@@ -98,7 +98,7 @@ class PepePost extends HTMLElement {
     switch (name) {
       case 'data-picture-id':
         const picture = this.shadowRoot.querySelector('#post-picture')
-        picture.src = `http://localhost:8080/pictures/${newValue}.jpg`
+        picture.src = `http://${window.location.hostname}:8080/pictures/${newValue}.jpg`
         picture.alt = `Picture ${newValue}`
         this.full = false
         const comments = this.shadowRoot.querySelector('#post-comments-feed')
@@ -236,7 +236,7 @@ class PepePost extends HTMLElement {
     const picture_id = this.getAttribute('data-picture-id')
     const payload = { picture_id }
     if (!deleteLike) payload.like = value
-    const url = 'http://localhost:3000/picture/like'
+    const url = `http://${window.location.hostname}:3000/picture/like`
 
     try {
       const response = await fetch(url, {
@@ -260,7 +260,8 @@ class PepePost extends HTMLElement {
   // Get comments
   async getComments() {
     const picture_id = this.getAttribute('data-picture-id')
-    const url = `http://localhost:3000/picture/comments?picture=${picture_id}`
+    const { hostname } = window.location
+    const url = `http://${hostname}:3000/picture/comments?picture=${picture_id}`
 
     try {
       const response = await fetch(url, { method: 'GET' })
@@ -278,7 +279,7 @@ class PepePost extends HTMLElement {
 
   // Send comment
   async sendComment() {
-    const url = 'http://localhost:3000/picture/comment'
+    const url = `http://${window.location.hostname}:3000/picture/comment`
     const picture_id = this.getAttribute('data-picture-id')
     const content = this.shadowRoot.querySelector('#post-comments-input').value
     const payload = { picture_id, comment: content }
@@ -311,7 +312,7 @@ class PepePost extends HTMLElement {
   // Delete post
   async deletePost() {
     const picture_id = this.getAttribute('data-picture-id')
-    const url = 'http://localhost:3000/picture'
+    const url = `http://${window.location.hostname}:3000/picture`
 
     try {
       const response = await fetch(url, {

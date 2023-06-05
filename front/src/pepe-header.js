@@ -36,7 +36,7 @@ PepeHeaderTemplate.innerHTML = `
     <button id="logout">logout</button>
   </div>
 
-  <dialog id="login-dialog" url="http://localhost:3000/user/login">
+  <dialog id="login-dialog">
     <h3>Login</h3>
     <form id="login-form" method="dialog" class="form">
       <label for="username" class="form-field">
@@ -54,7 +54,7 @@ PepeHeaderTemplate.innerHTML = `
     </form>
   </dialog>
 
-  <dialog id="signup-dialog" url="http://localhost:3000/user/register">
+  <dialog id="signup-dialog">
     <h3>Signup</h3>
     <form id="signup-form" method="dialog" class="form">
       <label for="username" class="form-field">
@@ -94,7 +94,15 @@ class PepeHeader extends HTMLElement {
     this.shadowRoot.appendChild(PepeHeaderTemplate.content.cloneNode(true))
 
     const loginDialog = this.shadowRoot.querySelector('#login-dialog')
+    loginDialog.setAttribute(
+      'url',
+      `http://${window.location.hostname}:3000/user/login`
+    )
     const signupDialog = this.shadowRoot.querySelector('#signup-dialog')
+    signupDialog.setAttribute(
+      'url',
+      `http://${window.location.hostname}:3000/user/register`
+    )
 
     const passwordField = signupDialog.querySelector('input[name="password"]')
     const confirmPasswordField = signupDialog.querySelector(
@@ -155,7 +163,8 @@ class PepeHeader extends HTMLElement {
 
   async logout() {
     try {
-      const response = await fetch('http://localhost:3000/user/logout', {
+      const url = `http://${window.location.hostname}:3000/user/logout`
+      const response = await fetch(url, {
         method: 'POST',
         credentials: 'include',
       })

@@ -46,7 +46,7 @@ class PepeUpload extends HTMLElement {
 
   async getSuperposables () {
     try {
-      const url = 'http://localhost:3000/pictures/superposable'
+      const url = `http://${window.location.hostname}:3000/pictures/superposable`
       const response = await fetch(url)
       const superposables = await response.json()
 

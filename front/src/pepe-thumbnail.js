@@ -48,7 +48,8 @@ class PepeThumbnail extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data-picture-id') {
       const picture = this.shadowRoot.querySelector('#thumbnail-picture')
-      picture.src = `http://localhost:8080/pictures/${newValue}.jpg`
+      const { hostname } = window.location
+      picture.src = `http://${hostname}:8080/pictures/${newValue}.jpg`
       picture.alt = `Picture ${newValue}`
     }
   }

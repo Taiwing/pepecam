@@ -73,8 +73,9 @@ class PepeGallery extends HTMLElement {
       // when loading the editor page, once when the gallery is connected
       // and once when data-username property is set. Fix this.
       const index = this._index
+      const { hostname } = window.location
       let url =
-        `http://localhost:3000/pictures?index=${this._index}&count=${this.count}`
+        `http://${hostname}:3000/pictures?index=${this._index}&count=${this.count}`
       if (this.username) url += `&username=${this.username}`
       const response = await fetch(url, { method: 'GET', credentials: 'include' })
       const posts = await response.json()

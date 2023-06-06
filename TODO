@@ -6,6 +6,8 @@ GLOBAL:
 FRONT:
 - create edition page with current webcam view or an uploaded picture and a pepe
   selector, and also a side section for previously created pictures
+- make sure that the formats are valid when creating and/or uploading pictures
+  from the editor to the backend
 - show the 'empty-gallery' div when deleting there is no picture left in the
   sidebar (simply add this in the onDeletePost handler)
 

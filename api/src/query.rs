@@ -53,6 +53,22 @@ pub mod types {
     }
 }
 
+impl From<&types::DbPicture> for Picture {
+    fn from(db_picture: &types::DbPicture) -> Self {
+        Picture {
+            picture_id: from_sqlx_to_serde(&db_picture.picture_id),
+            account_id: from_sqlx_to_serde(&db_picture.account_id),
+            creation_ts: db_picture.creation_ts.unix_timestamp(),
+            author: db_picture.author.clone(),
+            like_count: db_picture.like_count,
+            dislike_count: db_picture.dislike_count,
+            comment_count: db_picture.comment_count,
+            liked: db_picture.liked,
+            disliked: db_picture.disliked,
+        }
+    }
+}
+
 //TODO: find a way to remove the "postgres" string or to use the environment
 //instead (something like 'std::env!("DATABASE_NAME")' if possible).
 //TODO: Maybe actually implement this structure. This would mean setting every
@@ -132,17 +148,7 @@ pub async fn pictures(
 
     let pictures = raw_pictures
         .iter()
-        .map(|raw_picture| Picture {
-            picture_id: from_sqlx_to_serde(&raw_picture.picture_id),
-            account_id: from_sqlx_to_serde(&raw_picture.account_id),
-            creation_ts: raw_picture.creation_ts.unix_timestamp(),
-            author: raw_picture.author.clone(),
-            like_count: raw_picture.like_count,
-            dislike_count: raw_picture.dislike_count,
-            comment_count: raw_picture.comment_count,
-            liked: raw_picture.liked,
-            disliked: raw_picture.disliked,
-        })
+        .map(|raw_picture| Picture::from(raw_picture))
         .collect();
     Some(pictures)
 }
@@ -191,17 +197,7 @@ pub async fn user_pictures(
 
     let pictures = raw_pictures
         .iter()
-        .map(|raw_picture| Picture {
-            picture_id: from_sqlx_to_serde(&raw_picture.picture_id),
-            account_id: from_sqlx_to_serde(&raw_picture.account_id),
-            creation_ts: raw_picture.creation_ts.unix_timestamp(),
-            author: raw_picture.author.clone(),
-            like_count: raw_picture.like_count,
-            dislike_count: raw_picture.dislike_count,
-            comment_count: raw_picture.comment_count,
-            liked: raw_picture.liked,
-            disliked: raw_picture.disliked,
-        })
+        .map(|raw_picture| Picture::from(raw_picture))
         .collect();
     Some(pictures)
 }

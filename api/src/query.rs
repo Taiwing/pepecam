@@ -390,17 +390,32 @@ pub async fn comment(
 pub async fn post_picture(
     db: &mut Connection<PostgresDb>,
     account_id: &SqlxUuid,
-) -> Result<SqlxUuid, sqlx::Error> {
+) -> Result<Picture, sqlx::Error> {
     let query = "
-		INSERT INTO pictures (account_id) VALUES ($1)
-		RETURNING picture_id;
+		WITH new_picture AS (
+			INSERT INTO pictures (account_id)
+			VALUES ($1)
+			RETURNING *
+		)
+		SELECT
+			new_picture.picture_id,
+			new_picture.account_id,
+			new_picture.creation_ts,
+			accounts.username AS author,
+			0::INT8 AS like_count,
+			0::INT8 AS dislike_count,
+			0::INT8 AS comment_count,
+			FALSE::BOOL AS liked,
+			FALSE::BOOL AS disliked
+		FROM new_picture
+		JOIN accounts ON new_picture.account_id = accounts.account_id;
 	";
 
-    let new_picture: types::PictureId = sqlx::query_as(query)
+    let new_picture = sqlx::query_as::<_, types::DbPicture>(query)
         .bind(account_id)
         .fetch_one(&mut **db)
         .await?;
-    Ok(new_picture.picture_id)
+    Ok(Picture::from(&new_picture))
 }
 
 /// Delete a picture

@@ -1,6 +1,5 @@
 use crate::auth::session;
-use crate::payload::DefaultResponse;
-use crate::payload::PictureId;
+use crate::payload::{DefaultResponse, Picture, PictureId};
 use crate::pictures;
 use crate::query::{self, PostgresDb};
 use crate::result::ApiResult;
@@ -41,7 +40,7 @@ async fn create_picture(
     superposable: pictures::Superposable,
     account_id: &SqlxUuid,
     db: &mut Connection<PostgresDb>,
-) -> Result<SqlxUuid, ()> {
+) -> Result<Picture, ()> {
     let filename = &format!("{}.png", superposable.as_ref());
     let superposable_picture = match native::open_image(&format!(
         "{}/{}",
@@ -55,16 +54,19 @@ async fn create_picture(
     };
     let y: u32 = user_picture.get_height() - pictures::SUPERPOSABLES_SIDE;
     multiple::watermark(&mut user_picture, &superposable_picture, 0, y);
-    let picture_id = match query::post_picture(db, account_id).await {
+    let new_picture = match query::post_picture(db, account_id).await {
         Err(_) => {
             return Err(());
         }
-        Ok(picture_id) => picture_id,
+        Ok(new_picture) => new_picture,
     };
-    let filename =
-        format!("{}/{}.jpg", pictures::PATH, picture_id.to_hyphenated());
+    let filename = format!(
+        "{}/{}.jpg",
+        pictures::PATH,
+        new_picture.picture_id.hyphenated()
+    );
     native::save_image(user_picture, &filename);
-    Ok(picture_id)
+    Ok(new_picture)
 }
 
 #[post("/<superposable>", data = "<picture>", format = "image/jpeg")]
@@ -73,7 +75,7 @@ pub async fn post(
     picture: Data<'_>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
-) -> ApiResult<DefaultResponse> {
+) -> ApiResult<Picture> {
     let superposable = match pictures::Superposable::from_str(superposable) {
         Err(_) => {
             return ApiResult::Failure {
@@ -119,14 +121,9 @@ pub async fn post(
                     status: Status::InternalServerError,
                     message: String::from("failed to create new picture"),
                 },
-                Ok(picture_id) => ApiResult::Success {
+                Ok(picture) => ApiResult::Success {
                     status: Status::Created,
-                    payload: DefaultResponse {
-                        response: format!(
-                            "picture '{}' successfully created",
-                            picture_id.to_hyphenated()
-                        ),
-                    },
+                    payload: picture,
                 },
             }
         }

@@ -13,7 +13,7 @@ class PepeFooter extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot.appendChild(PepeFooterTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepeFooterTemplate.content.cloneNode(true))
   }
 }
 

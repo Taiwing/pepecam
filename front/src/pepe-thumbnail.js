@@ -17,7 +17,7 @@ class PepeThumbnail extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot.appendChild(PepeThumbnailTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepeThumbnailTemplate.content.cloneNode(true))
   }
 
   connectedCallback() {

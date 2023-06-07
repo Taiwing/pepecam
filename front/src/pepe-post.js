@@ -71,7 +71,7 @@ class PepePost extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot.appendChild(PepePostTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepePostTemplate.content.cloneNode(true))
   }
 
   connectedCallback() {
@@ -192,7 +192,7 @@ class PepePost extends HTMLElement {
     const commentElement = document.createElement('div')
     commentElement.classList.add('comment')
     commentElement.textContent = `@${author}: ${content}`
-    feed.appendChild(commentElement)
+    feed.append(commentElement)
   }
 
   async toggleFull() {

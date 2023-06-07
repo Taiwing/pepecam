@@ -44,7 +44,7 @@ class PepeUpload extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot.appendChild(PepeUploadTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepeUploadTemplate.content.cloneNode(true))
     this.setAttribute('data-superposable', '')
 
     this.importInput.addEventListener('change', () => this.onImportInputChange())
@@ -70,7 +70,7 @@ class PepeUpload extends HTMLElement {
         const option = document.createElement('option')
         option.value = superposable
         option.text = capitalize(superposable)
-        select.appendChild(option)
+        select.append(option)
       }
     } catch (error) {
       console.error(error)

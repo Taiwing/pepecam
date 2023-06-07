@@ -91,7 +91,7 @@ class PepeHeader extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot.appendChild(PepeHeaderTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepeHeaderTemplate.content.cloneNode(true))
 
     const loginDialog = this.shadowRoot.querySelector('#login-dialog')
     loginDialog.setAttribute(

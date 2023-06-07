@@ -22,7 +22,7 @@ class PepeGallery extends HTMLElement {
     this._index = -1
     this._finished = false
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepeGalleryTemplate.content.cloneNode(true))
 
     // Get posts on scroll
     this.shadowRoot
@@ -48,7 +48,7 @@ class PepeGallery extends HTMLElement {
     this._index = -1
     this._finished = false
     this.shadowRoot.innerHTML = ''
-    this.shadowRoot.appendChild(PepeGalleryTemplate.content.cloneNode(true))
+    this.shadowRoot.append(PepeGalleryTemplate.content.cloneNode(true))
     this.getPepePosts()
   }
 
@@ -115,9 +115,9 @@ class PepeGallery extends HTMLElement {
           'data-disliked': disliked,
         }
         if (this.thumbnail) {
-          this.shadowRoot.appendChild(createElement('pepe-thumbnail', attributes))
+          this.shadowRoot.append(createElement('pepe-thumbnail', attributes))
         } else {
-          this.shadowRoot.appendChild(createElement('pepe-post', attributes))
+          this.shadowRoot.append(createElement('pepe-post', attributes))
         }
       }
     } catch (error) {

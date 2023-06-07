@@ -64,6 +64,48 @@ class PepeGallery extends HTMLElement {
     return this.getAttribute('data-username')
   }
 
+  newPicture(picture) {
+    const {
+      picture_id,
+      account_id,
+      creation_ts,
+      author,
+      like_count,
+      dislike_count,
+      comment_count,
+      liked,
+      disliked,
+    } = picture
+
+    const attributes = {
+      'data-picture-id': picture_id,
+      'data-account-id': account_id,
+      'data-creation-ts': creation_ts,
+      'data-author': author,
+      'data-like-count': like_count,
+      'data-dislike-count': dislike_count,
+      'data-comment-count': comment_count,
+      'data-liked': liked,
+      'data-disliked': disliked,
+    }
+
+    if (this.thumbnail) {
+      return createElement('pepe-thumbnail', attributes)
+    } else {
+      return createElement('pepe-post', attributes)
+    }
+  }
+
+  appendPicture(picture) {
+    const pictureElement = this.newPicture(picture)
+    this.shadowRoot.append(pictureElement)
+  }
+
+  prependPicture(picture) {
+    const pictureElement = this.newPicture(picture)
+    this.shadowRoot.prepend(pictureElement)
+  }
+
   // Get posts
   async getPepePosts() {
     try {
@@ -91,35 +133,7 @@ class PepeGallery extends HTMLElement {
         return
       }
 
-      for (const post of posts) {
-        const {
-          picture_id,
-          account_id,
-          creation_ts,
-          author,
-          like_count,
-          dislike_count,
-          comment_count,
-          liked,
-          disliked,
-        } = post
-        const attributes = {
-          'data-picture-id': picture_id,
-          'data-account-id': account_id,
-          'data-creation-ts': creation_ts,
-          'data-author': author,
-          'data-like-count': like_count,
-          'data-dislike-count': dislike_count,
-          'data-comment-count': comment_count,
-          'data-liked': liked,
-          'data-disliked': disliked,
-        }
-        if (this.thumbnail) {
-          this.shadowRoot.append(createElement('pepe-thumbnail', attributes))
-        } else {
-          this.shadowRoot.append(createElement('pepe-post', attributes))
-        }
-      }
+      for (const post of posts) this.appendPicture(post)
     } catch (error) {
       this._finished = true
       //TODO: remove this log to "respect" the subject

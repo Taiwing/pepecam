@@ -18,6 +18,7 @@ const onThumbnailClick = (event) => {
   if (editor.hasAttribute('hidden')) toggleUploadEditor()
 }
 
+// Handle post delete event
 const onPostDelete = (event) => {
   const { picture_id } = event.detail
   const gallery = document.querySelector('pepe-gallery')
@@ -25,6 +26,16 @@ const onPostDelete = (event) => {
   const thumbnail = gallery.shadowRoot.querySelector(selector)
   thumbnail.remove()
   toggleUploadEditor()
+}
+
+// Handle editor upload event
+const onPepeUpload = (event) => {
+  const { detail } = event
+  const gallery = document.querySelector('pepe-gallery')
+  gallery.prependPicture(detail)
+  const selector = `pepe-thumbnail[data-picture-id="${detail.picture_id}"]`
+  const thumbnail = gallery.shadowRoot.querySelector(selector)
+  thumbnail.onClick()
 }
 
 const initEditor = async () => {
@@ -46,6 +57,9 @@ const initEditor = async () => {
 
   // Register post delete event
   window.addEventListener('pepe-post-delete', onPostDelete)
+
+  // Register editor upload event
+  window.addEventListener('pepe-upload', onPepeUpload)
 }
 
 initEditor()

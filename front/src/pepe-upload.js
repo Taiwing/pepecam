@@ -85,6 +85,7 @@ class PepeUpload extends HTMLElement {
         if (!newValue) {
           this.uploadButton.disabled = true
           this.cancelButton.disabled = true
+          this.superposableSelect.value = ''
         }
         break
     }
@@ -101,6 +102,14 @@ class PepeUpload extends HTMLElement {
 
   get superposable() {
     return this.getAttribute('data-superposable')
+  }
+
+  set superposable(value) {
+    this.setAttribute('data-superposable', value)
+  }
+
+  get superposableSelect() {
+    return this.shadowRoot.querySelector('#pepe-upload-toolbar-select')
   }
 
   get importButton() {
@@ -144,7 +153,7 @@ class PepeUpload extends HTMLElement {
       this.preview.hidden = true
       this.uploadButton.disabled = true
       this.cancelButton.disabled = true
-      }
+    }
   }
 
   cancel() {
@@ -152,32 +161,46 @@ class PepeUpload extends HTMLElement {
     this.onImportInputChange()
   }
 
+  _reset() {
+    this.cancel()
+    this.superposable = ''
+  }
+
   async upload() {
     try {
       const { hostname } = window.location
       const url = `http://${hostname}:3000/picture/${this.superposable}`
-      await fetch(url, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'image/jpeg' },
         credentials: 'include',
         body: this.picture,
       })
+      const picture = await response.json()
 
-      //TODO: check that the response is OK or show an error
-      //then reset the upload form and hide it
-      //and show the new picture in the gallery
+      if (!response.ok) {
+        const { message, error } = await response.json()
+        throw error || message || JSON.stringify(response)
+      }
+
+      const event = new CustomEvent('pepe-upload', {
+        bubbles: true,
+        composed: true,
+        detail: picture,
+      })
+      this.dispatchEvent(event)
+
+      this._reset()
     } catch (error) {
-      //TODO: remove this to "respect" the subject
-      console.error(error)
+      alert(`Error: ${error}`)
     }
   }
 
   connectedCallback() {
     this.getSuperposables()
-    const select = this.shadowRoot.querySelector('#pepe-upload-toolbar-select')
-    select.addEventListener('input', (event) => {
+    this.superposableSelect.addEventListener('input', (event) => {
       const { value } = event.target
-      this.setAttribute('data-superposable', value)
+      this.superposable = value
     })
   }
 }

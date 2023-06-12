@@ -15,6 +15,10 @@
 	width: 100%;
 }
 
+#pepe-upload-capture-video {
+	width: 100%;
+}
+
 input[type="file"] {
 	display: none;
 }

@@ -1,22 +1,15 @@
 import { capitalize } from './utils.js'
 
 const PepeUploadTemplate = document.createElement('template')
-/*
-    <div id="pepe-upload-dropzone">
-      <p>Drop files here</p>
-    </div>
-*/
+
 PepeUploadTemplate.innerHTML = `
   <link rel="stylesheet" href="style/global.css">
   <link rel="stylesheet" href="style/pepe-upload.css">
   <div id="pepe-upload">
-    <!--
-    <div id="pepe-upload-capture" hidden>
-      <video id="pepe-upload-capture-video" autoplay></video>
-    </div>
-    -->
+    <video id="pepe-upload-capture-video" autoplay hidden></video>
     <div id="pepe-upload-preview" hidden>
-      <img id="pepe-upload-preview-img" alt="Preview">
+      <img id="pepe-upload-preview-img" alt="Preview" />
+      <canvas id="pepe-upload-preview-canvas" hidden />
     </div>
     <div id="pepe-upload-toolbar">
       <select id="pepe-upload-toolbar-select">
@@ -26,9 +19,7 @@ PepeUploadTemplate.innerHTML = `
         Import Picture
         <input type="file" accept="image/*" capture="environment" disabled>
       </label>
-      <!--
       <button id="pepe-capture-button" disabled>Capture</button>
-      -->
       <button id="pepe-upload-button" disabled>Upload</button>
       <button id="pepe-cancel-button" disabled>Cancel</button>
     </div>
@@ -38,18 +29,24 @@ PepeUploadTemplate.innerHTML = `
 // PepeUpload element
 class PepeUpload extends HTMLElement {
   static get observedAttributes() {
-    return ['data-superposable']
+    return ['data-superposable', 'camera']
   }
 
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
     this.shadowRoot.append(PepeUploadTemplate.content.cloneNode(true))
-    this.setAttribute('data-superposable', '')
+    this.superposable = ''
+    this.camera = ''
+    this.cameraPicture = null
 
-    this.importInput.addEventListener('change', () => this.onImportInputChange())
+    this.importInput.addEventListener('change', () => {
+      this.cameraPicture = null
+      this.showPreview()
+    })
     this.uploadButton.addEventListener('click', () => this.upload())
     this.cancelButton.addEventListener('click', () => this.cancel())
+    this.captureButton.addEventListener('click', () => this.capture())
   }
 
   async getSuperposables() {
@@ -77,16 +74,33 @@ class PepeUpload extends HTMLElement {
     }
   }
 
+  async initializeCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false,
+      })
+      this.video.srcObject = stream
+      this.camera = 'on'
+    } catch (_) {
+      this.camera = ''
+    }
+  }
+
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
       case 'data-superposable':
         this.disableImportButton(!newValue)
-        //this.captureButton.disabled = !newValue
+        this.captureButton.disabled = !newValue || this.camera !== 'on'
         if (!newValue) {
           this.uploadButton.disabled = true
           this.cancelButton.disabled = true
           this.superposableSelect.value = ''
         }
+        break
+      case 'camera':
+        this.video.hidden = newValue !== 'on'
+        this.captureButton.disabled = newValue != 'on' || !this.superposable
         break
     }
   }
@@ -108,6 +122,14 @@ class PepeUpload extends HTMLElement {
     this.setAttribute('data-superposable', value)
   }
 
+  get camera() {
+    return this.getAttribute('camera')
+  }
+
+  set camera(value) {
+    this.setAttribute('camera', value)
+  }
+
   get superposableSelect() {
     return this.shadowRoot.querySelector('#pepe-upload-toolbar-select')
   }
@@ -121,14 +143,12 @@ class PepeUpload extends HTMLElement {
   }
 
   get picture() {
-    return this.importInput.files[0]
+    return this.importInput.files[0] || this.cameraPicture
   }
 
-  /*
   get captureButton() {
     return this.shadowRoot.querySelector('#pepe-capture-button')
   }
-  */
 
   get uploadButton() {
     return this.shadowRoot.querySelector('#pepe-upload-button')
@@ -142,28 +162,44 @@ class PepeUpload extends HTMLElement {
     return this.shadowRoot.querySelector('#pepe-upload-preview')
   }
 
-  onImportInputChange() {
-    if (this.picture) {
-      this.preview.hidden = false
-      const img = this.preview.querySelector('img')
-      img.src = URL.createObjectURL(this.picture)
-      this.uploadButton.disabled = false
-      this.cancelButton.disabled = false
-    } else {
-      this.preview.hidden = true
-      this.uploadButton.disabled = true
-      this.cancelButton.disabled = true
-    }
+  get previewImg() {
+    return this.shadowRoot.querySelector('#pepe-upload-preview-img')
+  }
+
+  get video() {
+    return this.shadowRoot.querySelector('#pepe-upload-capture-video')
+  }
+
+  get canvas() {
+    return this.shadowRoot.querySelector('#pepe-upload-preview-canvas')
+  }
+
+  showPreview() {
+    if (this.camera) this.camera = 'off'
+    this.previewImg.src = URL.createObjectURL(this.picture)
+    this.preview.hidden = false
+    this.uploadButton.disabled = false
+    this.cancelButton.disabled = false
+  }
+
+  hidePreview() {
+    if (this.camera) this.camera = 'on'
+    this.preview.hidden = true
+    if (this.previewImg.src) URL.revokeObjectURL(this.previewImg.src)
+    this.uploadButton.disabled = true
+    this.cancelButton.disabled = true
   }
 
   cancel() {
     this.importInput.value = ''
-    this.onImportInputChange()
+    this.cameraPicture = null
+    this.hidePreview()
   }
 
   _reset() {
-    this.cancel()
+    this.camera = this.camera ? 'off' : ''
     this.superposable = ''
+    this.cancel()
   }
 
   async upload() {
@@ -179,8 +215,7 @@ class PepeUpload extends HTMLElement {
       const picture = await response.json()
 
       if (!response.ok) {
-        const { message, error } = await response.json()
-        throw error || message || JSON.stringify(response)
+        throw response
       }
 
       const event = new CustomEvent('pepe-upload', {
@@ -196,12 +231,44 @@ class PepeUpload extends HTMLElement {
     }
   }
 
+  capture() {
+    const context = this.canvas.getContext('2d')
+    let width = this.video.videoWidth
+    let height = this.video.videoHeight
+    const min = Math.min(width, height, 512)
+    if (min < 512) {
+      width *= 512 / min
+      height *= 512 / min
+    }
+    this.canvas.width = width
+    this.canvas.height = height
+
+    context.drawImage(
+      this.video,
+      0,
+      0,
+      this.video.videoWidth,
+      this.video.videoHeight,
+      0,
+      0,
+      width,
+      height
+    )
+
+    this.importInput.value = ''
+    this.canvas.toBlob((blob) => {
+      this.cameraPicture = blob
+      this.showPreview()
+    }, 'image/jpeg')
+  }
+
   connectedCallback() {
     this.getSuperposables()
     this.superposableSelect.addEventListener('input', (event) => {
       const { value } = event.target
       this.superposable = value
     })
+    this.initializeCamera()
   }
 }
 

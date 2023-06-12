@@ -4,12 +4,11 @@ GLOBAL:
 - implement mail logic (find a way to send mail from the backend)
 
 FRONT:
-- create edition page with current webcam view or an uploaded picture and a pepe
-  selector, and also a side section for previously created pictures
 - make sure that the formats are valid when creating and/or uploading pictures
   from the editor to the backend
 - show the 'empty-gallery' div when deleting there is no picture left in the
   sidebar (simply add this in the onDeletePost handler)
+- add the superposable picture to camera feed and preview
 
 FIX:
 - Some pictures can be missing from the sidebar in the editor. I have seen this
@@ -29,7 +28,8 @@ GLOBAL:
   etc...)
 - add documentation about the populate scripts in README (maybe "clean" the
   logic so that it is simpler to use)
-- maybe try and find a way to use an ENV variable to populate the database
+- try and find a way to use an ENV variable to populate the database
+- make it possible to change the superposable's size (use resize in the back)
 
 API:
 - implement tests for every route and structures

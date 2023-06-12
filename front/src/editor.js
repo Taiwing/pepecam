@@ -40,7 +40,7 @@ const onPepeUpload = (event) => {
 
 const initEditor = async () => {
   // Check if user is connected
-  forbidUnconnected()
+  if (forbidUnconnected()) return
   window.addEventListener('toggle-connected', forbidUnconnected)
 
   // Set username for gallery

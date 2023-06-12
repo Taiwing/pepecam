@@ -19,7 +19,9 @@ export const forbidUnconnected = () => {
   if (!getCookie('session')) {
     alert('You must be connected to access this page')
     window.location.href = '/'
+    return true
   }
+  return false
 }
 
 export const toggleConnectedEvent = () =>

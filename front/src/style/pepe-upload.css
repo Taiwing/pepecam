@@ -1,6 +1,7 @@
 #pepe-upload {
 	display: flex;
 	flex-direction: column;
+	gap: 1rem;
 }
 
 #pepe-upload-toolbar {

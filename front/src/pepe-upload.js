@@ -29,13 +29,44 @@ PepeUploadTemplate.innerHTML = `
 // PepeUpload element
 class PepeUpload extends HTMLElement {
   static get observedAttributes() {
-    return ['data-superposable', 'camera']
+    return ['superposable', 'camera']
+  }
+
+  static get elements() {
+    return {
+      superposableImg: '#pepe-upload-preview-superposable',
+      superposableSelect: '#pepe-upload-toolbar-select',
+      importButton: '#pepe-import-button',
+      importInput: '#pepe-import-button input',
+      captureButton: '#pepe-capture-button',
+      uploadButton: '#pepe-upload-button',
+      cancelButton: '#pepe-cancel-button',
+      preview: '#pepe-upload-preview',
+      previewImg: '#pepe-upload-preview-img',
+      video: '#pepe-upload-capture-video',
+      canvas: '#pepe-upload-preview-canvas',
+    }
+  }
+
+  get picture() {
+    return this.importInput.files[0] || this.cameraPicture
   }
 
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
     this.shadowRoot.append(PepeUploadTemplate.content.cloneNode(true))
+
+    for (const attribute of this.constructor.observedAttributes) {
+      this.__defineGetter__(attribute, () => this.getAttribute(attribute))
+      this.__defineSetter__(attribute, (v) => this.setAttribute(attribute, v))
+    }
+    for (const element in this.constructor.elements) {
+      this.__defineGetter__(
+        element,
+        () => this.shadowRoot.querySelector(this.constructor.elements[element])
+      )
+    }
     this.superposable = ''
     this.camera = ''
     this.cameraPicture = null
@@ -51,7 +82,8 @@ class PepeUpload extends HTMLElement {
 
   async getSuperposables() {
     try {
-      const url = `http://${window.location.hostname}:3000/pictures/superposable`
+      const { hostname } = window.location
+      const url = `http://${hostname}:3000/pictures/superposable`
       const response = await fetch(url)
       const superposables = await response.json()
 
@@ -60,14 +92,11 @@ class PepeUpload extends HTMLElement {
         throw new Error('Error fetching superposables')
       }
 
-      const select = this.shadowRoot
-        .querySelector('#pepe-upload-toolbar-select')
-
       for (const superposable of superposables) {
         const option = document.createElement('option')
         option.value = superposable
         option.text = capitalize(superposable)
-        select.append(option)
+        this.superposableSelect.append(option)
       }
     } catch (error) {
       console.error(error)
@@ -89,7 +118,7 @@ class PepeUpload extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     switch (name) {
-      case 'data-superposable':
+      case 'superposable':
         this.disableImportButton(!newValue)
         this.captureButton.disabled = !newValue || this.camera !== 'on'
         if (!newValue) {
@@ -112,66 +141,6 @@ class PepeUpload extends HTMLElement {
       this.importButton.removeAttribute('disabled')
     }
     this.importInput.disabled = disabled
-  }
-
-  get superposable() {
-    return this.getAttribute('data-superposable')
-  }
-
-  set superposable(value) {
-    this.setAttribute('data-superposable', value)
-  }
-
-  get camera() {
-    return this.getAttribute('camera')
-  }
-
-  set camera(value) {
-    this.setAttribute('camera', value)
-  }
-
-  get superposableSelect() {
-    return this.shadowRoot.querySelector('#pepe-upload-toolbar-select')
-  }
-
-  get importButton() {
-    return this.shadowRoot.querySelector('#pepe-import-button')
-  }
-
-  get importInput() {
-    return this.shadowRoot.querySelector('#pepe-import-button input')
-  }
-
-  get picture() {
-    return this.importInput.files[0] || this.cameraPicture
-  }
-
-  get captureButton() {
-    return this.shadowRoot.querySelector('#pepe-capture-button')
-  }
-
-  get uploadButton() {
-    return this.shadowRoot.querySelector('#pepe-upload-button')
-  }
-
-  get cancelButton() {
-    return this.shadowRoot.querySelector('#pepe-cancel-button')
-  }
-
-  get preview() {
-    return this.shadowRoot.querySelector('#pepe-upload-preview')
-  }
-
-  get previewImg() {
-    return this.shadowRoot.querySelector('#pepe-upload-preview-img')
-  }
-
-  get video() {
-    return this.shadowRoot.querySelector('#pepe-upload-capture-video')
-  }
-
-  get canvas() {
-    return this.shadowRoot.querySelector('#pepe-upload-preview-canvas')
   }
 
   showPreview() {

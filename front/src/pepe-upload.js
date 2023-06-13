@@ -34,7 +34,6 @@ class PepeUpload extends HTMLElement {
 
   static get elements() {
     return {
-      superposableImg: '#pepe-upload-preview-superposable',
       superposableSelect: '#pepe-upload-toolbar-select',
       importButton: '#pepe-import-button',
       importInput: '#pepe-import-button input',

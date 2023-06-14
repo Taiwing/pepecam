@@ -49,10 +49,6 @@ class PepeUpload extends HTMLElement {
     }
   }
 
-  get picture() {
-    return this.importInput.files[0] || this.cameraPicture
-  }
-
   constructor() {
     super()
     this.attachShadow({ mode: 'open' })
@@ -70,10 +66,11 @@ class PepeUpload extends HTMLElement {
     }
     this.superposable = ''
     this.camera = ''
-    this.cameraPicture = null
+    this.picture = null
 
     this.importInput.addEventListener('change', () => {
-      this.cameraPicture = null
+      this.picture = this.importInput.files[0]
+      this.importInput.value = ''
       this.showPreview()
     })
     this.uploadButton.addEventListener('click', () => this.upload())
@@ -161,8 +158,7 @@ class PepeUpload extends HTMLElement {
   }
 
   cancel() {
-    this.importInput.value = ''
-    this.cameraPicture = null
+    this.picture = null
     this.hidePreview()
   }
 
@@ -227,7 +223,7 @@ class PepeUpload extends HTMLElement {
 
     this.importInput.value = ''
     this.canvas.toBlob((blob) => {
-      this.cameraPicture = blob
+      this.picture = blob
       this.showPreview()
     }, 'image/jpeg')
   }

@@ -6,22 +6,23 @@ PepeUploadTemplate.innerHTML = `
   <link rel="stylesheet" href="style/global.css">
   <link rel="stylesheet" href="style/pepe-upload.css">
   <div id="pepe-upload">
-    <video id="pepe-upload-capture-video" autoplay hidden></video>
-    <div id="pepe-upload-preview" hidden>
-      <img id="pepe-upload-preview-img" alt="Preview" />
-      <canvas id="pepe-upload-preview-canvas" hidden />
+    <video autoplay hidden></video>
+    <div id="preview" hidden>
+      <img id="preview-img" alt="Preview" />
+      <img id="preview-superposable" hidden />
+      <canvas id="preview-canvas" hidden />
     </div>
-    <div id="pepe-upload-toolbar">
-      <select id="pepe-upload-toolbar-select">
+    <div id="toolbar">
+      <select>
         <option value="">--Select a superposable--</option>
       </select>
-      <label id="pepe-import-button" class="button" disabled="">
+      <label id="import-button" class="button" disabled="">
         Import Picture
         <input type="file" accept="image/*" capture="environment" disabled>
       </label>
-      <button id="pepe-capture-button" disabled>Capture</button>
-      <button id="pepe-upload-button" disabled>Upload</button>
-      <button id="pepe-cancel-button" disabled>Cancel</button>
+      <button id="capture-button" disabled>Capture</button>
+      <button id="upload-button" disabled>Upload</button>
+      <button id="cancel-button" disabled>Cancel</button>
     </div>
   </div>
 `
@@ -34,16 +35,17 @@ class PepeUpload extends HTMLElement {
 
   static get elements() {
     return {
-      superposableSelect: '#pepe-upload-toolbar-select',
-      importButton: '#pepe-import-button',
-      importInput: '#pepe-import-button input',
-      captureButton: '#pepe-capture-button',
-      uploadButton: '#pepe-upload-button',
-      cancelButton: '#pepe-cancel-button',
-      preview: '#pepe-upload-preview',
-      previewImg: '#pepe-upload-preview-img',
-      video: '#pepe-upload-capture-video',
-      canvas: '#pepe-upload-preview-canvas',
+      superposableImg: '#preview-superposable',
+      superposableSelect: '#toolbar select',
+      importButton: '#import-button',
+      importInput: '#import-button input',
+      captureButton: '#capture-button',
+      uploadButton: '#upload-button',
+      cancelButton: '#cancel-button',
+      preview: '#preview',
+      previewImg: '#preview-img',
+      video: 'video',
+      canvas: '#preview-canvas',
     }
   }
 

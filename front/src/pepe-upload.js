@@ -76,6 +76,9 @@ class PepeUpload extends HTMLElement {
     this.superposableImg.addEventListener('load', () => {
       if (this.picture) this.showPreview()
     })
+    this.superposableImg.addEventListener('error', () => {
+      if (this.picture) this.showPreview()
+    })
     this.uploadButton.addEventListener('click', () => this.upload())
     this.cancelButton.addEventListener('click', () => this.cancel())
     this.captureButton.addEventListener('click', () => this.capture())
@@ -165,7 +168,7 @@ class PepeUpload extends HTMLElement {
         )
       }
       this.preview.hidden = false
-      this.uploadButton.disabled = false
+      this.uploadButton.disabled = !this.superposable
       this.cancelButton.disabled = false
     }
     image.src = URL.createObjectURL(this.picture)

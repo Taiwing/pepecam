@@ -8,9 +8,9 @@ PepeUploadTemplate.innerHTML = `
   <div id="pepe-upload">
     <video autoplay hidden></video>
     <div id="preview" hidden>
-      <img id="preview-img" alt="Preview" />
-      <img id="preview-superposable" hidden />
-      <canvas id="preview-canvas" hidden />
+      <canvas id="preview-canvas" alt="Preview" />
+      <img id="superposable-img" hidden />
+      <canvas id="capture-canvas" hidden />
     </div>
     <div id="toolbar">
       <select>
@@ -35,7 +35,7 @@ class PepeUpload extends HTMLElement {
 
   static get elements() {
     return {
-      superposableImg: '#preview-superposable',
+      superposableImg: '#superposable-img',
       superposableSelect: '#toolbar select',
       importButton: '#import-button',
       importInput: '#import-button input',
@@ -43,9 +43,9 @@ class PepeUpload extends HTMLElement {
       uploadButton: '#upload-button',
       cancelButton: '#cancel-button',
       preview: '#preview',
-      previewImg: '#preview-img',
+      previewCanvas: '#preview-canvas',
       video: 'video',
-      canvas: '#preview-canvas',
+      captureCanvas: '#capture-canvas',
     }
   }
 
@@ -123,6 +123,11 @@ class PepeUpload extends HTMLElement {
           this.uploadButton.disabled = true
           this.cancelButton.disabled = true
           this.superposableSelect.value = ''
+          this.superposableImg.src = ''
+        } else {
+          const { hostname } = window.location
+          const picture = `pictures/superposables/${newValue}.png`
+          this.superposableImg.src = `http://${hostname}:8080/${picture}`
         }
         break
       case 'camera':
@@ -143,16 +148,30 @@ class PepeUpload extends HTMLElement {
 
   showPreview() {
     if (this.camera) this.camera = 'off'
-    this.previewImg.src = URL.createObjectURL(this.picture)
-    this.preview.hidden = false
-    this.uploadButton.disabled = false
-    this.cancelButton.disabled = false
+    const image = new Image()
+    image.onload = () => {
+      this.previewCanvas.width = image.width
+      this.previewCanvas.height = image.height
+      const context = this.previewCanvas.getContext('2d')
+      context.drawImage(image, 0, 0)
+      if (this.superposable) {
+        context.drawImage(
+          this.superposableImg,
+          0,
+          image.height - this.superposableImg.height
+        )
+      }
+      this.preview.hidden = false
+      this.uploadButton.disabled = false
+      this.cancelButton.disabled = false
+    }
+    image.src = URL.createObjectURL(this.picture)
   }
 
   hidePreview() {
     if (this.camera) this.camera = 'on'
     this.preview.hidden = true
-    if (this.previewImg.src) URL.revokeObjectURL(this.previewImg.src)
+    this.previewCanvas.getContext('2d').clearRect(0, 0, 0, 0)
     this.uploadButton.disabled = true
     this.cancelButton.disabled = true
   }
@@ -164,8 +183,8 @@ class PepeUpload extends HTMLElement {
 
   _reset() {
     this.camera = this.camera ? 'off' : ''
-    this.superposable = ''
     this.cancel()
+    this.superposable = ''
   }
 
   async upload() {
@@ -198,7 +217,7 @@ class PepeUpload extends HTMLElement {
   }
 
   capture() {
-    const context = this.canvas.getContext('2d')
+    const context = this.captureCanvas.getContext('2d')
     let width = this.video.videoWidth
     let height = this.video.videoHeight
     const min = Math.min(width, height, 512)
@@ -206,8 +225,8 @@ class PepeUpload extends HTMLElement {
       width *= 512 / min
       height *= 512 / min
     }
-    this.canvas.width = width
-    this.canvas.height = height
+    this.captureCanvas.width = width
+    this.captureCanvas.height = height
 
     context.drawImage(
       this.video,
@@ -222,7 +241,7 @@ class PepeUpload extends HTMLElement {
     )
 
     this.importInput.value = ''
-    this.canvas.toBlob((blob) => {
+    this.captureCanvas.toBlob((blob) => {
       this.picture = blob
       this.showPreview()
     }, 'image/jpeg')

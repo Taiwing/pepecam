@@ -8,7 +8,7 @@ FRONT:
   from the editor to the backend
 - show the 'empty-gallery' div when deleting there is no picture left in the
   sidebar (simply add this in the onDeletePost handler)
-- add the superposable picture to camera feed and preview
+- add the superposable picture to camera feed
 
 FIX:
 - Some pictures can be missing from the sidebar in the editor. I have seen this

@@ -73,6 +73,9 @@ class PepeUpload extends HTMLElement {
       this.importInput.value = ''
       this.showPreview()
     })
+    this.superposableImg.addEventListener('load', () => {
+      if (this.picture) this.showPreview()
+    })
     this.uploadButton.addEventListener('click', () => this.upload())
     this.cancelButton.addEventListener('click', () => this.cancel())
     this.captureButton.addEventListener('click', () => this.capture())

@@ -8,7 +8,7 @@ FRONT:
   from the editor to the backend
 - show the 'empty-gallery' div when deleting there is no picture left in the
   sidebar (simply add this in the onDeletePost handler)
-- add the superposable picture to camera feed
+- make sure this shit looks good on mobile ("displays correctly")
 
 FIX:
 - Some pictures can be missing from the sidebar in the editor. I have seen this
@@ -43,5 +43,5 @@ API:
 - create superposable enum in db and add this information to pictures table
 
 FRONT:
-- make sure this shit looks good on mobile ("displays correctly")
 - use classes and ids instead of tags for the styling (more reliable)
+- add the superposable picture to camera feed

@@ -136,8 +136,7 @@ class PepeGallery extends HTMLElement {
       for (const post of posts) this.appendPicture(post)
     } catch (error) {
       this._finished = true
-      //TODO: remove this log to "respect" the subject
-      console.error(error)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 

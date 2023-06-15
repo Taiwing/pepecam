@@ -1,4 +1,9 @@
-import { getCookie, toggleConnectedEvent, submitForm } from './utils.js'
+import {
+  getCookie,
+  toggleConnectedEvent,
+  submitForm,
+  ApiError,
+} from './utils.js'
 
 async function dialogSubmit() {
   const url = this.getAttribute('url')
@@ -9,12 +14,12 @@ async function dialogSubmit() {
     if (form.reportValidity() === false) return
     const response = await submitForm(new FormData(form), 'POST', url)
     if (!response.ok) {
-      const { message, error } = await response.json()
-      throw message || error || JSON.stringify(response)
+      const error = await response.json()
+      throw new ApiError(error)
     }
     submit.dispatchEvent(toggleConnectedEvent())
   } catch (error) {
-    alert(`Error: ${error}`)
+    alert(`${error.name}: ${error.message}`)
   }
 }
 
@@ -170,11 +175,11 @@ class PepeHeader extends HTMLElement {
       })
 
       if (!response.ok) {
-        const { message, error } = await response.json()
-        throw message || error || JSON.stringify(response)
+        const error = await response.json()
+        throw new ApiError(error)
       }
     } catch (error) {
-      alert(`Error: ${error}`)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 }

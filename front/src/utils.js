@@ -17,7 +17,7 @@ export const getCookie = (name) => {
 
 export const forbidUnconnected = () => {
   if (!getCookie('session')) {
-    alert('You must be connected to access this page')
+    alert('Error: You must be connected to access this page')
     window.location.href = '/'
     return true
   }
@@ -59,4 +59,18 @@ export const submitForm = (formData, method, url) => {
 
 export const capitalize = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+export class ApiError extends Error {
+  constructor(response) {
+    const { status, error, message, method, path } = response
+    if (status && error && message && method && path) {
+      super(`${status} ${error}: ${message} (${method} ${path})`)
+    } else if (response) {
+      super(`Unknown error: ${JSON.stringify(response)}`)
+    } else {
+      super('Unknown error')
+    }
+    this.name = 'ApiError'
+  }
 }

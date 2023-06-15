@@ -1,4 +1,4 @@
-import { capitalize } from './utils.js'
+import { capitalize, ApiError } from './utils.js'
 
 const PepeUploadTemplate = document.createElement('template')
 
@@ -91,9 +91,12 @@ class PepeUpload extends HTMLElement {
       const response = await fetch(url)
       const superposables = await response.json()
 
-      if (response.status !== 200 || !superposables || !superposables.length) {
-        //TODO: think about the appropriate error handling
-        throw new Error('Error fetching superposables')
+      if (!response.ok && superposables) {
+        throw new ApiError(superposables)
+      }
+
+      if (!superposables || !superposables.length) {
+        throw new Error('no superposable found')
       }
 
       for (const superposable of superposables) {
@@ -103,7 +106,7 @@ class PepeUpload extends HTMLElement {
         this.superposableSelect.append(option)
       }
     } catch (error) {
-      console.error(error)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 
@@ -206,7 +209,7 @@ class PepeUpload extends HTMLElement {
       const picture = await response.json()
 
       if (!response.ok) {
-        throw response
+        throw new ApiError(picture)
       }
 
       const event = new CustomEvent('pepe-upload', {
@@ -218,7 +221,7 @@ class PepeUpload extends HTMLElement {
 
       this._reset()
     } catch (error) {
-      alert(`Error: ${error}`)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 

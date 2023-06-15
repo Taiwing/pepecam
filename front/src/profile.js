@@ -1,4 +1,4 @@
-import { forbidUnconnected, submitForm } from './utils.js'
+import { forbidUnconnected, submitForm, ApiError } from './utils.js'
 
 const form = document.querySelector('#profile-form')
 const passwordField = form.querySelector('input[name="password"]')
@@ -32,13 +32,13 @@ const profileSubmit = async (event) => {
     }
     const response = await submitForm(formData, 'PUT', url)
     if (!response.ok) {
-      const { message, error } = await response.json()
-      throw message || error || JSON.stringify(response)
+      const error = await response.json()
+      throw new ApiError(error)
     }
-    alert('Profile updated')
+    alert('Success: Profile updated')
     window.location.href = '/'
   } catch (error) {
-    alert(`Error: ${error}`)
+    alert(`${error.name}: ${error.message}`)
   }
 }
 
@@ -46,9 +46,8 @@ const getUser = async () => {
   const url = `http://${window.location.hostname}:3000/user`
   const response = await fetch(url, { credentials: 'include' })
   if (!response.ok) {
-    const { message, error } = await response.json()
-    const errorMessage = message || error || JSON.stringify(response)
-    throw errorMessage
+    const error = await response.json()
+    throw new ApiError(error)
   }
   return response.json()
 }
@@ -75,7 +74,7 @@ const initProfile = async () => {
       .querySelector('input[name="email_notifications"]')
       .checked = email_notifications
   } catch (error) {
-    alert(`Error: ${error}`)
+    alert(`${error.name}: ${error.message}`)
   }
 }
 

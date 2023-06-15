@@ -1,4 +1,4 @@
-import { createElement } from './utils.js'
+import { createElement, ApiError } from './utils.js'
 
 const PepePostTemplate = document.createElement('template')
 PepePostTemplate.innerHTML = `
@@ -247,13 +247,13 @@ class PepePost extends HTMLElement {
       })
 
       if (!response.ok) {
-        const { message, error } = await response.json()
-        throw error || message || JSON.stringify(response)
+        const error = await response.json()
+        throw new ApiError(error)
       }
 
       this.updateLikeCounts(deleteLike, value)
     } catch (error) {
-      alert(`Error: ${error}`)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 
@@ -267,13 +267,13 @@ class PepePost extends HTMLElement {
       const response = await fetch(url, { method: 'GET' })
 
       if (!response.ok) {
-        const { message, error } = await response.json()
-        throw error || message || JSON.stringify(response)
+        const error = await response.json()
+        throw new ApiError(error)
       }
 
       return response.json()
     } catch (error) {
-      alert(`Error: ${error}`)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 
@@ -294,8 +294,8 @@ class PepePost extends HTMLElement {
       })
 
       if (!response.ok) {
-        const { message, error } = await response.json()
-        throw message || error || JSON.stringify(response)
+        const error = await response.json()
+        throw new ApiError(error)
       }
 
       this.shadowRoot.querySelector('#post-comments-input').value = ''
@@ -305,7 +305,7 @@ class PepePost extends HTMLElement {
       const commentCount = this.getAttribute('data-comment-count')
       this.setAttribute('data-comment-count', Number(commentCount) + 1)
     } catch (error) {
-      alert(`Error: ${error}`)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 
@@ -323,8 +323,8 @@ class PepePost extends HTMLElement {
       })
 
       if (!response.ok) {
-        const { message, error } = await response.json()
-        throw error || message || JSON.stringify(response)
+        const error = await response.json()
+        throw new ApiError(error)
       }
 
       const event = new CustomEvent('pepe-post-delete', {
@@ -334,7 +334,7 @@ class PepePost extends HTMLElement {
       })
       this.dispatchEvent(event)
     } catch (error) {
-      alert(`Error: ${error}`)
+      alert(`${error.name}: ${error.message}`)
     }
   }
 }

@@ -18,7 +18,12 @@ PepeUploadTemplate.innerHTML = `
       </select>
       <label id="import-button" class="button" disabled="">
         Import Picture
-        <input type="file" accept="image/*" capture="environment" disabled>
+        <input
+          type="file"
+          accept="image/jpeg,image/png"
+          capture="environment"
+          disabled
+        >
       </label>
       <button id="capture-button" disabled>Capture</button>
       <button id="upload-button" disabled>Upload</button>
@@ -159,6 +164,11 @@ class PepeUpload extends HTMLElement {
     if (this.camera) this.camera = 'off'
     const image = new Image()
     image.onload = () => {
+      if (image.width < 512 || image.height < 512) {
+        this.hidePreview()
+        alert('Image too small')
+        return
+      }
       this.previewCanvas.width = image.width
       this.previewCanvas.height = image.height
       const context = this.previewCanvas.getContext('2d')

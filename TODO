@@ -8,11 +8,6 @@ FRONT:
   from the editor to the backend
 
 FIX:
-- Some pictures can be missing from the sidebar in the editor. I have seen this
-  by manually removing every picture and then refreshing the page, two 'new'
-  pictures appeared. After deleting them and reloading the list was indeed
-  empty. This is the gallery scroll that does not work or is not implemented
-  correctly.
 - reset the comment section status when switching picture (the bar appears
   without the comments when the previous pictures comments were visible)
   or make it appear (the first option is better)

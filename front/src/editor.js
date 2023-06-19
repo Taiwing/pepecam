@@ -22,9 +22,7 @@ const onThumbnailClick = (event) => {
 const onPostDelete = (event) => {
   const { picture_id } = event.detail
   const gallery = document.querySelector('pepe-gallery')
-  const selector = `pepe-thumbnail[data-picture-id="${picture_id}"]`
-  const thumbnail = gallery.shadowRoot.querySelector(selector)
-  thumbnail.remove()
+  gallery.deletePicture(picture_id)
   toggleUploadEditor()
 }
 
@@ -32,9 +30,7 @@ const onPostDelete = (event) => {
 const onPepeUpload = (event) => {
   const { detail } = event
   const gallery = document.querySelector('pepe-gallery')
-  gallery.prependPicture(detail)
-  const selector = `pepe-thumbnail[data-picture-id="${detail.picture_id}"]`
-  const thumbnail = gallery.shadowRoot.querySelector(selector)
+  const thumbnail = gallery.prependPicture(detail)
   thumbnail.onClick()
 }
 

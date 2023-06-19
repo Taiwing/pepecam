@@ -64,6 +64,10 @@ class PepeGallery extends HTMLElement {
     return this.getAttribute('data-username')
   }
 
+  getPictureElement(id) {
+    return this.shadowRoot.querySelector(`[data-picture-id="${id}"]`)
+  }
+
   newPicture(picture) {
     const {
       picture_id,
@@ -99,11 +103,18 @@ class PepeGallery extends HTMLElement {
   appendPicture(picture) {
     const pictureElement = this.newPicture(picture)
     this.shadowRoot.append(pictureElement)
+    return this.getPictureElement(picture.picture_id)
   }
 
   prependPicture(picture) {
     const pictureElement = this.newPicture(picture)
     this.shadowRoot.prepend(pictureElement)
+    return this.getPictureElement(picture.picture_id)
+  }
+
+  deletePicture(id) {
+    const pictureElement = this.getPictureElement(id)
+    pictureElement.remove()
   }
 
   // Get posts

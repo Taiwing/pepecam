@@ -3,10 +3,6 @@
 GLOBAL:
 - implement mail logic (find a way to send mail from the backend)
 
-FRONT:
-- make sure that the formats are valid when creating and/or uploading pictures
-  from the editor to the backend
-
 --- MAYBE ---
 
 GLOBAL:

@@ -6,7 +6,6 @@ GLOBAL:
 FRONT:
 - make sure that the formats are valid when creating and/or uploading pictures
   from the editor to the backend
-- make sure this shit looks good on mobile ("displays correctly")
 
 FIX:
 - Some pictures can be missing from the sidebar in the editor. I have seen this

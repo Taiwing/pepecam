@@ -7,11 +7,6 @@ FRONT:
 - make sure that the formats are valid when creating and/or uploading pictures
   from the editor to the backend
 
-FIX:
-- reset the comment section status when switching picture (the bar appears
-  without the comments when the previous pictures comments were visible)
-  or make it appear (the first option is better)
-
 --- MAYBE ---
 
 GLOBAL:

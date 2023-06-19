@@ -103,6 +103,7 @@ class PepePost extends HTMLElement {
         this.full = false
         const comments = this.shadowRoot.querySelector('#post-comments-feed')
         comments.innerHTML = ''
+        this.showComments = false
         break
       case 'data-creation-ts':
         const dateSpan = this.shadowRoot.querySelector('#date-span')

@@ -41,12 +41,9 @@
 @media only screen and (max-width: 800px) {
 	.editor {
 		width: 100%;
-		max-width: none;
-		flex-direction: column;
 	}
 
 	.editor-main {
-		width: 100%;
 		min-width: none;
 		padding: 0.5rem;
 	}

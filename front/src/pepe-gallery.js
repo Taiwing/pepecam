@@ -64,6 +64,22 @@ class PepeGallery extends HTMLElement {
     return this.getAttribute('data-username')
   }
 
+  get pictureCount() {
+    if (this.thumbnail) {
+      return this.shadowRoot.querySelectorAll('pepe-thumbnail').length
+    } else {
+      return this.shadowRoot.querySelectorAll('pepe-post').length
+    }
+  }
+
+  set emptyGallery(value) {
+    if (value) {
+      this.shadowRoot.getElementById('empty-gallery').removeAttribute('hidden')
+    } else {
+      this.shadowRoot.getElementById('empty-gallery').setAttribute('hidden', '')
+    }
+  }
+
   getPictureElement(id) {
     return this.shadowRoot.querySelector(`[data-picture-id="${id}"]`)
   }
@@ -103,18 +119,21 @@ class PepeGallery extends HTMLElement {
   appendPicture(picture) {
     const pictureElement = this.newPicture(picture)
     this.shadowRoot.append(pictureElement)
+    this.emptyGallery = false
     return this.getPictureElement(picture.picture_id)
   }
 
   prependPicture(picture) {
     const pictureElement = this.newPicture(picture)
     this.shadowRoot.prepend(pictureElement)
+    this.emptyGallery = false
     return this.getPictureElement(picture.picture_id)
   }
 
   deletePicture(id) {
     const pictureElement = this.getPictureElement(id)
     pictureElement.remove()
+    this.emptyGallery = this.pictureCount === 0
   }
 
   // Get posts
@@ -136,11 +155,7 @@ class PepeGallery extends HTMLElement {
       if (response.status !== 200 || !posts || posts.length === 0) {
         this._finished = true
         //TODO: replace index by this._index when root cause is fixed
-        if (index === 0) {
-          this.shadowRoot
-            .getElementById('empty-gallery')
-            .removeAttribute('hidden')
-        }
+        if (index === 0) this.emptyGallery = true
         return
       }
 

@@ -6,8 +6,6 @@ GLOBAL:
 FRONT:
 - make sure that the formats are valid when creating and/or uploading pictures
   from the editor to the backend
-- show the 'empty-gallery' div when deleting there is no picture left in the
-  sidebar (simply add this in the onDeletePost handler)
 - make sure this shit looks good on mobile ("displays correctly")
 
 FIX:

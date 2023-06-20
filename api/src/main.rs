@@ -3,11 +3,13 @@
 #[macro_use]
 extern crate rocket;
 extern crate argon2;
+extern crate lazy_static;
 extern crate photon_rs;
 extern crate rand;
 
 mod auth;
 mod cache;
+mod config;
 mod cors;
 mod payload;
 mod pictures;
@@ -27,9 +29,6 @@ use rocket::tokio::time::{sleep, Duration};
 use rocket_db_pools::Database;
 use routes::user::reset;
 
-// Interval in seconds for cleanup of expired values from the caches
-const CACHE_CLEANUP_INTERVAL: u64 = 5;
-
 #[launch]
 fn rocket() -> _ {
     // Remember to add the Cache cleanup call here when creating a managed Cache
@@ -45,7 +44,8 @@ fn rocket() -> _ {
                     new_users.cleanup();
                     sessions.cleanup();
                     reset_requests.cleanup();
-                    sleep(Duration::from_secs(CACHE_CLEANUP_INTERVAL)).await;
+                    sleep(Duration::from_secs(*config::CACHE_CLEANUP_INTERVAL))
+                        .await;
                 }
             });
             Ok(rocket)

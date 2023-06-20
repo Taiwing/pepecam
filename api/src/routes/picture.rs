@@ -1,4 +1,5 @@
 use crate::auth::session;
+use crate::config;
 use crate::payload::{DefaultResponse, Picture, PictureId};
 use crate::pictures;
 use crate::query::{self, PostgresDb};
@@ -26,8 +27,8 @@ fn load_user_picture(raw_bytes: Vec<u8>) -> Result<PhotonImage, String> {
         Ok(user_picture) => user_picture,
     };
 
-    if user_picture.get_width() < pictures::SUPERPOSABLES_SIDE
-        || user_picture.get_height() < pictures::SUPERPOSABLES_SIDE
+    if user_picture.get_width() < *config::SUPERPOSABLES_SIDE
+        || user_picture.get_height() < *config::SUPERPOSABLES_SIDE
     {
         return Err(String::from("user picture too small"));
     }
@@ -44,7 +45,7 @@ async fn create_picture(
     let filename = &format!("{}.png", superposable.as_ref());
     let superposable_picture = match native::open_image(&format!(
         "{}/{}",
-        pictures::SUPERPOSABLES_PATH,
+        *config::SUPERPOSABLES_DIR,
         filename
     )) {
         Err(_) => {
@@ -52,7 +53,7 @@ async fn create_picture(
         }
         Ok(image) => image,
     };
-    let y: u32 = user_picture.get_height() - pictures::SUPERPOSABLES_SIDE;
+    let y: u32 = user_picture.get_height() - *config::SUPERPOSABLES_SIDE;
     multiple::watermark(&mut user_picture, &superposable_picture, 0, y);
     let new_picture = match query::post_picture(db, account_id).await {
         Err(_) => {
@@ -62,7 +63,7 @@ async fn create_picture(
     };
     let filename = format!(
         "{}/{}.jpg",
-        pictures::PATH,
+        *config::PICTURES_DIR,
         new_picture.picture_id.hyphenated()
     );
     native::save_image(user_picture, &filename);
@@ -87,7 +88,7 @@ pub async fn post(
     };
 
     match picture
-        .open(pictures::SIZEMAX.mebibytes())
+        .open(config::PICTURES_SIZEMAX.mebibytes())
         .into_bytes()
         .await
     {
@@ -97,7 +98,10 @@ pub async fn post(
         },
         Ok(transfer) if !transfer.is_complete() => ApiResult::Failure {
             status: Status::BadRequest,
-            message: format!("file too big ({} MiB max)", pictures::SIZEMAX),
+            message: format!(
+                "file too big ({} MiB max)",
+                *config::PICTURES_SIZEMAX
+            ),
         },
         Ok(transfer) => {
             let user_picture = match load_user_picture(transfer.into_inner()) {
@@ -138,7 +142,7 @@ pub async fn delete(
 ) -> ApiResult<DefaultResponse> {
     let picture_id = picture.into_inner().picture_id;
     let filename =
-        format!("{}/{}.jpg", pictures::PATH, picture_id.hyphenated());
+        format!("{}/{}.jpg", *config::PICTURES_DIR, picture_id.hyphenated());
     match query::delete_picture(
         &mut db,
         &from_serde_to_sqlx(&picture_id),

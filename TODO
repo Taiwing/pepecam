@@ -1,12 +1,17 @@
 --- TODO ---
 
+FRONT:
+- add forgot password button and menu somewhere
+
 GLOBAL:
 - implement mail logic (find a way to send mail from the backend)
 
 --- MAYBE ---
 
-GLOBAL:
+FRONT:
 - better notifications (maybe replace alerts)
+
+GLOBAL:
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
 - add documentation about the populate scripts in README (maybe "clean" the

@@ -1,3 +1,5 @@
+//! Configuration module loading environment variables
+
 use lazy_static::lazy_static;
 use std::env;
 

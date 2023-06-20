@@ -69,11 +69,6 @@ impl From<&types::DbPicture> for Picture {
     }
 }
 
-//TODO: find a way to remove the "postgres" string or to use the environment
-//instead (something like 'std::env!("DATABASE_NAME")' if possible).
-//TODO: Maybe actually implement this structure. This would mean setting every
-//query function as a mehod of a PostgresDb implementation (which would all work
-//on an '&mut PostgresDb' instance or something). This would be easier to use.
 #[derive(Database)]
 #[database("postgres")]
 pub struct PostgresDb(PgPool);

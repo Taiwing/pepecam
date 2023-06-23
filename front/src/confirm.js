@@ -10,6 +10,7 @@ const confirmEmail = async () => {
     const url = `http://${window.location.hostname}:3000/user/confirm`
     const response = await fetch(url, {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token }),
     })

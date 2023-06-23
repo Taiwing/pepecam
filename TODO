@@ -2,14 +2,14 @@
 
 FRONT:
 - add forgot password button and menu somewhere
+- beautify confirm page (maybe add loader or something)
 
 GLOBAL:
 - implement mail logic (find a way to send mail from the backend)
+- fix invalid password hashes in the db (for populated users) now that
+  we cannot use the "manually" created user trick to fix it
 
 --- MAYBE ---
-
-FRONT:
-- better notifications (maybe replace alerts)
 
 GLOBAL:
 - create "filters" for the feed (like the superposable, the date, the user,

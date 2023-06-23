@@ -4,7 +4,7 @@ use crate::{
     cache::Cache,
     config,
     mail::Mailer,
-    payload::{NewUser, Token},
+    payload::{DefaultResponse, NewUser, Token},
     query::{self, PostgresDb},
     validation,
 };
@@ -24,7 +24,7 @@ pub async fn post(
     mut db: Connection<PostgresDb>,
     new_users: &State<Cache<NewUser>>,
     mailer: &State<Mailer>,
-) -> ApiResult<Token> {
+) -> ApiResult<DefaultResponse> {
     let user = new_user.into_inner();
 
     if let Err(message) = validation::username(&user.username) {
@@ -86,9 +86,10 @@ pub async fn post(
         }
     }
 
-    //TODO: remove the token from payload
     ApiResult::Success {
         status: Status::Created,
-        payload: token,
+        payload: DefaultResponse {
+            response: format!("Registration email sent to '{}'", &user.email),
+        },
     }
 }

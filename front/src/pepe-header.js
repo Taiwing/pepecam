@@ -1,4 +1,5 @@
 import {
+  asyncAlert,
   getCookie,
   toggleConnectedEvent,
   submitForm,
@@ -6,6 +7,7 @@ import {
 } from './utils.js'
 
 async function dialogSubmit() {
+  const id = this.getAttribute('id')
   const url = this.getAttribute('url')
   const form = this.querySelector('form')
   const submit = this.querySelector('button[type="submit"]')
@@ -13,11 +15,14 @@ async function dialogSubmit() {
   try {
     if (form.reportValidity() === false) return
     const response = await submitForm(new FormData(form), 'POST', url)
+    const data = await response.json()
     if (!response.ok) {
-      const error = await response.json()
-      throw new ApiError(error)
+      throw new ApiError(data)
+    } else if (id === 'login-dialog') {
+      submit.dispatchEvent(toggleConnectedEvent())
+    } else if (id === 'signup-dialog') {
+      asyncAlert(`Success: ${data.response}`)
     }
-    submit.dispatchEvent(toggleConnectedEvent())
   } catch (error) {
     alert(`${error.name}: ${error.message}`)
   }

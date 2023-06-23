@@ -3,7 +3,7 @@ import { ApiError, asyncAlert } from './utils.js'
 // confirm email address
 const confirmEmail = async () => {
   try {
-    const token = window.location.pathname.split('?token=')[1]
+    const token = window.location.href.split('?token=')[1]
     if (!token) {
       throw new Error('Token not found')
     }
@@ -19,7 +19,7 @@ const confirmEmail = async () => {
       throw new ApiError(data)
     }
 
-    asyncAlert(`Success: ${data.message}`, '/')
+    asyncAlert(`Success: ${data.response}`, '/')
   } catch (error) {
     asyncAlert(`${error.name}: ${error.message}`, '/')
   }

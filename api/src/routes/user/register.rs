@@ -2,6 +2,7 @@ use crate::result::ApiResult;
 use crate::{
     auth::session,
     cache::Cache,
+    config,
     mail::Mailer,
     payload::{NewUser, Token},
     query::{self, PostgresDb},
@@ -69,7 +70,13 @@ pub async fn post(
         Duration::from_secs(REGISTRATION_TOKEN_LIFETIME),
     );
 
-    match mailer.send(&user.email, "registration", token.to_string().as_str()) {
+    let link = format!(
+        "{}/confirm.html?token={}",
+        config::FRONT_LINK.as_str(),
+        token
+    );
+
+    match mailer.send(&user.email, "registration", &link) {
         Ok(_) => (),
         Err(_) => {
             return ApiResult::Failure {
@@ -79,7 +86,7 @@ pub async fn post(
         }
     }
 
-    //TODO: send token through an email instead of this
+    //TODO: remove the token from payload
     ApiResult::Success {
         status: Status::Created,
         payload: token,

@@ -29,4 +29,22 @@ lazy_static! {
         .expect("missing SUPERPOSABLES_SIDE env var")
         .parse::<u32>()
         .expect("SUPERPOSABLES_SIDE must be a number");
+
+    /// SMTP server address
+    pub static ref SMTP_SERVER: String = env::var("SMTP_SERVER")
+        .expect("missing SMTP_SERVER env var");
+
+    /// SMTP port
+    pub static ref SMTP_PORT: u16 = env::var("SMTP_PORT")
+        .expect("missing SMTP_PORT env var")
+        .parse::<u16>()
+        .expect("SMTP_PORT must be a number");
+
+    /// SMTP username
+    pub static ref SMTP_USERNAME: String = env::var("SMTP_USERNAME")
+        .expect("missing SMTP_USERNAME env var");
+
+    /// SMTP password
+    pub static ref SMTP_PASSWORD: String = env::var("SMTP_PASSWORD")
+        .expect("missing SMTP_PASSWORD env var");
 }

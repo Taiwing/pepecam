@@ -2,6 +2,7 @@ use crate::result::ApiResult;
 use crate::{
     auth::session,
     cache::Cache,
+    mail::Mailer,
     payload::{NewUser, Token},
     query::{self, PostgresDb},
     validation,
@@ -21,6 +22,7 @@ pub async fn post(
     _sess: session::Unconnected,
     mut db: Connection<PostgresDb>,
     new_users: &State<Cache<NewUser>>,
+    mailer: &State<Mailer>,
 ) -> ApiResult<Token> {
     let user = new_user.into_inner();
 
@@ -66,6 +68,16 @@ pub async fn post(
         &user,
         Duration::from_secs(REGISTRATION_TOKEN_LIFETIME),
     );
+
+    match mailer.send(&user.email, "registration", token.to_string().as_str()) {
+        Ok(_) => (),
+        Err(_) => {
+            return ApiResult::Failure {
+                status: Status::InternalServerError,
+                message: "Failed to send registration email".to_string(),
+            };
+        }
+    }
 
     //TODO: send token through an email instead of this
     ApiResult::Success {

@@ -4,6 +4,7 @@
 extern crate rocket;
 extern crate argon2;
 extern crate lazy_static;
+extern crate lettre;
 extern crate photon_rs;
 extern crate rand;
 
@@ -11,6 +12,7 @@ mod auth;
 mod cache;
 mod config;
 mod cors;
+mod mail;
 mod payload;
 mod pictures;
 mod query;
@@ -22,6 +24,7 @@ mod validation;
 use auth::session;
 use cache::Cache;
 use cors::Cors;
+use mail::Mailer;
 use payload::NewUser;
 use query::PostgresDb;
 use rocket::fairing::AdHoc;
@@ -53,6 +56,7 @@ fn rocket() -> _ {
 
     rocket::build()
         .attach(PostgresDb::init())
+        .manage(Mailer::new())
         .manage(Cache::<NewUser>::new())
         .manage(Cache::<session::Connected>::new())
         .manage(Cache::<reset::Request>::new())

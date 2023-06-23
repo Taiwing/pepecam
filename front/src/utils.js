@@ -15,10 +15,16 @@ export const getCookie = (name) => {
   return cookies[name] ? JSON.parse(cookies[name]) : undefined
 }
 
+export const asyncAlert = (message, href) => {
+  setTimeout(() => {
+    alert(message)
+    if (href) window.location.href = href
+  }, 1)
+}
+
 export const forbidUnconnected = () => {
   if (!getCookie('session')) {
-    alert('Error: You must be connected to access this page')
-    window.location.href = '/'
+    asyncAlert('Error: You must be connected to access this page', '/')
     return true
   }
   return false

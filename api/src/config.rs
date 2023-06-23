@@ -47,4 +47,8 @@ lazy_static! {
     /// SMTP password
     pub static ref SMTP_PASSWORD: String = env::var("SMTP_PASSWORD")
         .expect("missing SMTP_PASSWORD env var");
+
+    /// Front link
+    pub static ref FRONT_LINK: String = env::var("FRONT_LINK")
+        .expect("missing FRONT_LINK env var");
 }

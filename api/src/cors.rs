@@ -1,3 +1,4 @@
+use crate::config;
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
 use rocket::{Request, Response};
@@ -20,7 +21,7 @@ impl Fairing for Cors {
     ) {
         response.set_header(Header::new(
             "Access-Control-Allow-Origin",
-            "http://localhost:8080",
+            config::FRONT_LINK.as_str(),
         ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",

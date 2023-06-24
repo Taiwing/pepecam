@@ -1,3 +1,10 @@
+:host {
+	--background-color: var(--dark-grey);
+
+	color: inherit;
+	background-color: var(--background-color);
+}
+
 a {
 	color: inherit;
 	text-decoration: none;

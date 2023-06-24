@@ -1,3 +1,14 @@
+:root {
+	--light-grey: #b1b1b1;
+	--grey: #171717;
+	--dark-grey: #121212;
+	--black: #0b0b0b;
+	--green: #03f200;
+
+	--text-color: var(--light-grey);
+	--background-color: var(--grey);
+}
+
 html {
 	height: 100vh;
 }
@@ -7,8 +18,8 @@ body {
 	flex-direction: column;
 	margin: 0;
 	height: 100%;
-	color: #b1b1b1;
-	background: #171717;
+	color: var(--text-color);
+	background: var(--background-color);
 	font-family: sans-serif;
 }
 
@@ -18,7 +29,6 @@ header {
 	justify-content: space-between;
 	font-size: 1rem;
 	padding: 2rem 0.75rem;
-	background-color: #0b0b0b;
 	flex-grow: 0;
 	flex-shrink: 0;
 }
@@ -39,8 +49,6 @@ footer {
 	flex-direction: row;
 	box-sizing: border-box;
 	padding: 2rem 0.75rem;
-	color: #b1b1b1;
-	background-color: #121212;
 	width: 100%;
 	flex-grow: 0;
 	flex-shrink: 0;
@@ -68,8 +76,8 @@ button, .button {
 }
 
 button:hover:not([disabled]), .button:hover:not([disabled]) {
-	color: #171717;
-	background-color: #b1b1b1;
+	color: var(--background-color);
+	background-color: var(--text-color);
 	transition-duration: 0.4s;
 }
 

@@ -1,5 +1,13 @@
+:host {
+	--text-color: var(--green);
+	--background-color: var(--black);
+
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
 a {
-	color: #03f200;
+	color: inherit;
 	text-decoration: none;
 }
 
@@ -19,17 +27,6 @@ a {
 	gap: 2rem;
 }
 
-button {
-	background-color: inherit;
-	color: #03f200;
-	border: 0.1rem solid #03f200;
-}
-
-button:hover {
-	color: #0b0b0b;
-	background-color: #03f200;
-}
-
 .user-actions {
 	display: flex;
 	flex-direction: row;
@@ -43,8 +40,10 @@ button:hover {
 }
 
 dialog {
+	--text-color: var(--light-grey);
+
+	color: var(--text-color);
 	background-color: inherit;
-	color: inherit;
 }
 
 @media only screen and (max-width: 800px) {

@@ -10,8 +10,6 @@ GLOBAL:
 
 API:
 - implement tests for every route and structures
-- try and use environment variables for some constants (maybe create a config
-  module and initialize it once at launch)
 - Check every unwrap() call. Remove the ones that should be removed (where a
   failure might happen and should be handled cleanly), and replace the others
   with expect calls to make sure we know what's going on.

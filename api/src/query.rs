@@ -234,6 +234,19 @@ pub async fn get_user_by_username(
         .unwrap()
 }
 
+/// Get user by email
+pub async fn get_user_by_email(
+    email: &str,
+    db: &mut Connection<PostgresDb>,
+) -> Option<types::Account> {
+    let query = "SELECT * FROM accounts WHERE email = $1;";
+    sqlx::query_as(query)
+        .bind(email)
+        .fetch_optional(&mut **db)
+        .await
+        .unwrap()
+}
+
 /// Get user by account_id
 pub async fn get_user_by_account_id(
     account_id: &SqlxUuid,

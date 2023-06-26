@@ -2,7 +2,7 @@ use crate::cache::Cache;
 use crate::config;
 use crate::mail::Mailer;
 use crate::payload::{DefaultResponse, Token};
-use crate::query::{get_user_by_username, put_user, PostgresDb};
+use crate::query::{get_user_by_email, put_user, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::{from_serde_to_sqlx, from_sqlx_to_serde};
 use crate::validation;
@@ -36,14 +36,14 @@ pub struct Request {
 // Time during which the reset can be used in seconds.
 const RESET_TOKEN_LIFETIME: u64 = 300; // 5 minutes
 
-#[post("/reset", data = "<username>", format = "json")]
+#[post("/reset", data = "<email>", format = "json")]
 pub async fn post(
-    username: String,
+    email: String,
     mut db: Connection<PostgresDb>,
     reset_requests: &State<Cache<Request>>,
     mailer: &State<Mailer>,
 ) -> ApiResult<DefaultResponse> {
-    if let Some(account) = get_user_by_username(&username, &mut db).await {
+    if let Some(account) = get_user_by_email(&email, &mut db).await {
         let token = Token::new();
         let token_name = format!("reset_token:{}", token);
         let request = Request {
@@ -59,27 +59,14 @@ pub async fn post(
             config::FRONT_LINK.as_str(),
             token
         );
-        match mailer.send(&account.email, "password reset", &link) {
-            Ok(_) => {
-                return ApiResult::Success {
-                    status: Status::Ok,
-                    payload: DefaultResponse {
-                        response: "Reset token successfully sent!".to_string(),
-                    },
-                };
-            }
-            Err(_) => {
-                return ApiResult::Failure {
-                    status: Status::InternalServerError,
-                    message: "Failed to send reset token.".to_string(),
-                };
-            }
-        }
-    } else {
-        ApiResult::Failure {
-            status: Status::BadRequest,
-            message: format!("user '{}' not found", username),
-        }
+        _ = mailer.send(&account.email, "password reset", &link);
+    }
+
+    ApiResult::Success {
+            status: Status::Ok,
+			payload: DefaultResponse {
+				response: "Your request has been processed. Check your email for further instructions.".to_string(),
+			},
     }
 }
 

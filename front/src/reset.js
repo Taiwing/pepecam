@@ -31,7 +31,7 @@ const submitResetForm = async (event) => {
       throw new ApiError(data)
     }
 
-    asyncAlert(`Success: ${data.message}`, '/')
+    asyncAlert(`Success: ${data.response}`, '/')
   } catch (error) {
     asyncAlert(`${error.name}: ${error.message}`, '/')
   }

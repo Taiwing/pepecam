@@ -1,8 +1,5 @@
 --- TODO ---
 
-FRONT:
-- add forgot password button and menu somewhere
-
 GLOBAL:
 - fix invalid password hashes in the db (for populated users) now that
   we cannot use the "manually" created user trick to fix it

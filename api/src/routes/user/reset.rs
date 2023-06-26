@@ -19,6 +19,13 @@ pub struct ResetToken {
     reset_token: Uuid,
 }
 
+/// Request payload containing the email for the POST /reset route
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+pub struct Email {
+    email: String,
+}
+
 /// Request payload containing the new password for the POST /reset route
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -38,11 +45,12 @@ const RESET_TOKEN_LIFETIME: u64 = 300; // 5 minutes
 
 #[post("/reset", data = "<email>", format = "json")]
 pub async fn post(
-    email: String,
+    email: Json<Email>,
     mut db: Connection<PostgresDb>,
     reset_requests: &State<Cache<Request>>,
     mailer: &State<Mailer>,
 ) -> ApiResult<DefaultResponse> {
+    let email = email.into_inner().email;
     if let Some(account) = get_user_by_email(&email, &mut db).await {
         let token = Token::new();
         let token_name = format!("reset_token:{}", token);

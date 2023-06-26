@@ -20,7 +20,7 @@ async function dialogSubmit() {
       throw new ApiError(data)
     } else if (id === 'login-dialog') {
       submit.dispatchEvent(toggleConnectedEvent())
-    } else if (id === 'signup-dialog') {
+    } else if (id === 'signup-dialog' || id === 'reset-dialog') {
       asyncAlert(`Success: ${data.response}`)
     }
   } catch (error) {
@@ -57,8 +57,25 @@ PepeHeaderTemplate.innerHTML = `
         password
         <input type="password" name="password" placeholder="password" required>
       </label>
+      <div class="form-field" id="forgot-password-container">
+        <a href="#" id="forgot-password">forgot password?</a>
+      </div>
       <div class="form-field">
         <button type="submit">login</button>
+        <button type="reset">cancel</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="reset-dialog">
+    <h3>Reset Password</h3>
+    <form id="reset-form" method="dialog" class="form">
+      <label for="email" class="form-field">
+        email
+        <input type="email" name="email" placeholder="email" required>
+      </label>
+      <div class="form-field">
+        <button type="submit">send</button>
         <button type="reset">cancel</button>
       </div>
     </form>
@@ -108,6 +125,11 @@ class PepeHeader extends HTMLElement {
       'url',
       `http://${window.location.hostname}:3000/user/login`
     )
+    const resetDialog = this.shadowRoot.querySelector('#reset-dialog')
+    resetDialog.setAttribute(
+      'url',
+      `http://${window.location.hostname}:3000/user/reset`
+    )
     const signupDialog = this.shadowRoot.querySelector('#signup-dialog')
     signupDialog.setAttribute(
       'url',
@@ -130,6 +152,11 @@ class PepeHeader extends HTMLElement {
 
     const loginButton = this.shadowRoot.querySelector('#login')
     loginButton.addEventListener('click', () => loginDialog.showModal())
+    const resetButton = loginDialog.querySelector('#forgot-password')
+    resetButton.addEventListener('click', () => {
+      loginDialog.close()
+      resetDialog.showModal()
+    })
     const signupButton = this.shadowRoot.querySelector('#signup')
     signupButton.addEventListener('click', () => signupDialog.showModal())
     const logoutButton = this.shadowRoot.querySelector('#logout')
@@ -144,6 +171,12 @@ class PepeHeader extends HTMLElement {
     loginDialog
       .querySelector('button[type="reset"]')
       .addEventListener('click', () => loginDialog.close())
+    resetDialog
+      .querySelector('button[type="submit"]')
+      .addEventListener('click', dialogSubmit.bind(resetDialog))
+    resetDialog
+      .querySelector('button[type="reset"]')
+      .addEventListener('click', () => resetDialog.close())
     signupDialog
       .querySelector('button[type="submit"]')
       .addEventListener('click', dialogSubmit.bind(signupDialog))

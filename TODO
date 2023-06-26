@@ -2,10 +2,8 @@
 
 FRONT:
 - add forgot password button and menu somewhere
-- beautify confirm page (maybe add loader or something)
 
 GLOBAL:
-- implement mail logic (find a way to send mail from the backend)
 - fix invalid password hashes in the db (for populated users) now that
   we cannot use the "manually" created user trick to fix it
 
@@ -32,4 +30,5 @@ API:
 
 FRONT:
 - use classes and ids instead of tags for the styling (more reliable)
+- beautify confirm page (maybe add loader or something)
 - add the superposable picture to camera feed

@@ -1,4 +1,6 @@
 use crate::cache::Cache;
+use crate::config;
+use crate::mail::Mailer;
 use crate::payload::{DefaultResponse, Token};
 use crate::query::{get_user_by_username, put_user, PostgresDb};
 use crate::result::ApiResult;
@@ -34,12 +36,13 @@ pub struct Request {
 // Time during which the reset can be used in seconds.
 const RESET_TOKEN_LIFETIME: u64 = 300; // 5 minutes
 
-#[get("/reset?<username>")]
-pub async fn get(
+#[post("/reset", data = "<username>", format = "json")]
+pub async fn post(
     username: String,
     mut db: Connection<PostgresDb>,
     reset_requests: &State<Cache<Request>>,
-) -> Option<Json<ResetToken>> {
+    mailer: &State<Mailer>,
+) -> ApiResult<DefaultResponse> {
     if let Some(account) = get_user_by_username(&username, &mut db).await {
         let token = Token::new();
         let token_name = format!("reset_token:{}", token);
@@ -51,16 +54,37 @@ pub async fn get(
             &request,
             Duration::from_secs(RESET_TOKEN_LIFETIME),
         );
-        //TODO: send it via mail instead of doing this
-        return Some(Json(ResetToken {
-            reset_token: token.token,
-        }));
+        let link = format!(
+            "{}/reset.html?token={}",
+            config::FRONT_LINK.as_str(),
+            token
+        );
+        match mailer.send(&account.email, "password reset", &link) {
+            Ok(_) => {
+                return ApiResult::Success {
+                    status: Status::Ok,
+                    payload: DefaultResponse {
+                        response: "Reset token successfully sent!".to_string(),
+                    },
+                };
+            }
+            Err(_) => {
+                return ApiResult::Failure {
+                    status: Status::InternalServerError,
+                    message: "Failed to send reset token.".to_string(),
+                };
+            }
+        }
+    } else {
+        ApiResult::Failure {
+            status: Status::BadRequest,
+            message: format!("user '{}' not found", username),
+        }
     }
-    None
 }
 
-#[post("/reset", data = "<password_reset>", format = "json")]
-pub async fn post(
+#[put("/reset", data = "<password_reset>", format = "json")]
+pub async fn put(
     password_reset: Json<PasswordReset>,
     mut db: Connection<PostgresDb>,
     reset_requests: &State<Cache<Request>>,

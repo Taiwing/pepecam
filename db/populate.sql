@@ -5,7 +5,7 @@ SET SESSION test.n_likes = '8000';
 SET SESSION test.n_comments = '5000';
 SET SESSION test.date_min = '2022-01-01 00:00:00';
 SET SESSION test.date_max = '2023-04-18 00:00:00';
-SET SESSION test.password_hash = 'toto';
+SET SESSION test.password_hash = '$argon2i$v=19$m=4096,t=3,p=1$jYwfWYO26anwMuRnN1FdHA$TDUUjIe62D7Uq/x+jxBdpPxBeeNiLD8pFmSh2o++1Iw'; -- password is 'Trustno1!'
 
 -- Generate Users
 INSERT INTO accounts

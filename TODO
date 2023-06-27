@@ -1,6 +1,8 @@
 --- MAYBE ---
 
 GLOBAL:
+- replace every occurence of '[Cc]amagru' by '[Pp]epecam' and rename the current
+  directory
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
 - add documentation about the populate scripts in README (maybe "clean" the

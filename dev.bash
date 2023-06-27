@@ -13,15 +13,6 @@ cd ..
 # link pepe pictures
 ./link_pepes.bash
 
-# replace default password_hash (TODO: fix password_hash in db)
-#PASSWORD_HASH=$(
-#	docker exec camagru-db-1 psql -U postgres postgres -t -c \
-#	"SELECT password_hash FROM accounts WHERE password_hash != 'toto' LIMIT 1;" \
-#	| tr -d '[:space:]'
-#)
-#docker exec camagru-db-1 psql -U postgres postgres -c \
-#	"UPDATE accounts SET password_hash = '$PASSWORD_HASH' WHERE password_hash = 'toto';"
-
 # wait for input
 read
 

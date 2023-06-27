@@ -1,9 +1,6 @@
-FROM rust:1.61 as builder
+FROM rust:1.68.2
 WORKDIR /app
 COPY . .
-RUN cargo install --path .
+RUN cargo build --release
 
-FROM debian:buster-slim
-RUN apt update && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /usr/local/cargo/bin/api /usr/local/bin/api
-CMD ["api"]
+CMD cargo run --release

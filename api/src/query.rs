@@ -85,7 +85,7 @@ pub async fn is_taken(
         .bind(value)
         .fetch_optional(&mut **db)
         .await
-        .unwrap();
+        .unwrap_or(None);
     row.is_some()
 }
 
@@ -99,7 +99,7 @@ pub async fn account_exists(
         .bind(account_id)
         .fetch_optional(&mut **db)
         .await
-        .unwrap();
+        .unwrap_or(None);
     row.is_some()
 }
 
@@ -137,7 +137,7 @@ pub async fn pictures(
         .bind(connected_user)
         .fetch_all(&mut **db)
         .await
-        .unwrap();
+        .unwrap_or(Vec::new());
     if raw_pictures.is_empty() {
         return None;
     }
@@ -186,7 +186,7 @@ pub async fn user_pictures(
         .bind(connected_user)
         .fetch_all(&mut **db)
         .await
-        .unwrap();
+        .unwrap_or(Vec::new());
     if raw_pictures.is_empty() {
         return None;
     }
@@ -235,7 +235,7 @@ pub async fn get_user_by_username(
         .bind(username)
         .fetch_optional(&mut **db)
         .await
-        .unwrap()
+        .unwrap_or(None)
 }
 
 /// Get user by email
@@ -248,7 +248,7 @@ pub async fn get_user_by_email(
         .bind(email)
         .fetch_optional(&mut **db)
         .await
-        .unwrap()
+        .unwrap_or(None)
 }
 
 /// Get user by account_id
@@ -262,7 +262,7 @@ pub async fn get_user_by_account_id(
         .bind(account_id)
         .fetch_optional(&mut **db)
         .await
-        .unwrap()
+        .unwrap_or(None)
 }
 
 /// Modify user account
@@ -479,7 +479,7 @@ pub async fn comments(
         .bind(picture_id)
         .fetch_all(&mut **db)
         .await
-        .unwrap();
+        .unwrap_or_default();
 
     let comments = raw_comments
         .iter()

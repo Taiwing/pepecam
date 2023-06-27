@@ -94,7 +94,7 @@ pub mod session {
 
     impl fmt::Display for Connected {
         fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-            let string = json::to_string(self).unwrap();
+            let string = json::to_string(self).expect("Failed to serialize");
             fmt.write_str(&string)?;
             Ok(())
         }

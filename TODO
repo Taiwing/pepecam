@@ -9,8 +9,6 @@ GLOBAL:
 
 API:
 - implement tests for every route and structures
-- check the queries for unhandled failure (basically use the rows_affected
-  value instead of returning an Ok(()))
 - create superposable enum in db and add this information to pictures table
 
 FRONT:

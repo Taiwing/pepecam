@@ -12,6 +12,5 @@ API:
 - create superposable enum in db and add this information to pictures table
 
 FRONT:
-- use classes and ids instead of tags for the styling (more reliable)
 - beautify confirm page (maybe add loader or something)
 - add the superposable picture to camera feed

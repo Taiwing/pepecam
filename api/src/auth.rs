@@ -16,7 +16,7 @@ pub mod password {
     }
 }
 
-/// Manage user sessions with private cookies.
+/// Manage user sessions with cookies.
 pub mod session {
     use crate::cache::Cache;
     use crate::query::{self, PostgresDb};

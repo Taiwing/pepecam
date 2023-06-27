@@ -56,7 +56,7 @@ impl<T: Clone> Cache<T> {
     /// already existed for the given key. The lifetime is the duration of
     /// storage inside the Cache. Passed it the data will be deleted.
     pub fn set(&self, key: &str, value: &T, lifetime: Duration) -> Option<T> {
-        let mut map = self.safe.lock().unwrap();
+        let mut map = self.safe.lock().expect("Could not lock the cache.");
         let old_item =
             map.insert(key.to_string(), CacheItem::new(value, lifetime));
         match old_item {
@@ -73,7 +73,7 @@ impl<T: Clone> Cache<T> {
 
     /// Get a value from the Cache.
     pub fn get(&self, key: &str) -> Option<T> {
-        let mut map = self.safe.lock().unwrap();
+        let mut map = self.safe.lock().expect("Could not lock the cache.");
         match map.get(key) {
             Some(item) => {
                 if item.is_expired() {
@@ -90,7 +90,7 @@ impl<T: Clone> Cache<T> {
     /// Delete a value from the Cache. Returns the old value if it was still
     /// valid. So this method can basically be used as a 'pop' function.
     pub fn del(&self, key: &str) -> Option<T> {
-        let mut map = self.safe.lock().unwrap();
+        let mut map = self.safe.lock().expect("Could not lock the cache.");
         match map.remove(key) {
             Some(item) => {
                 if item.is_expired() {
@@ -106,13 +106,13 @@ impl<T: Clone> Cache<T> {
     /// Check if a given key exists in the cache.
     #[allow(unused)]
     pub fn exists(&self, key: &str) -> bool {
-        let map = self.safe.lock().unwrap();
+        let map = self.safe.lock().expect("Could not lock the cache.");
         map.contains_key(key)
     }
 
     /// Cleanup the cache by removing expired items.
     pub fn cleanup(&self) {
-        let mut map = self.safe.lock().unwrap();
+        let mut map = self.safe.lock().expect("Could not lock the cache.");
         map.retain(|_, item| !item.is_expired());
     }
 }

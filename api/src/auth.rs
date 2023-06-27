@@ -4,15 +4,15 @@ pub mod password {
     use rand;
 
     /// Hash a password with a random salt and default Argon2 configuration.
-    pub fn hash(password: &str) -> String {
+    pub fn hash(password: &str) -> argon2::Result<String> {
         let config = Config::default();
         let salt: [u8; 16] = rand::random();
-        argon2::hash_encoded(password.as_bytes(), &salt, &config).unwrap()
+        argon2::hash_encoded(password.as_bytes(), &salt, &config)
     }
 
     /// Check if the password matches against a given hash.
     pub fn verify(password: &str, hash: &str) -> bool {
-        argon2::verify_encoded(hash, password.as_bytes()).unwrap()
+        argon2::verify_encoded(hash, password.as_bytes()).unwrap_or(false)
     }
 }
 
@@ -130,10 +130,14 @@ pub mod session {
         async fn from_request(
             request: &'r Request<'_>,
         ) -> Outcome<Self, Self::Error> {
-            let mut db =
-                request.guard::<Connection<PostgresDb>>().await.unwrap();
-            let sessions =
-                request.guard::<&State<Cache<Connected>>>().await.unwrap();
+            let mut db = request
+                .guard::<Connection<PostgresDb>>()
+                .await
+                .expect("Failed to get database connection");
+            let sessions = request
+                .guard::<&State<Cache<Connected>>>()
+                .await
+                .expect("Failed to get connected session cache");
             match request.cookies().get("session") {
                 None => {
                     Outcome::Failure((Status::Unauthorized, Error::NotLoggedIn))
@@ -160,10 +164,14 @@ pub mod session {
         async fn from_request(
             request: &'r Request<'_>,
         ) -> Outcome<Self, Self::Error> {
-            let mut db =
-                request.guard::<Connection<PostgresDb>>().await.unwrap();
-            let sessions =
-                request.guard::<&State<Cache<Connected>>>().await.unwrap();
+            let mut db = request
+                .guard::<Connection<PostgresDb>>()
+                .await
+                .expect("Failed to get database connection");
+            let sessions = request
+                .guard::<&State<Cache<Connected>>>()
+                .await
+                .expect("Failed to get connected session cache");
             match request.cookies().get("session") {
                 None => Outcome::Success(IsConnected { 0: None }),
                 Some(cookie) => match Connected::from_str(cookie.value()) {

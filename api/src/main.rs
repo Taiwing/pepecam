@@ -37,11 +37,18 @@ fn rocket() -> _ {
     // Remember to add the Cache cleanup call here when creating a managed Cache
     let cleanup_job =
         AdHoc::try_on_ignite("Cache Cleanup Job", |rocket| async {
-            let new_users = rocket.state::<Cache<NewUser>>().unwrap().clone();
-            let sessions =
-                rocket.state::<Cache<session::Connected>>().unwrap().clone();
-            let reset_requests =
-                rocket.state::<Cache<reset::Request>>().unwrap().clone();
+            let new_users = rocket
+                .state::<Cache<NewUser>>()
+                .expect("Failed to get NewUser cache")
+                .clone();
+            let sessions = rocket
+                .state::<Cache<session::Connected>>()
+                .expect("Failed to get connected session cache")
+                .clone();
+            let reset_requests = rocket
+                .state::<Cache<reset::Request>>()
+                .expect("Failed to get reset request cache")
+                .clone();
             rocket::tokio::task::spawn(async move {
                 loop {
                     new_users.cleanup();

@@ -5,6 +5,7 @@ use crate::{
     auth::password,
     payload::{Comment, NewUser, Picture},
 };
+use rocket::http::Status;
 use rocket_db_pools::sqlx::{self, PgPool};
 use rocket_db_pools::{Connection, Database};
 
@@ -201,24 +202,27 @@ pub async fn user_pictures(
 pub async fn create_account(
     db: &mut Connection<PostgresDb>,
     new_user: &NewUser,
-) -> Result<String, sqlx::Error> {
-    let password_hash = password::hash(&new_user.password);
-    sqlx::query(
+) -> Result<(), Status> {
+    let password_hash = match password::hash(&new_user.password) {
+        Ok(hash) => hash,
+        Err(_) => return Err(Status::InternalServerError),
+    };
+    match sqlx::query(
         "
-		INSERT INTO accounts (email, username, password_hash)
-		VALUES ($1, $2, $3)
-		RETURNING account_id;
-	",
+			INSERT INTO accounts (email, username, password_hash)
+			VALUES ($1, $2, $3)
+			RETURNING account_id;
+		",
     )
     .bind(&new_user.email)
     .bind(&new_user.username)
     .bind(&password_hash)
     .fetch_one(&mut **db)
-    .await?;
-    Ok(format!(
-        "Great success! New user account '{}' has been created!",
-        new_user.username
-    ))
+    .await
+    {
+        Err(_) => Err(Status::Conflict),
+        Ok(_) => Ok(()),
+    }
 }
 
 /// Get user by username
@@ -273,17 +277,24 @@ pub async fn put_user(
     password: Option<String>,
     email: Option<String>,
     email_notifications: Option<bool>,
-) -> Result<(), sqlx::Error> {
-    let password_hash = password.map(|password| password::hash(&password));
-
+) -> Result<(), ()> {
     if let Some(username) = username {
         let query = "UPDATE accounts SET username = $1 WHERE account_id = $2";
         sqlx::query(query)
             .bind(&username)
             .bind(account_id)
             .execute(&mut **db)
-            .await?;
+            .await
+            .map_err(|_| ())?;
     }
+
+    let password_hash = match password {
+        None => None,
+        Some(password) => match password::hash(&password) {
+            Ok(hash) => Some(hash),
+            Err(_) => return Err(()),
+        },
+    };
 
     if let Some(password_hash) = password_hash {
         let query =
@@ -292,7 +303,8 @@ pub async fn put_user(
             .bind(&password_hash)
             .bind(account_id)
             .execute(&mut **db)
-            .await?;
+            .await
+            .map_err(|_| ())?;
     }
 
     if let Some(email) = email {
@@ -301,7 +313,8 @@ pub async fn put_user(
             .bind(&email)
             .bind(account_id)
             .execute(&mut **db)
-            .await?;
+            .await
+            .map_err(|_| ())?;
     }
 
     if let Some(email_notifications) = email_notifications {
@@ -310,7 +323,8 @@ pub async fn put_user(
             .bind(&email_notifications)
             .bind(account_id)
             .execute(&mut **db)
-            .await?;
+            .await
+            .map_err(|_| ())?;
     }
 
     Ok(())

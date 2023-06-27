@@ -36,22 +36,27 @@ pub async fn post(
         }
     };
     match query::create_account(&mut db, &new_user).await {
-        Ok(mut response) => {
+        Ok(_) => {
             let credentials = Credentials {
                 username: new_user.username,
                 password: new_user.password,
             };
-            if (login(&credentials, &mut db, cookies, sessions).await).is_err()
+            let response = match login(&credentials, &mut db, cookies, sessions)
+                .await
             {
-                response = String::from("login error");
-            }
+                Ok(_) => format!(
+                    "Great success! New user account '{}' has been created!",
+                    &credentials.username
+                ),
+                Err(_) => "account created, but could not log in".to_string(),
+            };
             ApiResult::Success {
                 status: Status::Created,
                 payload: DefaultResponse { response },
             }
         }
-        Err(_) => ApiResult::Failure {
-            status: Status::Conflict,
+        Err(status) => ApiResult::Failure {
+            status,
             message: String::from("could not create new user account"),
         },
     }

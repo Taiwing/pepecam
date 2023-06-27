@@ -5,7 +5,6 @@ GLOBAL:
   etc...)
 - add documentation about the populate scripts in README (maybe "clean" the
   logic so that it is simpler to use)
-- try and find a way to use an ENV variable to populate the database
 - make it possible to change the superposable's size (use resize in the back)
 
 API:

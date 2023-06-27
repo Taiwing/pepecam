@@ -8,8 +8,12 @@ GLOBAL:
 - add documentation about the populate scripts in README (maybe "clean" the
   logic so that it is simpler to use)
 - make it possible to change the superposable's size (use resize in the back)
+- add doc about environment and secrets
 
 API:
+- if secrets are not set (SMTP values for now), make it so the API can still
+  compile but without the email functions (warn user in the doc and/or with a
+  message somewhere during compilation or on launch)
 - implement tests for every route and structures
 - create superposable enum in db and add this information to pictures table
 

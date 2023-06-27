@@ -9,9 +9,6 @@ GLOBAL:
 
 API:
 - implement tests for every route and structures
-- Check every unwrap() call. Remove the ones that should be removed (where a
-  failure might happen and should be handled cleanly), and replace the others
-  with expect calls to make sure we know what's going on.
 - check the queries for unhandled failure (basically use the rows_affected
   value instead of returning an Ok(()))
 - create superposable enum in db and add this information to pictures table

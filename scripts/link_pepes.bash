@@ -30,7 +30,7 @@ MISSING_PICTURE=($(shuf -e "${MISSING_PICTURE[@]}"))
 # symlinking missing pictures
 INDEX=0
 for picture in ${MISSING_PICTURE[@]}; do
-	[ ! -f pepe/$INDEX-*.jpg ] && exit 0
+	[ ! -f pepe/$INDEX-*.jpg ] && continue
 	ln -s pepe/$INDEX-*.jpg $picture.jpg
 	INDEX=$((INDEX + 1))
 done

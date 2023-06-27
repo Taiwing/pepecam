@@ -29,10 +29,12 @@ const EMAIL_REGEX_STRING: &str =
 
 lazy_static! {
     static ref USERNAME_REGEX: Regex =
-        Regex::new(USERNAME_REGEX_STRING).unwrap();
+        Regex::new(USERNAME_REGEX_STRING).expect("invalid username regex");
     static ref PASSWORD_REGEX: RegexSet =
-        RegexSet::new(&PASSWORD_REGEX_STRINGS).unwrap();
-    static ref EMAIL_REGEX: Regex = Regex::new(EMAIL_REGEX_STRING).unwrap();
+        RegexSet::new(&PASSWORD_REGEX_STRINGS)
+            .expect("invalid password regex set");
+    static ref EMAIL_REGEX: Regex =
+        Regex::new(EMAIL_REGEX_STRING).expect("invalid email regex");
 }
 
 /// Check that the given username is a valid string

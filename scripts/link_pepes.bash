@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# go to repo root
+cd $(git rev-parse --show-toplevel)
+
 # Get every picture id from the database
 DB_PICTURES=$(docker exec camagru-db-1 psql -U postgres postgres \
 	-c "SELECT picture_id FROM pictures" \

@@ -1,3 +1,8 @@
+#!/usr/bin/env bash
+
+# go to repo root
+cd $(git rev-parse --show-toplevel)
+
 # build and run docker compose
 COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose build
 docker compose up -d
@@ -11,7 +16,7 @@ cd api
 cd ..
 
 # link pepe pictures
-./link_pepes.bash
+./scripts/link_pepes.bash
 
 # wait for input
 read

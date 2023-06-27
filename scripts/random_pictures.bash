@@ -34,7 +34,7 @@ function download_pictures() {
 }
 
 function login_user() {
-	curl -c jar -X POST http://localhost:3000/user/login \
+	curl -c resources/jar -X POST http://localhost:3000/user/login \
 		-H 'Content-Type: application/json' \
 		--data '{"username":"User1","password":"Trustno1!"}' | jq
 }
@@ -50,7 +50,7 @@ function generate_pepes() {
 	for i in $(seq 0 $COUNT); do
 		[ ! -s "resources/picsum/$i.jpg" ] && continue
 		PEPE=${PEPES[ $RANDOM % ${#PEPES[@]} ]}
-		PICTURE_ID=$(curl -b jar -X POST http://localhost:3000/picture/$PEPE \
+		PICTURE_ID=$(curl -b resources/jar -X POST http://localhost:3000/picture/$PEPE \
 			-H 'Content-Type: image/jpeg' \
 			--data-binary @resources/picsum/$i.jpg)
 		PICTURE_ID="${PICTURE_ID:22:36}"

@@ -348,7 +348,7 @@ pub async fn put_like(
     like: bool,
     picture_id: &SqlxUuid,
     account_id: &SqlxUuid,
-) -> Result<(), sqlx::Error> {
+) -> Result<(), ()> {
     let query = "
 		INSERT INTO likes (picture_id, account_id, value)
 		VALUES ($1, $2, $3)
@@ -356,13 +356,17 @@ pub async fn put_like(
 		DO UPDATE SET value = $3;
 	";
 
-    sqlx::query(query)
+    match sqlx::query(query)
         .bind(picture_id)
         .bind(account_id)
         .bind(like)
         .execute(&mut **db)
-        .await?;
-    Ok(())
+        .await
+        .map_err(|_| ())?
+    {
+        ref result if result.rows_affected() != 1 => Err(()),
+        _ => Ok(()),
+    }
 }
 
 /// Remove like or dislike on a given picture
@@ -370,15 +374,19 @@ pub async fn delete_like(
     db: &mut Connection<PostgresDb>,
     picture_id: &SqlxUuid,
     account_id: &SqlxUuid,
-) -> Result<(), sqlx::Error> {
+) -> Result<(), ()> {
     let query = "DELETE FROM likes WHERE picture_id = $1 AND account_id = $2";
 
-    sqlx::query(query)
+    match sqlx::query(query)
         .bind(picture_id)
         .bind(account_id)
         .execute(&mut **db)
-        .await?;
-    Ok(())
+        .await
+        .map_err(|_| ())?
+    {
+        ref result if result.rows_affected() != 1 => Err(()),
+        _ => Ok(()),
+    }
 }
 
 /// Add given comment to a picture

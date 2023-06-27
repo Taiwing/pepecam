@@ -24,7 +24,7 @@ done
 # shuffle the array
 MISSING_PICTURE=($(shuf -e "${MISSING_PICTURE[@]}"))
 
-# symling missing pictures
+# symlinking missing pictures
 INDEX=0
 for picture in ${MISSING_PICTURE[@]}; do
 	[ ! -f pepe/$INDEX-*.jpg ] && exit 0

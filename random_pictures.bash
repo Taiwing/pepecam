@@ -30,20 +30,10 @@ function download_pictures() {
 	done
 }
 
-function register_user() {
-	ID=$(echo $RANDOM | md5sum | head -c 20)
-	REGISTER_TOKEN=$(curl -X POST http://localhost:3000/user/register \
+function login_user() {
+	curl -c jar -X POST http://localhost:3000/user/login \
 		-H 'Content-Type: application/json' \
-		--data '{"username":"'$ID'","password":"Trustno1!","email":"'$ID'@b.c"}')
-	REGISTER_TOKEN="${REGISTER_TOKEN:10:36}"
-	echo $REGISTER_TOKEN
-}
-
-function confirm_user() {
-	REGISTER_TOKEN=$1
-	curl -c jar -X POST http://localhost:3000/user/confirm \
-		-H 'Content-Type: application/json' \
-		--data '{"token":"'$REGISTER_TOKEN'"}' | jq
+		--data '{"username":"User1","password":"Trustno1!"}' | jq
 }
 
 function generate_pepes() {
@@ -55,6 +45,7 @@ function generate_pepes() {
 
 	# generate pictures
 	for i in $(seq 0 $COUNT); do
+		[ ! -s "picsum/$i.jpg" ] && continue
 		PEPE=${PEPES[ $RANDOM % ${#PEPES[@]} ]}
 		PICTURE_ID=$(curl -b jar -X POST http://localhost:3000/picture/$PEPE \
 			-H 'Content-Type: image/jpeg' \
@@ -63,9 +54,12 @@ function generate_pepes() {
 		mv front/pictures/$PICTURE_ID.jpg pepe/$i-$PEPE.jpg
 	done
 
-	mv pepe front/pictures
+	# move pictures to front/pictures/
+	mkdir -p front/pictures/pepe
+	mv pepe/* front/pictures/pepe/
 }
 
+# use this instead of download_pictures() if some pictures are missing
 function download_missing() {
 	# download pictures
 	for i in $(seq 0 $COUNT); do
@@ -77,6 +71,5 @@ function download_missing() {
 }
 
 download_pictures
-REGISTER_TOKEN=$(register_user)
-confirm_user $REGISTER_TOKEN
+login_user
 generate_pepes

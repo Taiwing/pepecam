@@ -3,6 +3,7 @@
 # load .env file
 set -o allexport
 source ../.env
+source ../.env.secrets
 set +o allexport
 
 # Use localhost instead of db for the host

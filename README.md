@@ -7,7 +7,7 @@ posts. This is meant to be usable on desktop, phones and small resolutions.
 
 <br />
 <p align="center">
-	<img src="https://github.com/Taiwing/ft_nm/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
+	<img src="https://github.com/Taiwing/camagru/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
 </p>
 
 ## Setup

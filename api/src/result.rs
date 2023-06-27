@@ -78,10 +78,12 @@ fn build_success_response<'r, T: Serialize>(
     request: &Request,
 ) -> Response<'r> {
     let body = Json(payload);
-    Response::build_from(body.respond_to(request).unwrap())
-        .header(ContentType::JSON)
-        .status(status)
-        .finalize()
+    Response::build_from(
+        body.respond_to(request).expect("failed to build response"),
+    )
+    .header(ContentType::JSON)
+    .status(status)
+    .finalize()
 }
 
 fn build_failure_response<'r, 's, 't>(
@@ -95,10 +97,12 @@ fn build_failure_response<'r, 's, 't>(
         request.method(),
         &request.uri().path().to_string(),
     ));
-    Response::build_from(body.respond_to(request).unwrap())
-        .header(ContentType::JSON)
-        .status(status)
-        .finalize()
+    Response::build_from(
+        body.respond_to(request).expect("failed to build response"),
+    )
+    .header(ContentType::JSON)
+    .status(status)
+    .finalize()
 }
 
 impl<'r, T: Serialize> Responder<'r, 'static> for ApiResult<T> {

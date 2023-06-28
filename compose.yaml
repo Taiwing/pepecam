@@ -13,18 +13,17 @@ services:
     env_file: .env
     restart: always
 
-# TODO: uncomment this when the project is finished
-#  api:
-#    build: ./api/
-#    expose:
-#      - ${API_PORT}
-#    ports:
-#      - "${API_PORT}:${API_PORT}"
-#    env_file: .env
-#    volumes:
-#      pictures: *pictures-volume
-#    depends_on:
-#      - db
+  api:
+    build: ./api/
+    expose:
+      - ${API_PORT}
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    env_file: .env
+    volumes:
+      - <<: *pictures-volume
+    depends_on:
+      - db
 
   front:
     build: ./front/
@@ -34,5 +33,4 @@ services:
       - <<: *pictures-volume
         target: /usr/local/apache2/htdocs/pictures/
     depends_on:
-      #- api
-      - db # TEMP (only for dev purposes)
+      - api

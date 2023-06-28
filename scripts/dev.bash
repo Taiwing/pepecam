@@ -4,16 +4,7 @@
 cd $(git rev-parse --show-toplevel)
 
 # build and run docker compose
-COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose build
-docker compose up -d
-
-# wait for db to be ready
-sleep 7
-
-# build api (TODO: remove this when api is back in compose file)
-cd api
-./dev.bash &
-cd ..
+docker compose up --build --wait
 
 # link pepe pictures
 ./scripts/link_pepes.bash
@@ -22,5 +13,4 @@ cd ..
 read
 
 # stop application
-kill -9 $(pidof target/debug/api)
 docker compose down

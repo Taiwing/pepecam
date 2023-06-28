@@ -57,8 +57,8 @@ and serving html/CSS/Javascript files.
 ## Environment
 
 Every environment variable defined in the .env file can be changed. However, the
-variables containing '$' substitutions should be changed directly. Instead it is
-the variables they refer to that should be changed.
+variables containing '$' substitutions should not be changed directly. Instead
+it is the variables they refer to that should be changed.
 
 ### Secrets
 

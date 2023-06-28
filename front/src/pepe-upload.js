@@ -139,9 +139,9 @@ class PepeUpload extends HTMLElement {
           this.superposableSelect.value = ''
           this.superposableImg.src = ''
         } else {
-          const { hostname } = window.location
+          const { hostname, port } = window.location
           const picture = `pictures/superposables/${newValue}.png`
-          this.superposableImg.src = `http://${hostname}:8080/${picture}`
+          this.superposableImg.src = `http://${hostname}:${port}/${picture}`
         }
         break
       case 'camera':

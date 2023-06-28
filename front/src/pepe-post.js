@@ -98,7 +98,8 @@ class PepePost extends HTMLElement {
     switch (name) {
       case 'data-picture-id':
         const picture = this.shadowRoot.querySelector('#post-picture')
-        picture.src = `http://${window.location.hostname}:8080/pictures/${newValue}.jpg`
+        const { hostname, port } = window.location
+        picture.src = `http://${hostname}:${port}/pictures/${newValue}.jpg`
         picture.alt = `Picture ${newValue}`
         this.full = false
         const comments = this.shadowRoot.querySelector('#post-comments-feed')

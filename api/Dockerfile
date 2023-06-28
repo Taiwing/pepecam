@@ -16,6 +16,6 @@ RUN cargo build --release --bin api
 # We do not need the Rust toolchain to run the binary!
 FROM debian:buster-slim AS runtime
 WORKDIR /app
-COPY --from=builder /app/target/release/api /usr/local/bin
 RUN apt update && apt install -y libssl-dev ca-certificates
+COPY --from=builder /app/target/release/api /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/api"]

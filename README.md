@@ -7,14 +7,14 @@ posts. This is meant to be usable on desktop, phones and small resolutions.
 
 <br />
 <p align="center">
-	<img src="https://github.com/Taiwing/camagru/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
+	<img src="https://github.com/Taiwing/pepecam/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
 </p>
 
 ## Setup
 
 ```shell
 # clone it
-git clone https://github.com/Taiwing/camagru
+git clone https://github.com/Taiwing/pepecam
 
 # decrypt .env file if you have the password (see below for more info)
 transcrypt -c aes-256-cbc -p TRANSCRYPT_PASSWORD

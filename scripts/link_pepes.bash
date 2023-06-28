@@ -7,7 +7,7 @@ SCRIPT=$(basename $0)
 cd $(git rev-parse --show-toplevel)
 
 # Get every picture id from the database
-DB_PICTURES=$(docker exec camagru-db-1 psql -U postgres postgres \
+DB_PICTURES=$(docker exec pepecam-db-1 psql -U postgres postgres \
 	-c "SELECT picture_id FROM pictures" \
 	| grep -E '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
 

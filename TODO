@@ -13,7 +13,6 @@ API:
 - create superposable enum in db and add this information to pictures table
 
 FRONT:
-- beautify confirm page (maybe add loader or something)
 - add the superposable picture to camera feed
-- find a way to use the API_PORT, PICTURES_DIR and SUPERPOSABLES_DIR env
-  variables (because right now everything is hardcoded...)
+- find a way to access 'Constants' env variables (because right now everything
+  is hardcoded...)

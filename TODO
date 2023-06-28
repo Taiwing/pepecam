@@ -6,7 +6,6 @@ GLOBAL:
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
 - make it possible to change the superposable's size (use resize in the back)
-- add doc about the scripts (mainly for picture generation)
 
 API:
 - implement tests for every route and structures

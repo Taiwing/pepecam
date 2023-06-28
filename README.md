@@ -33,6 +33,23 @@ mv .env.template .env
 
 Click [here](http://localhost:8080) to test it.
 
+### Populate front with pictures
+
+When you have built the project a first time you can run the
+[random\_pictures.bash](scripts/random_pictures.bash) script. It will download
+pictures from an online repository and generate random pepe posts from them.
+Once this is done you can relaunch the application to see the effect. Make sure
+you have the POPULATE\_DB environment variable set to "true" (which should be
+the case by default).
+
+> If there are some missing pictures after the first run of the script (there
+> should be 1084 pictures in the front/pictures/pepe directory), you can
+> relaunch it as much as necessary to complete the list.
+
+If you do not download random pictures but still have the database populated you
+will still get random pictures in the front but without pepes (which would be a
+shame).
+
 ## How it works
 
 This application is bundled with docker-compose. Each part is a service in the

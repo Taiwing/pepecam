@@ -28,8 +28,10 @@ function download_pictures() {
 
 	# download pictures
 	for i in $(seq 0 $COUNT); do
-		RESOLUTION=${RESOLUTIONS[ $RANDOM % ${#RESOLUTIONS[@]} ]}
-	    wget -O resources/picsum/$i.jpg https://picsum.photos/id/$i/$RESOLUTION
+		if [ ! -s "resources/picsum/$i.jpg" ]; then
+			RESOLUTION=${RESOLUTIONS[ $RANDOM % ${#RESOLUTIONS[@]} ]}
+			wget -O resources/picsum/$i.jpg https://picsum.photos/id/$i/$RESOLUTION
+		fi
 	done
 }
 
@@ -49,6 +51,7 @@ function generate_pepes() {
 	# generate pictures
 	for i in $(seq 0 $COUNT); do
 		[ ! -s "resources/picsum/$i.jpg" ] && continue
+		[ -s front/pictures/pepe/$i-*.jpg ] && continue
 		PEPE=${PEPES[ $RANDOM % ${#PEPES[@]} ]}
 		PICTURE_ID=$(curl -b resources/jar -X POST http://localhost:3000/picture/$PEPE \
 			-H 'Content-Type: image/jpeg' \

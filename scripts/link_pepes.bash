@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# get the script name
+SCRIPT=$(basename $0)
+
 # go to repo root
 cd $(git rev-parse --show-toplevel)
 
@@ -22,7 +25,10 @@ for picture in $DB_PICTURES; do
 done
 
 # if no picture is missing, exit
-[ ${#MISSING_PICTURE[@]} -eq 0 ] && exit 0
+if [ ${#MISSING_PICTURE[@]} -eq 0 ]; then
+	echo "$SCRIPT: No picture missing."
+	exit 0
+fi
 
 # shuffle the array
 MISSING_PICTURE=($(shuf -e "${MISSING_PICTURE[@]}"))
@@ -34,3 +40,5 @@ for picture in ${MISSING_PICTURE[@]}; do
 	ln -s pepe/$INDEX-*.jpg $picture.jpg
 	INDEX=$((INDEX + 1))
 done
+
+echo "$SCRIPT: $INDEX pictures linked."

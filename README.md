@@ -22,7 +22,7 @@ transcrypt -c aes-256-cbc -p TRANSCRYPT_PASSWORD
 mv .env.template .env
 
 # build (the first time is reaaaally long, like 5 minutes)
-./scripts/dev.bash
+./run.bash
 ```
 
 > The complete environment file (.env) is available in this repository. It
@@ -102,7 +102,3 @@ Only applies to the db. The most important variable is 'POPULATE\_DB'. If it is
 set to a non-empty string the [populate.sql](db/populate.sql) script will be
 executed. It will fill the database with users and random data making it easier
 to test the application.
-
-## Development
-
-Use scripts/dev.bash to build and start this application.

@@ -7,7 +7,6 @@ GLOBAL:
   etc...)
 - make it possible to change the superposable's size (use resize in the back)
 - add doc about the scripts (mainly for picture generation)
-- move scripts/dev.bash to ./run.bash
 
 API:
 - implement tests for every route and structures

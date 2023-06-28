@@ -5,18 +5,16 @@ GLOBAL:
   directory
 - create "filters" for the feed (like the superposable, the date, the user,
   etc...)
-- add documentation about the populate scripts in README (maybe "clean" the
-  logic so that it is simpler to use)
 - make it possible to change the superposable's size (use resize in the back)
-- add doc about environment and secrets
+- add doc about the scripts (mainly for picture generation)
+- move scripts/dev.bash to ./run.bash
 
 API:
-- if secrets are not set (SMTP values for now), make it so the API can still
-  compile but without the email functions (warn user in the doc and/or with a
-  message somewhere during compilation or on launch)
 - implement tests for every route and structures
 - create superposable enum in db and add this information to pictures table
 
 FRONT:
 - beautify confirm page (maybe add loader or something)
 - add the superposable picture to camera feed
+- find a way to use the API_PORT, PICTURES_DIR and SUPERPOSABLES_DIR env
+  variables (because right now everything is hardcoded...)

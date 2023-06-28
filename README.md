@@ -15,9 +15,21 @@ posts. This is meant to be usable on desktop, phones and small resolutions.
 ```shell
 # clone it
 git clone https://github.com/Taiwing/camagru
-# build (this is reaaaally long, like 5 minutes)
-docker compose up
+
+# decrypt .env file if you have the password (see below for more info)
+transcrypt -c aes-256-cbc -p TRANSCRYPT_PASSWORD
+# OR replace encrypted .env file with default
+mv .env.template .env
+
+# build (the first time is reaaaally long, like 5 minutes)
+./scripts/dev.bash
 ```
+
+> The complete environment file (.env) is available in this repository. It
+> contains API credentials (only SMTP for now) and is encrypted with
+> [transcrypt](https://github.com/elasticdog/transcrypt) for obvious security
+> reasons. If you do not have the TRANSCRYPT\_PASSWORD you can simply remove
+> the encrypted .env file and replace it with the .env.template.
 
 Click [here](http://localhost:8080) to test it.
 
@@ -42,9 +54,55 @@ A Postgresql database storing user data and listing uploaded pictures.
 This is the user interface. A simple apache server running on `localhost:8080`
 and serving html/CSS/Javascript files.
 
+## Environment
+
+Every environment variable defined in the .env file can be changed. However, the
+variables containing '$' substitutions should be changed directly. Instead it is
+the variables they refer to that should be changed.
+
+### Secrets
+
+As mentioned in the Setup section, you must have transcrypt installed and
+configured to use the default .env file. If you do not have it you will have
+to use the [.env.template](.env.template) instead. The application will run with
+this environment but it will not be able to send emails because of the missing
+env values (the 'Secrets' section of the .env.template file). This means that
+you wont be able to register new users or to use the password reset functions.
+
+To fix this you will have to give a value to these missing variables:
+- SMTP\_SERVER
+- SMTP\_PORT
+- SMTP\_USERNAME
+- SMTP\_PASSWORD
+
+Of course this means that you will have to setup your own SMTP server or
+register to a third party service. You can use [Brevo's](https://www.brevo.com/)
+free plan which is more than enough for testing purposes.
+
+### Global
+
+The Global variables can all be changed by the user. They will apply to the
+entire application. For example, if you change API\_PORT the api will be served
+on a new port and the front will perform its backend requests with this value
+instead of the default.
+
+> Be careful if changing the '\_DIR'-suffixed variables. They refer to actual
+> files in the front/ directory and are used for a shared volume in the compose
+> configuration. They should match the front/pictures/ layout.
+
+### API
+
+Only applies to the api. 'RUST\_' and 'ROCKET\_'-prefixed variables are compile
+time config to build the api binary. The other variables refer to api constants
+and can be changed at will.
+
+### DB
+
+Only applies to the db. The most important variable is 'POPULATE\_DB'. If it is
+set to a non-empty string the [populate.sql](db/populate.sql) script will be
+executed. It will fill the database with users and random data making it easier
+to test the application.
+
 ## Development
 
-Use scripts/dev.bash to build and start this application in dev mode. The main
-difference with the setup method above is that the api is run locally instead
-of in a container. This is way faster to rebuild (like 10 seconds as opposed to
-5 minutes for the docker way).
+Use scripts/dev.bash to build and start this application.

@@ -11,4 +11,3 @@ API:
 FRONT:
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables
-- fix annoying favicon.ico problem

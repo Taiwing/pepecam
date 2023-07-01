@@ -1,5 +1,6 @@
 //! Re-usable payloads for the routes' incoming or outgoing json data.
 
+use crate::pictures::Superposable;
 use rocket::serde::{uuid::Uuid, Deserialize, Serialize};
 use std::fmt;
 
@@ -55,6 +56,7 @@ pub struct UserProfile {
 pub struct Picture {
     pub picture_id: Uuid,
     pub account_id: Uuid,
+    pub superposable: Superposable,
     pub creation_ts: i64,
     pub author: String,
     pub like_count: i64,

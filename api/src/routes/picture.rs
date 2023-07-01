@@ -55,12 +55,13 @@ async fn create_picture(
     };
     let y: u32 = user_picture.get_height() - *config::SUPERPOSABLES_SIDE;
     multiple::watermark(&mut user_picture, &superposable_picture, 0, y);
-    let new_picture = match query::post_picture(db, account_id).await {
-        Err(_) => {
-            return Err(());
-        }
-        Ok(new_picture) => new_picture,
-    };
+    let new_picture =
+        match query::post_picture(db, account_id, superposable).await {
+            Err(_) => {
+                return Err(());
+            }
+            Ok(new_picture) => new_picture,
+        };
     let filename = format!(
         "{}/{}.jpg",
         *config::PICTURES_DIR,

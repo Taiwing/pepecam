@@ -8,9 +8,21 @@ CREATE TABLE IF NOT EXISTS accounts (
 	email_notifications BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+CREATE TYPE superposable AS ENUM (
+	'chic',
+	'cry',
+	'honk',
+	'rage',
+	'sad',
+	'smirk',
+	'stoned',
+	'sweat'
+);
+
 CREATE TABLE IF NOT EXISTS pictures (
 	picture_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	account_id UUID NOT NULL,
+	superposable superposable NOT NULL,
 	creation_ts TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

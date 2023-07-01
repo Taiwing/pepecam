@@ -59,11 +59,27 @@ $$
 	END
 $$;
 
+-- Random Superposable function
+CREATE FUNCTION random_superposable()
+	RETURNS superposable
+	LANGUAGE PLPGSQL
+AS
+$$
+	DECLARE super superposable;
+	BEGIN
+		SELECT superposable INTO super
+			FROM unnest(enum_range(NULL::superposable)) superposable
+		ORDER BY random() LIMIT 1;
+		RETURN super;
+	END
+$$;
+
 -- Generate Pictures
 INSERT INTO pictures
 SELECT
 	uuid_generate_v4(),
 	random_user(),
+	random_superposable(),
 	random_date(CURRENT_SETTING('test.date_min'), CURRENT_SETTING('test.date_max'))
 FROM GENERATE_SERIES(1, CURRENT_SETTING('test.n_pictures')::int);
 

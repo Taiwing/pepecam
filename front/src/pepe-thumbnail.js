@@ -29,6 +29,7 @@ class PepeThumbnail extends HTMLElement {
     const detail = {
       'data-picture-id': this.getAttribute('data-picture-id'),
       'data-account-id': this.getAttribute('data-account-id'),
+      'data-superposable': this.getAttribute('data-superposable'),
       'data-creation-ts': this.getAttribute('data-creation-ts'),
       'data-author': this.getAttribute('data-author'),
       'data-like-count': this.getAttribute('data-like-count'),

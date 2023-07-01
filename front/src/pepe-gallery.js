@@ -88,6 +88,7 @@ class PepeGallery extends HTMLElement {
     const {
       picture_id,
       account_id,
+      superposable,
       creation_ts,
       author,
       like_count,
@@ -100,6 +101,7 @@ class PepeGallery extends HTMLElement {
     const attributes = {
       'data-picture-id': picture_id,
       'data-account-id': account_id,
+      'data-superposable': superposable,
       'data-creation-ts': creation_ts,
       'data-author': author,
       'data-like-count': like_count,

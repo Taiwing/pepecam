@@ -4,6 +4,7 @@ use crate::uuid::{from_sqlx_to_serde, SqlxUuid};
 use crate::{
     auth::password,
     payload::{Comment, NewUser, Picture},
+    pictures::Superposable,
 };
 use rocket::http::Status;
 use rocket_db_pools::sqlx::{self, PgPool};
@@ -12,6 +13,7 @@ use rocket_db_pools::{Connection, Database};
 pub mod types {
     use super::sqlx::{self, types::time::OffsetDateTime};
     use super::SqlxUuid;
+    use crate::pictures::Superposable;
 
     /// An account instance from the 'accounts' table.
     #[derive(sqlx::FromRow)]
@@ -28,6 +30,7 @@ pub mod types {
     pub struct DbPicture {
         pub picture_id: SqlxUuid,
         pub account_id: SqlxUuid,
+        pub superposable: Superposable,
         pub creation_ts: OffsetDateTime,
         pub author: String,
         pub like_count: i64,
@@ -59,6 +62,7 @@ impl From<&types::DbPicture> for Picture {
         Picture {
             picture_id: from_sqlx_to_serde(&db_picture.picture_id),
             account_id: from_sqlx_to_serde(&db_picture.account_id),
+            superposable: db_picture.superposable.clone(),
             creation_ts: db_picture.creation_ts.unix_timestamp(),
             author: db_picture.author.clone(),
             like_count: db_picture.like_count,
@@ -112,7 +116,8 @@ pub async fn pictures(
 ) -> Option<Vec<Picture>> {
     let query = "
 		SELECT
-			pictures.picture_id, pictures.account_id, pictures.creation_ts,
+			pictures.picture_id, pictures.account_id,
+			pictures.superposable, pictures.creation_ts,
 			accounts.username as author,
 			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
 			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
@@ -159,7 +164,8 @@ pub async fn user_pictures(
 ) -> Option<Vec<Picture>> {
     let query = "
 		SELECT
-			pictures.picture_id, pictures.account_id, pictures.creation_ts,
+			pictures.picture_id, pictures.account_id,
+			pictures.superposable, pictures.creation_ts,
 			accounts.username as author,
 			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
 			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
@@ -432,16 +438,18 @@ pub async fn comment(
 pub async fn post_picture(
     db: &mut Connection<PostgresDb>,
     account_id: &SqlxUuid,
+    superposable: Superposable,
 ) -> Result<Picture, sqlx::Error> {
     let query = "
 		WITH new_picture AS (
-			INSERT INTO pictures (account_id)
-			VALUES ($1)
+			INSERT INTO pictures (account_id, superposable)
+			VALUES ($1, $2)
 			RETURNING *
 		)
 		SELECT
 			new_picture.picture_id,
 			new_picture.account_id,
+			new_picture.superposable,
 			new_picture.creation_ts,
 			accounts.username AS author,
 			0::INT8 AS like_count,
@@ -455,6 +463,7 @@ pub async fn post_picture(
 
     let new_picture = sqlx::query_as::<_, types::DbPicture>(query)
         .bind(account_id)
+        .bind(superposable)
         .fetch_one(&mut **db)
         .await?;
     Ok(Picture::from(&new_picture))

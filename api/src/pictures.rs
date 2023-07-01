@@ -9,6 +9,7 @@ use strum::{self, AsRefStr, EnumIter, EnumString};
 #[strum(serialize_all = "lowercase")] // Every Superposable name is in lowercase
 #[serde(crate = "rocket::serde")]
 #[sqlx(type_name = "superposable", rename_all = "lowercase")] // For postgresql
+#[serde(rename_all = "lowercase")] // For json
 pub enum Superposable {
     Chic,
     Cry,

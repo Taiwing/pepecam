@@ -35,10 +35,22 @@ MISSING_PICTURE=($(shuf -e "${MISSING_PICTURE[@]}"))
 
 # symlinking missing pictures
 INDEX=0
+LINKED=()
+SUPERPOSABLES=()
 for picture in ${MISSING_PICTURE[@]}; do
 	[ ! -f pepe/$INDEX-*.jpg ] && continue
 	ln -s pepe/$INDEX-*.jpg $picture.jpg
+	SUPERPOSABLE=$(echo pepe/$INDEX-*.jpg | sed -n "s/pepe\/$INDEX-\(.*\)\.jpg/\1/p")
 	INDEX=$((INDEX + 1))
+	LINKED+=($picture)
+	SUPERPOSABLES+=($SUPERPOSABLE)
 done
+
+## update superposable column in database
+QUERY=""
+for i in "${!LINKED[@]}"; do
+	QUERY+="UPDATE pictures SET superposable = '${SUPERPOSABLES[$i]}'::superposable WHERE picture_id = '${LINKED[$i]}'::uuid;"
+done
+docker exec pepecam-db-1 psql -U postgres postgres -c "$QUERY"
 
 echo "$SCRIPT: $INDEX pictures linked."

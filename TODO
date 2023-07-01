@@ -3,7 +3,6 @@
 GLOBAL:
 - create "filters" for the feed (superposable, date, user, etc...)
 - make it possible to change the superposable's size (use resize in the back)
-- fix superposable attribution when linking pepe pictures (populate)
 
 API:
 - implement tests for every route and structure

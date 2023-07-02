@@ -7,7 +7,20 @@ use std::str::FromStr;
 use strum::{self, AsRefStr, EnumIter, EnumString};
 
 // Superposable picture names
-#[derive(EnumString, AsRefStr, EnumIter, Serialize, sqlx::Type, Clone)]
+#[derive(
+    Clone,
+    Debug,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Eq,
+    EnumString,
+    AsRefStr,
+    EnumIter,
+    Serialize,
+    sqlx::Type,
+    FromFormField,
+)]
 #[strum(serialize_all = "lowercase")] // Every Superposable name is in lowercase
 #[serde(crate = "rocket::serde")]
 #[sqlx(type_name = "superposable", rename_all = "lowercase")] // For postgresql

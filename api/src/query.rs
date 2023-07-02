@@ -114,6 +114,7 @@ pub async fn pictures(
     count: u32,
     connected_user: Option<SqlxUuid>,
     username: Option<&str>,
+    superposable: Vec<Superposable>,
 ) -> Option<Vec<Picture>> {
     let mut argc = 3;
     let mut query = String::from("
@@ -140,6 +141,15 @@ pub async fn pictures(
         query.push_str(&format!("WHERE accounts.username = ${}\n", argc));
     }
 
+    if !superposable.is_empty() {
+        argc += 1;
+        let clause = if argc == 4 { "WHERE" } else { "AND" };
+        query.push_str(&format!(
+            "{} pictures.superposable = ANY(${}::superposable[])\n",
+            clause, argc
+        ));
+    }
+
     query.push_str(
         "
 		GROUP BY
@@ -148,11 +158,25 @@ pub async fn pictures(
 	",
     );
 
-    let raw_pictures = sqlx::query_as::<_, types::DbPicture>(&query)
+    let mut query = sqlx::query_as::<_, types::DbPicture>(&query)
         .bind(connected_user)
         .bind(count)
-        .bind(index * count)
-        .bind(username)
+        .bind(index * count);
+
+    if let Some(username) = username {
+        query = query.bind(username);
+    }
+
+    if !superposable.is_empty() {
+        let superposable = superposable
+            .iter()
+            .map(|s| s.as_ref())
+            .collect::<Vec<&str>>();
+        println!("{:?}", superposable);
+        query = query.bind(superposable);
+    }
+
+    let raw_pictures = query
         .fetch_all(&mut **db)
         .await
         //.unwrap_or(Vec::new());

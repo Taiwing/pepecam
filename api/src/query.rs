@@ -7,7 +7,9 @@ use crate::{
     pictures::Superposable,
 };
 use rocket::http::Status;
-use rocket_db_pools::sqlx::{self, PgPool};
+use rocket_db_pools::sqlx::{
+    self, query_builder::QueryBuilder, Execute, PgPool,
+};
 use rocket_db_pools::{Connection, Database};
 
 pub mod types {
@@ -107,14 +109,16 @@ pub async fn account_exists(
     row.is_some()
 }
 
-/// Get a list of ids for every picture in the database.
+/// Get a list of pictures
 pub async fn pictures(
     db: &mut Connection<PostgresDb>,
     index: u32,
     count: u32,
     connected_user: Option<SqlxUuid>,
+    username: Option<&str>,
 ) -> Option<Vec<Picture>> {
-    let query = "
+    let mut argc = 3;
+    let mut query = String::from("
 		SELECT
 			pictures.picture_id, pictures.account_id,
 			pictures.superposable, pictures.creation_ts,
@@ -122,59 +126,20 @@ pub async fn pictures(
 			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
 			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
 			COALESCE(comment_counts.comment_count, 0) AS comment_count,
-			COALESCE(BOOL_OR(likes.value = TRUE AND likes.account_id = $3), FALSE) AS liked,
-			COALESCE(BOOL_OR(likes.value = FALSE AND likes.account_id = $3), FALSE) AS disliked
-		FROM pictures
-		JOIN accounts ON pictures.account_id = accounts.account_id
-		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
-		LEFT JOIN (
-			SELECT picture_id, COUNT(*) AS comment_count
-			FROM comments GROUP BY picture_id
-		) AS comment_counts ON pictures.picture_id = comment_counts.picture_id
-		GROUP BY
-			pictures.picture_id, accounts.username, comment_counts.comment_count
-		ORDER BY creation_ts DESC LIMIT $1 OFFSET $2;
-	";
-
-    let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
-        .bind(count)
-        .bind(index * count)
-        .bind(connected_user)
-        .fetch_all(&mut **db)
-        .await
-        .unwrap_or(Vec::new());
-    if raw_pictures.is_empty() {
-        return None;
-    }
-
-    let pictures = raw_pictures
-        .iter()
-        .map(|raw_picture| Picture::from(raw_picture))
-        .collect();
-    Some(pictures)
-}
-
-/// Get a list of pictures uploaded by a given user.
-pub async fn user_pictures(
-    db: &mut Connection<PostgresDb>,
-    username: &str,
-    index: u32,
-    count: u32,
-    connected_user: Option<SqlxUuid>,
-) -> Option<Vec<Picture>> {
-    let query = "
-		SELECT
-			pictures.picture_id, pictures.account_id,
-			pictures.superposable, pictures.creation_ts,
-			accounts.username as author,
-			COUNT(CASE WHEN likes.value = TRUE THEN 1 END) AS like_count,
-			COUNT(CASE WHEN likes.value = FALSE THEN 1 END) AS dislike_count,
-			COALESCE(comment_counts.comment_count, 0) AS comment_count,
-			COALESCE(BOOL_OR(likes.value = TRUE AND likes.account_id = $4), FALSE) AS liked,
-			COALESCE(BOOL_OR(likes.value = FALSE AND likes.account_id = $4), FALSE) AS disliked
+			COALESCE(BOOL_OR(likes.value = TRUE AND likes.account_id = $1), FALSE) AS liked,
+			COALESCE(BOOL_OR(likes.value = FALSE AND likes.account_id = $1), FALSE) AS disliked
 		FROM pictures
 		JOIN accounts
-		ON pictures.account_id = accounts.account_id AND accounts.username = $1
+		ON pictures.account_id = accounts.account_id
+	");
+
+    if let Some(_) = username {
+        argc += 1;
+        query.push_str(&format!("AND accounts.username = ${}", argc));
+    }
+
+    query.push_str(
+        "
 		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
 		LEFT JOIN (
 			SELECT picture_id, COUNT(*) AS comment_count
@@ -183,16 +148,18 @@ pub async fn user_pictures(
 		GROUP BY
 			pictures.picture_id, accounts.username, comment_counts.comment_count
 		ORDER BY creation_ts DESC LIMIT $2 OFFSET $3;
-	";
+	",
+    );
 
-    let raw_pictures = sqlx::query_as::<_, types::DbPicture>(query)
-        .bind(username)
+    let raw_pictures = sqlx::query_as::<_, types::DbPicture>(&query)
+        .bind(connected_user)
         .bind(count)
         .bind(index * count)
-        .bind(connected_user)
+        .bind(username)
         .fetch_all(&mut **db)
         .await
-        .unwrap_or(Vec::new());
+        //.unwrap_or(Vec::new());
+        .expect("Failed to fetch pictures from database"); //TODO: remove expect
     if raw_pictures.is_empty() {
         return None;
     }

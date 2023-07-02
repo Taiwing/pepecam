@@ -172,7 +172,6 @@ pub async fn pictures(
             .iter()
             .map(|s| s.as_ref())
             .collect::<Vec<&str>>();
-        println!("{:?}", superposable);
         query = query.bind(superposable);
     }
 

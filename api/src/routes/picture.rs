@@ -12,7 +12,6 @@ use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket_db_pools::Connection;
 use std::fs;
-use std::str::FromStr;
 
 pub mod comment;
 pub mod comments;
@@ -73,21 +72,11 @@ async fn create_picture(
 
 #[post("/<superposable>", data = "<picture>", format = "image/jpeg")]
 pub async fn post(
-    superposable: &str,
+    superposable: pictures::Superposable,
     picture: Data<'_>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
 ) -> ApiResult<Picture> {
-    let superposable = match pictures::Superposable::from_str(superposable) {
-        Err(_) => {
-            return ApiResult::Failure {
-                status: Status::NotFound,
-                message: String::from("invalid superposable"),
-            };
-        }
-        Ok(superposable) => superposable,
-    };
-
     match picture
         .open(config::PICTURES_SIZEMAX.mebibytes())
         .into_bytes()

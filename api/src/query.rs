@@ -7,9 +7,7 @@ use crate::{
     pictures::Superposable,
 };
 use rocket::http::Status;
-use rocket_db_pools::sqlx::{
-    self, query_builder::QueryBuilder, Execute, PgPool,
-};
+use rocket_db_pools::sqlx::{self, PgPool};
 use rocket_db_pools::{Connection, Database};
 
 pub mod types {
@@ -129,22 +127,21 @@ pub async fn pictures(
 			COALESCE(BOOL_OR(likes.value = TRUE AND likes.account_id = $1), FALSE) AS liked,
 			COALESCE(BOOL_OR(likes.value = FALSE AND likes.account_id = $1), FALSE) AS disliked
 		FROM pictures
-		JOIN accounts
-		ON pictures.account_id = accounts.account_id
-	");
-
-    if let Some(_) = username {
-        argc += 1;
-        query.push_str(&format!("AND accounts.username = ${}", argc));
-    }
-
-    query.push_str(
-        "
+		JOIN accounts ON pictures.account_id = accounts.account_id
 		LEFT JOIN likes ON pictures.picture_id = likes.picture_id
 		LEFT JOIN (
 			SELECT picture_id, COUNT(*) AS comment_count
 			FROM comments GROUP BY picture_id
 		) AS comment_counts ON pictures.picture_id = comment_counts.picture_id
+	");
+
+    if let Some(_) = username {
+        argc += 1;
+        query.push_str(&format!("WHERE accounts.username = ${}\n", argc));
+    }
+
+    query.push_str(
+        "
 		GROUP BY
 			pictures.picture_id, accounts.username, comment_counts.comment_count
 		ORDER BY creation_ts DESC LIMIT $2 OFFSET $3;

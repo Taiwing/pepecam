@@ -43,6 +43,7 @@ const initEditor = async () => {
   const gallery = document.querySelector('pepe-gallery')
   const { username } = getCookie('session')
   gallery.setAttribute('data-username', username)
+  gallery.removeAttribute('disabled')
 
   // Register thumbnail click event
   window.addEventListener('pepe-thumbnail-click', onThumbnailClick)

@@ -14,7 +14,7 @@ class PepeGallery extends HTMLElement {
   count = 10 // Number of posts to get
 
   static get observedAttributes() {
-    return ['data-username']
+    return ['disabled']
   }
 
   constructor() {
@@ -53,7 +53,7 @@ class PepeGallery extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'data-username') this._reset()
+    if (name === 'disabled' && !newValue) this._reset()
   }
 
   get thumbnail() {
@@ -142,11 +142,6 @@ class PepeGallery extends HTMLElement {
   async getPepePosts() {
     try {
       this._index += 1
-      //TODO: This is a dirty hack so that the gallery is empty when needed.
-      // The root cause of the problem is that this method is called twice
-      // when loading the editor page, once when the gallery is connected
-      // and once when data-username property is set. Fix this.
-      const index = this._index
       const { hostname } = window.location
       let url =
         `http://${hostname}:3000/pictures?index=${this._index}&count=${this.count}`
@@ -156,8 +151,7 @@ class PepeGallery extends HTMLElement {
 
       if (response.status !== 200 || !posts || posts.length === 0) {
         this._finished = true
-        //TODO: replace index by this._index when root cause is fixed
-        if (index === 0) this.emptyGallery = true
+        if (this._index === 0) this.emptyGallery = true
         return
       }
 
@@ -169,7 +163,7 @@ class PepeGallery extends HTMLElement {
   }
 
   connectedCallback() {
-    this.getPepePosts()
+    if (!this.disabled) this.getPepePosts()
   }
 }
 

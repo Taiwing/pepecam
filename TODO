@@ -1,3 +1,14 @@
+--- TODO ---
+
+GLOBAL:
+- send a mail change validation email when updating it in the profile
+
+API:
+- send a mail when receiving a comment on a picture if the setting is on
+
+FRONT:
+- fix the filters button issue in the editor mobile view (maybe refactor it)
+
 --- MAYBE ---
 
 GLOBAL:

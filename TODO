@@ -10,4 +10,3 @@ API:
 FRONT:
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables
-- make it possible to submit message by pressing 'Enter'

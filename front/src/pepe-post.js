@@ -40,7 +40,7 @@ PepePostTemplate.innerHTML = `
 
   <div id="post-comments" hidden>
     <div id="post-comments-feed"></div>
-    <div id="post-comments-form">
+    <form action="" id="post-comments-form">
       <input
         id="post-comments-input"
         type="text"
@@ -49,7 +49,7 @@ PepePostTemplate.innerHTML = `
       <button class="icon" id="send-button" type="submit">
         <img id="send" />
       </button>
-    </div>
+    </form>
   </div>
 `
 
@@ -84,8 +84,13 @@ class PepePost extends HTMLElement {
     const commentButton = this.shadowRoot.querySelector('#comment-button')
     commentButton.addEventListener('click', async () => this.toggleFull())
 
-    const sendButton = this.shadowRoot.querySelector('#send-button')
-    sendButton.addEventListener('click', async () => this.sendComment())
+    //const sendButton = this.shadowRoot.querySelector('#send-button')
+    //sendButton.addEventListener('click', async () => this.sendComment())
+    const commentsForm = this.shadowRoot.querySelector('#post-comments-form')
+    commentsForm.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      await this.sendComment()
+    })
 
     if (this.hasAttribute('show-delete-button')) {
       this.shadowRoot.querySelector('#delete-button-div').removeAttribute('hidden')

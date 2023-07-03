@@ -50,11 +50,11 @@ PepeHeaderTemplate.innerHTML = `
   <dialog id="login-dialog">
     <h3>Login</h3>
     <form id="login-form" method="dialog" class="form">
-      <label for="username" class="form-field">
+      <label class="form-field">
         username
         <input type="text" name="username" placeholder="username" required>
       </label>
-      <label for="password" class="form-field">
+      <label class="form-field">
         password
         <input type="password" name="password" placeholder="password" required>
       </label>
@@ -71,7 +71,7 @@ PepeHeaderTemplate.innerHTML = `
   <dialog id="reset-dialog">
     <h3>Reset Password</h3>
     <form id="reset-form" method="dialog" class="form">
-      <label for="email" class="form-field">
+      <label class="form-field">
         email
         <input type="email" name="email" placeholder="email" required>
       </label>
@@ -85,19 +85,19 @@ PepeHeaderTemplate.innerHTML = `
   <dialog id="signup-dialog">
     <h3>Signup</h3>
     <form id="signup-form" method="dialog" class="form">
-      <label for="username" class="form-field">
+      <label class="form-field">
         username
         <input type="text" name="username" placeholder="username" required>
       </label>
-      <label for="email" class="form-field">
+      <label class="form-field">
         email
         <input type="email" name="email" placeholder="email" required>
       </label>
-      <label for="password" class="form-field">
+      <label class="form-field">
         password
         <input type="password" name="password" placeholder="password" required>
       </label>
-      <label for="password-confirm" class="form-field">
+      <label class="form-field">
         confirm
         <input
           type="password"

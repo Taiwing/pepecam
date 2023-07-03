@@ -206,8 +206,7 @@ pub async fn pictures(
     let raw_pictures = query
         .fetch_all(&mut **db)
         .await
-        //.unwrap_or(Vec::new());
-        .expect("Failed to fetch pictures from database"); //TODO: remove expect
+        .unwrap_or(Vec::new());
     if raw_pictures.is_empty() {
         return None;
     }

@@ -18,11 +18,22 @@ PepeGalleryTemplate.innerHTML = `
     <h3>Filters</h3>
     <form id="filters-form" method="dialog" class="form">
       <label class="form-field">
-        username
+        Username
         <input type="text" name="username" placeholder="username">
       </label>
       <fieldset id="superposables-fieldset" class="form-field">
         <legend>Superposables</legend>
+      </fieldset>
+      <fieldset class="form-field">
+        <legend>Date Range</legend>
+        <label class="form-subfield">
+          Start
+          <input type="date" name="start">
+        </label>
+        <label class="form-subfield">
+          End
+          <input type="date" name="end">
+        </label>
       </fieldset>
       <div class="form-field">
         <button type="submit">apply</button>
@@ -86,6 +97,7 @@ class PepeGallery extends HTMLElement {
         const label = document.createElement('label')
         label.textContent = capitalize(superposable)
         label.prepend(input)
+        label.classList.add('checkbox')
         this.shadowRoot.querySelector('#superposables-fieldset').append(label)
         this._superposables.push(superposable)
       }

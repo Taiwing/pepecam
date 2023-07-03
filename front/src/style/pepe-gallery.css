@@ -19,6 +19,12 @@ pepe-post[full] {
 	border-radius: 0.5rem;
 }
 
+.checkbox {
+	display: flex;
+	flex-direction: row;
+	gap: 0.25rem;
+}
+
 #empty-gallery {
 	display: flex;
 	flex-direction: column;

@@ -252,7 +252,8 @@ class PepeGallery extends HTMLElement {
 
   prependPicture(picture) {
     const pictureElement = this._newPicture(picture)
-    this.shadowRoot.prepend(pictureElement)
+    const filtersDialog = this.shadowRoot.querySelector('#filters-dialog')
+    filtersDialog.after(pictureElement)
     this.emptyGallery = false
     return this._getPictureElement(picture.picture_id)
   }

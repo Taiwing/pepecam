@@ -12,4 +12,3 @@ FRONT:
 - find a way to access 'Constants' env variables
 - remove useless labels (when labeled element is nested inside)
 - make it possible to submit message by pressing 'Enter'
-- fix prepend fail on image upload (image appears before filters button)

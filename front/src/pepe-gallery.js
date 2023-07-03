@@ -248,6 +248,10 @@ class PepeGallery extends HTMLElement {
         continue
       } else if (this._superposables.includes(key)) {
         newFilters += `&superposable=${key}`
+      } else if (key === 'start' || key === 'end') {
+        const date = new Date(value)
+        const timestamp = Math.floor(date.getTime() / 1000)
+        newFilters += `&${key}=${timestamp}`
       } else {
         newFilters += `&${key}=${value}`
       }

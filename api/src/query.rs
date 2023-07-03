@@ -115,6 +115,8 @@ pub async fn pictures(
     connected_user: Option<SqlxUuid>,
     username: Option<&str>,
     superposable: Vec<Superposable>,
+    start: Option<i64>,
+    end: Option<i64>,
 ) -> Option<Vec<Picture>> {
     let mut argc = 3;
     let mut query = String::from("
@@ -150,6 +152,24 @@ pub async fn pictures(
         ));
     }
 
+    if let Some(_start) = start {
+        argc += 1;
+        let clause = if argc == 4 { "WHERE" } else { "AND" };
+        query.push_str(&format!(
+            "{} pictures.creation_ts >= to_timestamp(${})\n",
+            clause, argc
+        ));
+    }
+
+    if let Some(_end) = end {
+        argc += 1;
+        let clause = if argc == 4 { "WHERE" } else { "AND" };
+        query.push_str(&format!(
+            "{} pictures.creation_ts <= to_timestamp(${})\n",
+            clause, argc
+        ));
+    }
+
     query.push_str(
         "
 		GROUP BY
@@ -173,6 +193,14 @@ pub async fn pictures(
             .map(|s| s.as_ref())
             .collect::<Vec<&str>>();
         query = query.bind(superposable);
+    }
+
+    if let Some(start) = start {
+        query = query.bind(start);
+    }
+
+    if let Some(end) = end {
+        query = query.bind(end);
     }
 
     let raw_pictures = query

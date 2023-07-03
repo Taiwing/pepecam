@@ -1,7 +1,6 @@
 --- MAYBE ---
 
 GLOBAL:
-- create "filters" for the feed (superposable, date, user, etc...)
 - make it possible to change the superposable's size (use resize in the back)
 
 API:

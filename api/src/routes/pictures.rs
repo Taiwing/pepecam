@@ -8,12 +8,14 @@ use rocket_db_pools::Connection;
 
 pub mod superposable;
 
-#[get("/?<index>&<count>&<username>&<superposable>")]
+#[get("/?<index>&<count>&<username>&<superposable>&<start>&<end>")]
 pub async fn get(
     index: u32,
     count: u32,
     username: Option<&str>,
     mut superposable: Vec<pictures::Superposable>,
+    start: Option<i64>,
+    end: Option<i64>,
     mut db: Connection<PostgresDb>,
     is_connected: session::IsConnected,
 ) -> Option<Json<Vec<Picture>>> {
@@ -29,7 +31,16 @@ pub async fn get(
         None => None,
     };
 
-    query::pictures(&mut db, index, count, account_id, username, superposable)
-        .await
-        .map(Json)
+    query::pictures(
+        &mut db,
+        index,
+        count,
+        account_id,
+        username,
+        superposable,
+        start,
+        end,
+    )
+    .await
+    .map(Json)
 }

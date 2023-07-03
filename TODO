@@ -12,3 +12,4 @@ FRONT:
 - find a way to access 'Constants' env variables
 - remove useless labels (when labeled element is nested inside)
 - beautify gallery's filters button
+- make it possible to submit message by pressing 'Enter'

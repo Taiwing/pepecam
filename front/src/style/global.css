@@ -58,6 +58,14 @@ footer:before {
 	content: "Deved by Me. All rights reserved ? How does it work really ?";
 }
 
+dialog {
+	--text-color: var(--light-grey);
+	--background-color: var(--black);
+
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
 input {
 	background-color: inherit;
 	color: inherit;
@@ -101,6 +109,18 @@ button[disabled], .button[disabled] {
 .form-field:last-child {
 	margin-top: 0.75rem;
 	justify-content: space-around;
+}
+
+.user-actions {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.user-actions[hidden] {
+	display: none;
 }
 
 @media only screen and (max-width: 800px) {

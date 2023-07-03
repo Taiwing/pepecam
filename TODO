@@ -10,3 +10,5 @@ API:
 FRONT:
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables
+- remove useless labels (when labeled element is nested inside)
+- beautify gallery's filters button

@@ -32,6 +32,7 @@ const PepeHeaderTemplate = document.createElement('template')
 PepeHeaderTemplate.innerHTML = `
   <link rel="stylesheet" href="style/global.css" />
   <link rel="stylesheet" href="style/pepe-header.css" />
+
   <a id="app-name" href="/"></a>
   <nav class="nav-menu">
     <a href="/index.html">Gallery</a>

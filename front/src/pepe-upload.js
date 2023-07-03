@@ -1,4 +1,4 @@
-import { capitalize, ApiError } from './utils.js'
+import { ApiError, capitalize, getSuperposables } from './utils.js'
 
 const PepeUploadTemplate = document.createElement('template')
 
@@ -87,32 +87,6 @@ class PepeUpload extends HTMLElement {
     this.uploadButton.addEventListener('click', () => this.upload())
     this.cancelButton.addEventListener('click', () => this.cancel())
     this.captureButton.addEventListener('click', () => this.capture())
-  }
-
-  async getSuperposables() {
-    try {
-      const { hostname } = window.location
-      const url = `http://${hostname}:3000/pictures/superposable`
-      const response = await fetch(url)
-      const superposables = await response.json()
-
-      if (!response.ok && superposables) {
-        throw new ApiError(superposables)
-      }
-
-      if (!superposables || !superposables.length) {
-        throw new Error('no superposable found')
-      }
-
-      for (const superposable of superposables) {
-        const option = document.createElement('option')
-        option.value = superposable
-        option.text = capitalize(superposable)
-        this.superposableSelect.append(option)
-      }
-    } catch (error) {
-      alert(`${error.name}: ${error.message}`)
-    }
   }
 
   async initializeCamera() {
@@ -267,7 +241,14 @@ class PepeUpload extends HTMLElement {
   }
 
   connectedCallback() {
-    this.getSuperposables()
+    getSuperposables().then((superposables) => {
+      for (const superposable of superposables) {
+        const option = document.createElement('option')
+        option.value = superposable
+        option.text = capitalize(superposable)
+        this.superposableSelect.append(option)
+      }
+    })
     this.superposableSelect.addEventListener('input', (event) => {
       const { value } = event.target
       this.superposable = value

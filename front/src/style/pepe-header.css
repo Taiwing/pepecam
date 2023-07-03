@@ -27,25 +27,6 @@ a {
 	gap: 2rem;
 }
 
-.user-actions {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.user-actions[hidden] {
-	display: none;
-}
-
-dialog {
-	--text-color: var(--light-grey);
-
-	color: var(--text-color);
-	background-color: inherit;
-}
-
 #forgot-password-container {
 	justify-content: flex-end;
 }

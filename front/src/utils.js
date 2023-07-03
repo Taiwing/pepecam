@@ -80,3 +80,24 @@ export class ApiError extends Error {
     this.name = 'ApiError'
   }
 }
+
+export const getSuperposables = async () => {
+  try {
+    const { hostname } = window.location
+    const url = `http://${hostname}:3000/pictures/superposable`
+    const response = await fetch(url)
+    const superposables = await response.json()
+
+    if (!response.ok && superposables) {
+      throw new ApiError(superposables)
+    }
+
+    if (!superposables || !superposables.length) {
+      throw new Error('no superposable found')
+    }
+
+    return superposables
+  } catch (error) {
+    alert(`${error.name}: ${error.message}`)
+  }
+}

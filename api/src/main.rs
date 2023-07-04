@@ -25,7 +25,7 @@ use auth::session;
 use cache::Cache;
 use cors::Cors;
 use mail::Mailer;
-use payload::NewUser;
+use payload::{Email, NewUser};
 use query::PostgresDb;
 use rocket::fairing::AdHoc;
 use rocket::tokio::time::{sleep, Duration};
@@ -49,11 +49,16 @@ fn rocket() -> _ {
                 .state::<Cache<reset::Request>>()
                 .expect("Failed to get reset request cache")
                 .clone();
+            let new_emails = rocket
+                .state::<Cache<Email>>()
+                .expect("Failed to get new email cache")
+                .clone();
             rocket::tokio::task::spawn(async move {
                 loop {
                     new_users.cleanup();
                     sessions.cleanup();
                     reset_requests.cleanup();
+                    new_emails.cleanup();
                     sleep(Duration::from_secs(*config::CACHE_CLEANUP_INTERVAL))
                         .await;
                 }
@@ -67,6 +72,7 @@ fn rocket() -> _ {
         .manage(Cache::<NewUser>::new())
         .manage(Cache::<session::Connected>::new())
         .manage(Cache::<reset::Request>::new())
+        .manage(Cache::<Email>::new())
         .attach(cleanup_job)
         .attach(Cors)
         .mount("/", routes![routes::options])
@@ -76,6 +82,7 @@ fn rocket() -> _ {
         .mount("/user", routes![routes::user::logout::post])
         .mount("/user", routes![routes::user::reset::post])
         .mount("/user", routes![routes::user::reset::put])
+        .mount("/user", routes![routes::user::email::post])
         .mount("/user", routes![routes::user::put])
         .mount("/user", routes![routes::user::get])
         .mount("/picture", routes![routes::picture::like::put])

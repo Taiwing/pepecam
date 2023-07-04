@@ -11,11 +11,18 @@ pub struct DefaultResponse {
     pub response: String,
 }
 
-/// One-time token for user registration and password reset.
+/// One-time token for user registration, password and email reset.
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
 pub struct Token {
     pub token: Uuid,
+}
+
+/// Request payload /reset and Cache structure for email reset.
+#[derive(Serialize, Deserialize, Clone)]
+#[serde(crate = "rocket::serde")]
+pub struct Email {
+    pub email: String,
 }
 
 impl Token {

@@ -1,7 +1,7 @@
 use crate::cache::Cache;
 use crate::config;
 use crate::mail::Mailer;
-use crate::payload::{DefaultResponse, Token};
+use crate::payload::{DefaultResponse, Email, Token};
 use crate::query::{get_user_by_email, put_user, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::{from_serde_to_sqlx, from_sqlx_to_serde};
@@ -17,13 +17,6 @@ use std::time::Duration;
 #[serde(crate = "rocket::serde")]
 pub struct ResetToken {
     reset_token: Uuid,
-}
-
-/// Request payload containing the email for the POST /reset route
-#[derive(Serialize, Deserialize)]
-#[serde(crate = "rocket::serde")]
-pub struct Email {
-    email: String,
 }
 
 /// Request payload containing the new password for the POST /reset route

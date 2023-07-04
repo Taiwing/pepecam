@@ -101,3 +101,29 @@ export const getSuperposables = async () => {
     alert(`${error.name}: ${error.message}`)
   }
 }
+
+// send token to server to confirm email
+export const sendToken = async (route) => {
+  try {
+    const token = window.location.href.split('?token=')[1]
+    if (!token) {
+      throw new Error('Token not found')
+    }
+    const url = `http://${window.location.hostname}:3000/user/${route}`
+    const response = await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token }),
+    })
+
+    const data = await response.json()
+    if (!response.ok) {
+      throw new ApiError(data)
+    }
+
+    asyncAlert(`Success: ${data.response}`, '/')
+  } catch (error) {
+    asyncAlert(`${error.name}: ${error.message}`, '/')
+  }
+}

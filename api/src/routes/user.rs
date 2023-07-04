@@ -1,18 +1,24 @@
 pub mod confirm;
+pub mod email;
 pub mod login;
 pub mod logout;
 pub mod register;
 pub mod reset;
 
 use crate::auth::session;
-use crate::payload::{DefaultResponse, UserProfile};
+use crate::cache::Cache;
+use crate::config;
+use crate::mail::Mailer;
+use crate::payload::{DefaultResponse, Email, Token, UserProfile};
 use crate::query::{get_user_by_account_id, put_user, PostgresDb};
 use crate::result::ApiResult;
 use crate::uuid::from_serde_to_sqlx;
 use crate::validation;
 use rocket::http::Status;
 use rocket::serde::{json::Json, Deserialize, Serialize};
+use rocket::State;
 use rocket_db_pools::Connection;
+use std::time::Duration;
 
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -23,11 +29,16 @@ pub struct UserChanges {
     email_notifications: Option<bool>,
 }
 
+// Time during which the email can be used in seconds.
+const EMAIL_TOKEN_LIFETIME: u64 = 300; // 5 minutes
+
 #[put("/", data = "<user_changes>", format = "json")]
 pub async fn put(
     user_changes: Json<UserChanges>,
     sess: session::Connected,
     mut db: Connection<PostgresDb>,
+    new_emails: &State<Cache<Email>>,
+    mailer: &State<Mailer>,
 ) -> ApiResult<DefaultResponse> {
     let user_changes = user_changes.into_inner();
 
@@ -69,6 +80,23 @@ pub async fn put(
                 message,
             };
         }
+
+        let token = Token::new();
+        let token_name = format!("email_token:{}", token);
+        let new_email = Email {
+            email: email.clone(),
+        };
+        new_emails.set(
+            &token_name,
+            &new_email,
+            Duration::from_secs(EMAIL_TOKEN_LIFETIME),
+        );
+        let link = format!(
+            "{}/email.html?token={}",
+            config::FRONT_LINK.as_str(),
+            token
+        );
+        _ = mailer.send(email, "Confirm your email", &link);
     }
 
     match put_user(
@@ -76,7 +104,7 @@ pub async fn put(
         &from_serde_to_sqlx(&sess.account_id),
         user_changes.username,
         user_changes.password,
-        user_changes.email,
+        None,
         user_changes.email_notifications,
     )
     .await

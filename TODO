@@ -4,7 +4,6 @@ GLOBAL:
 - send a mail change validation email when updating it in the profile
 
 FRONT:
-- handle picture id parameter for the gallery in index and in editor
 - fix the filters button issue in the editor mobile view (maybe refactor it)
 
 --- MAYBE ---
@@ -16,5 +15,6 @@ API:
 - implement tests for every route and structure
 
 FRONT:
+- handle picture id parameter for the gallery in editor
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables

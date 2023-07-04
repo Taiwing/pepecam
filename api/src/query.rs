@@ -117,6 +117,7 @@ pub async fn pictures(
     superposable: Vec<Superposable>,
     start: Option<i64>,
     end: Option<i64>,
+    picture_id: Option<SqlxUuid>,
 ) -> Option<Vec<Picture>> {
     let mut argc = 3;
     let mut query = String::from("
@@ -170,6 +171,13 @@ pub async fn pictures(
         ));
     }
 
+    if let Some(_picture_id) = picture_id {
+        argc += 1;
+        let clause = if argc == 4 { "WHERE" } else { "AND" };
+        query
+            .push_str(&format!("{} pictures.picture_id = ${}\n", clause, argc));
+    }
+
     query.push_str(
         "
 		GROUP BY
@@ -201,6 +209,10 @@ pub async fn pictures(
 
     if let Some(end) = end {
         query = query.bind(end);
+    }
+
+    if let Some(picture_id) = picture_id {
+        query = query.bind(picture_id);
     }
 
     let raw_pictures = query.fetch_all(&mut **db).await.unwrap_or(Vec::new());

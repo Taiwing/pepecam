@@ -4,11 +4,12 @@ use crate::pictures;
 use crate::query::{self, PostgresDb};
 use crate::uuid::from_serde_to_sqlx;
 use rocket::serde::json::Json;
+use rocket::serde::uuid::Uuid;
 use rocket_db_pools::Connection;
 
 pub mod superposable;
 
-#[get("/?<index>&<count>&<username>&<superposable>&<start>&<end>")]
+#[get("/?<index>&<count>&<username>&<superposable>&<start>&<end>&<picture>")]
 pub async fn get(
     index: u32,
     count: u32,
@@ -16,6 +17,7 @@ pub async fn get(
     mut superposable: Vec<pictures::Superposable>,
     start: Option<i64>,
     end: Option<i64>,
+    picture: Option<Uuid>,
     mut db: Connection<PostgresDb>,
     is_connected: session::IsConnected,
 ) -> Option<Json<Vec<Picture>>> {
@@ -31,6 +33,11 @@ pub async fn get(
         None => None,
     };
 
+    let picture_id = match picture {
+        Some(picture) => Some(from_serde_to_sqlx(&picture)),
+        None => None,
+    };
+
     query::pictures(
         &mut db,
         index,
@@ -40,6 +47,7 @@ pub async fn get(
         superposable,
         start,
         end,
+        picture_id,
     )
     .await
     .map(Json)

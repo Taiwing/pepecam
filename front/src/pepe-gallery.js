@@ -18,6 +18,10 @@ PepeGalleryTemplate.innerHTML = `
     <h3>Filters</h3>
     <form id="filters-form" method="dialog" class="form">
       <label class="form-field">
+        Picture ID
+        <input type="text" name="picture" placeholder="picture id">
+      </label>
+      <label class="form-field">
         Username
         <input type="text" name="username" placeholder="username">
       </label>
@@ -72,6 +76,14 @@ class PepeGallery extends HTMLElement {
       this._reset.bind(this),
     )
 
+    // Set picture id if picture is in url
+    const pictureId = window.location.href.split('?picture=')[1]
+    if (pictureId) {
+      this.shadowRoot
+        .querySelector('#filters-form [name="picture"]').value = pictureId
+      this._applyFilters()
+    }
+
     // Handle filters dialog
     const filtersDialog = this.shadowRoot.querySelector('#filters-dialog')
     filtersDialog
@@ -107,8 +119,9 @@ class PepeGallery extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'disabled' && !newValue) this._reset()
-    else if (name === 'data-filters' && newValue !== oldValue) this._reset()
-    else if (name === 'data-username') {
+    else if (name === 'data-filters' && newValue !== oldValue) {
+      this._reset()
+    } else if (name === 'data-username') {
       const usernameField = this.shadowRoot.querySelector('#filters-form [name="username"]')
       usernameField.value = ''
       usernameField.placeholder = newValue

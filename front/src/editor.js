@@ -39,6 +39,14 @@ const initEditor = async () => {
   if (forbidUnconnected()) return
   window.addEventListener('toggle-connected', forbidUnconnected)
 
+  // Set event listener if picture id is provided (one-time event)
+  const pictureId = window.location.href.split('?picture=')[1]
+  if (pictureId) {
+    window.addEventListener('pepe-gallery-ready', (event) => {
+      event.target.getPictureElement(pictureId).onClick()
+    }, { once: true })
+  }
+
   // Set username for gallery
   const gallery = document.querySelector('pepe-gallery')
   const { username } = getCookie('session')

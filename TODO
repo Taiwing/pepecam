@@ -15,6 +15,5 @@ API:
 - implement tests for every route and structure
 
 FRONT:
-- handle picture id parameter for the gallery in editor
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables

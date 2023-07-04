@@ -179,10 +179,6 @@ class PepeGallery extends HTMLElement {
     this._getPepePosts()
   }
 
-  _getPictureElement(id) {
-    return this.shadowRoot.querySelector(`[data-picture-id="${id}"]`)
-  }
-
   _getSuperposableElement(superposable) {
     return this.shadowRoot.querySelector(`#superposable-${superposable}`)
   }
@@ -221,6 +217,15 @@ class PepeGallery extends HTMLElement {
     }
   }
 
+  // Send event to notify that gallery is ready
+  _ready() {
+    const event = new CustomEvent('pepe-gallery-ready', {
+      bubbles: true,
+      composed: true,
+    })
+    this.dispatchEvent(event)
+  }
+
   // Get posts
   async _getPepePosts() {
     try {
@@ -240,6 +245,7 @@ class PepeGallery extends HTMLElement {
       }
 
       for (const post of posts) this.appendPicture(post)
+      if (this._index === 0) this._ready()
     } catch (error) {
       this._finished = true
       alert(`${error.name}: ${error.message}`)
@@ -272,11 +278,15 @@ class PepeGallery extends HTMLElement {
     this.filters = newFilters
   }
 
+  getPictureElement(id) {
+    return this.shadowRoot.querySelector(`[data-picture-id="${id}"]`)
+  }
+
   appendPicture(picture) {
     const pictureElement = this._newPicture(picture)
     this.shadowRoot.append(pictureElement)
     this.emptyGallery = false
-    return this._getPictureElement(picture.picture_id)
+    return this.getPictureElement(picture.picture_id)
   }
 
   prependPicture(picture) {
@@ -284,11 +294,11 @@ class PepeGallery extends HTMLElement {
     const filtersDialog = this.shadowRoot.querySelector('#filters-dialog')
     filtersDialog.after(pictureElement)
     this.emptyGallery = false
-    return this._getPictureElement(picture.picture_id)
+    return this.getPictureElement(picture.picture_id)
   }
 
   deletePicture(id) {
-    const pictureElement = this._getPictureElement(id)
+    const pictureElement = this.getPictureElement(id)
     pictureElement.remove()
     this.emptyGallery = this.pictureCount === 0
   }

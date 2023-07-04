@@ -7,6 +7,7 @@ API:
 - send a mail when receiving a comment on a picture if the setting is on
 
 FRONT:
+- handle picture id parameter for the gallery in index and in editor
 - fix the filters button issue in the editor mobile view (maybe refactor it)
 
 --- MAYBE ---

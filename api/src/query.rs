@@ -203,10 +203,7 @@ pub async fn pictures(
         query = query.bind(end);
     }
 
-    let raw_pictures = query
-        .fetch_all(&mut **db)
-        .await
-        .unwrap_or(Vec::new());
+    let raw_pictures = query.fetch_all(&mut **db).await.unwrap_or(Vec::new());
     if raw_pictures.is_empty() {
         return None;
     }
@@ -535,4 +532,22 @@ pub async fn comments(
         })
         .collect();
     Some(comments)
+}
+
+/// Get email if picture author has email notifications enabled
+pub async fn has_email_notifications(
+    db: &mut Connection<PostgresDb>,
+    picture_id: &SqlxUuid,
+) -> Option<String> {
+    let query = "
+		SELECT email FROM accounts
+		JOIN pictures ON accounts.account_id = pictures.account_id
+		WHERE pictures.picture_id = $1 AND accounts.email_notifications = TRUE;
+	";
+
+    sqlx::query_scalar::<_, String>(query)
+        .bind(picture_id)
+        .fetch_optional(&mut **db)
+        .await
+        .unwrap_or_default()
 }

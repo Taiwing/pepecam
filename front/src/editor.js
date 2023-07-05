@@ -10,12 +10,17 @@ const toggleUploadEditor = () => {
 
 // Handle thumbnail click event
 const onThumbnailClick = (event) => {
+  // Set post attributes
   const post = document.querySelector('pepe-post')
   Object.entries(event.detail).forEach(([key, value]) =>
     post.setAttribute(key, value)
   )
   const editor = document.querySelector('#editor-editor')
   if (editor.hasAttribute('hidden')) toggleUploadEditor()
+
+  // Scroll to left
+  const container = document.querySelector('.editor')
+  container.scrollLeft = 0
 }
 
 // Handle post delete event

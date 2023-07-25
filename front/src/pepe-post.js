@@ -84,8 +84,6 @@ class PepePost extends HTMLElement {
     const commentButton = this.shadowRoot.querySelector('#comment-button')
     commentButton.addEventListener('click', async () => this.toggleFull())
 
-    //const sendButton = this.shadowRoot.querySelector('#send-button')
-    //sendButton.addEventListener('click', async () => this.sendComment())
     const commentsForm = this.shadowRoot.querySelector('#post-comments-form')
     commentsForm.addEventListener('submit', async (event) => {
       event.preventDefault()

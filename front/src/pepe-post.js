@@ -64,6 +64,9 @@ PepePostTemplate.innerHTML = `
       <button id="share-dialog-facebook-button" type="submit" class="form-field">
         share on facebook
       </button>
+      <button id="share-dialog-twitter-button" type="submit" class="form-field">
+        share on twitter
+      </button>
       <button id="share-dialog-copy-button" type="submit" class="form-field">
         copy link
       </button>
@@ -127,6 +130,10 @@ class PepePost extends HTMLElement {
         .querySelector('#share-dialog-facebook-button')
       shareDialogFacebookButton
         .addEventListener('click', () => this.facebookShare())
+      const shareDialogTwitterButton = shareDialog
+        .querySelector('#share-dialog-twitter-button')
+      shareDialogTwitterButton
+        .addEventListener('click', () => this.twitterShare())
       const shareDialogCopyButton = shareDialog
         .querySelector('#share-dialog-copy-button')
       shareDialogCopyButton.addEventListener('click', () => this.copyShare())
@@ -275,6 +282,15 @@ class PepePost extends HTMLElement {
     window.open(
       `https://www.facebook.com/sharer/sharer.php?u=${this.pictureSrc}`,
       'facebook-share-dialog',
+      'width=626,height=436'
+    )
+  }
+
+  // Share post on Twitter
+  twitterShare() {
+    window.open(
+      `https://twitter.com/intent/tweet?url=${this.pictureSrc}`,
+      'twitter-share-dialog',
       'width=626,height=436'
     )
   }

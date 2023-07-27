@@ -8,6 +8,11 @@
   - share button through the navigator.share API
   - find 1 or 2 other bonuses to make it to 125
 
+--- FIX ---
+
+FRONT:
+- icon buttons are buggy (one tap and it stays full on mobile)
+- mobile clipboard copy does not work (in share dialog)
 
 --- MAYBE ---
 

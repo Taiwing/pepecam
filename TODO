@@ -6,7 +6,7 @@
   - ajaxify exchanges with the server (example when uploading a picture) [DONE]
   - infinite scroll [DONE]
   - share button through the navigator.share API or fallback [DONE]
-  - find 1 or 2 other bonuses to make it to 125
+  - gallery filters [DONE]
 
 --- FIX ---
 

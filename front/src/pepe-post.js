@@ -273,8 +273,15 @@ class PepePost extends HTMLElement {
   }
 
   // Copy link to clipboard
-  copyShare() {
-    navigator.clipboard.writeText(this.pictureSrc)
+  async copyShare() {
+    try {
+      if (!navigator.clipboard) {
+        throw new Error('Clipboard API not available')
+      }
+      await navigator.clipboard.writeText(this.pictureSrc)
+    } catch (error) {
+      alert(`${error.name}: ${error.message}`)
+    }
   }
 
   // Share post on Facebook

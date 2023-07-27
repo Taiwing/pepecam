@@ -101,6 +101,11 @@ class PepeGallery extends HTMLElement {
 
   connectedCallback() {
     getSuperposables().then(superposables => {
+      // TODO: remove this monkey patch one day (when I'll have time)
+      // There is an error when the user is not logged in on the editor's
+      // page. I think htat the async window location change interrups the
+      // getSuperposables() call which therefore returns undefined.
+      if (!superposables) return
       for (const superposable of superposables) {
         const input = document.createElement('input')
         input.type = 'checkbox'

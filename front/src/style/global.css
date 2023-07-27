@@ -75,7 +75,7 @@ input {
 	font-size: inherit;
 }
 
-button, .button {
+button:not(.icon), .button {
 	background-color: inherit;
 	color: inherit;
 	padding: 0.5rem 1rem;
@@ -86,13 +86,13 @@ button, .button {
 	font-size: inherit;
 }
 
-button:hover:not([disabled]), .button:hover:not([disabled]) {
+button:not(.icon):hover:not([disabled]), .button:hover:not([disabled]) {
 	color: var(--background-color);
 	background-color: var(--text-color);
 	transition-duration: 0.4s;
 }
 
-button[disabled], .button[disabled] {
+button[disabled]:not(.icon), .button[disabled] {
 	filter: opacity(0.3);
 }
 

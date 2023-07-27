@@ -2,6 +2,7 @@ import { createElement, ApiError } from './utils.js'
 
 const PepePostTemplate = document.createElement('template')
 PepePostTemplate.innerHTML = `
+  <link rel="stylesheet" href="style/global.css">
   <link rel="stylesheet" href="style/pepe-post.css" />
   <link rel="stylesheet" href="style/pepe-icons.css" />
 
@@ -31,6 +32,11 @@ PepePostTemplate.innerHTML = `
       </button>
       <span id="comment-count"></span>
     </div>
+    <div class="post-action">
+      <button class="icon" id="share-button">
+        <img id="share" />
+      </button>
+    </div>
     <div id="delete-button-div" class="post-action" hidden>
       <button class="icon" id="delete-button">
         <img id="trash" />
@@ -51,6 +57,18 @@ PepePostTemplate.innerHTML = `
       </button>
     </form>
   </div>
+
+  <dialog id="share-dialog">
+    <h3>Share this post</h3>
+    <form id="share-form" method="dialog" class="form">
+      <button id="share-dialog-copy-button" type="submit" class="form-field">
+        copy link
+      </button>
+      <button id="share-dialog-cancel-button" type="button" class="form-field">
+        cancel
+      </button>
+    </form>
+  </dialog>
 `
 
 // PepePost element
@@ -94,6 +112,22 @@ class PepePost extends HTMLElement {
       this.shadowRoot.querySelector('#delete-button-div').removeAttribute('hidden')
       const deleteButton = this.shadowRoot.querySelector('#delete-button')
       deleteButton.addEventListener('click', async () => this.deletePost())
+    }
+
+    const testData = { title: 'test', url: 'www.example.com' }
+    const shareButton = this.shadowRoot.querySelector('#share-button')
+    if (navigator.share && navigator.canShare(testData)) {
+      shareButton.addEventListener('click', async () => this.nativeShare())
+    } else {
+      const shareDialog = this.shadowRoot.querySelector('#share-dialog')
+      const shareDialogCopyButton = shareDialog
+        .querySelector('#share-dialog-copy-button')
+      shareDialogCopyButton.addEventListener('click', () => this.copyShare())
+      const shareDialogCancelButton = shareDialog
+        .querySelector('#share-dialog-cancel-button')
+      shareDialogCancelButton
+        .addEventListener('click', () => shareDialog.close())
+      shareButton.addEventListener('click', () => shareDialog.showModal())
     }
   }
 
@@ -193,6 +227,10 @@ class PepePost extends HTMLElement {
     return this.shadowRoot.querySelector('#post-comments').hasAttribute('hidden')
   }
 
+  get pictureSrc() {
+    return this.shadowRoot.querySelector('#post-picture').src
+  }
+
   createComment(feed, { author, content }) {
     const commentElement = document.createElement('div')
     commentElement.classList.add('comment')
@@ -209,6 +247,20 @@ class PepePost extends HTMLElement {
       for (const comment of comments) this.createComment(commentsFeed, comment)
     }
     this.showComments = this.full
+  }
+
+  // Share post on social media with native share API
+  async nativeShare() {
+    try {
+      await navigator.share({ title: 'Share', url: this.pictureSrc })
+    } catch (error) {
+      alert(`${error.name}: ${error.message}`)
+    }
+  }
+
+  // Copy link to clipboard
+  copyShare() {
+    navigator.clipboard.writeText(this.pictureSrc)
   }
 
   // Update like and dislike counts

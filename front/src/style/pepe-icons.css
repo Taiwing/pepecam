@@ -52,6 +52,14 @@
 	content: url('../icons/trash-solid-svgrepo-com.svg');
 }
 
+#share, #share[filled]:hover {
+	content: url('../icons/share-svgrepo-com.svg');
+}
+
+#share[filled], #share:hover {
+	content: url('../icons/share-fill-svgrepo-com.svg');
+}
+
 @media only screen and (max-width: 800px) {
 	.icon > img {
 		width: 2.5rem;

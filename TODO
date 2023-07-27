@@ -5,19 +5,19 @@
   - populate scripts [DONE]
   - ajaxify exchanges with the server (example when uploading a picture) [DONE]
   - infinite scroll [DONE]
-  - share button through the navigator.share API
+  - share button through the navigator.share API or fallback [DONE]
   - find 1 or 2 other bonuses to make it to 125
 
 --- FIX ---
 
 FRONT:
 - icon buttons are buggy (one tap and it stays full on mobile)
-- mobile clipboard copy does not work (in share dialog)
 
 --- MAYBE ---
 
 GLOBAL:
 - make it possible to change the superposable's size (use resize in the back)
+- host this app on my domain
 
 API:
 - implement tests for every route and structure
@@ -25,3 +25,5 @@ API:
 FRONT:
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables
+- remove the share-dialog from pepe-posts and only use the web share API when
+  it is well implemented everywhere

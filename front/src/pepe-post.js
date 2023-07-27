@@ -61,6 +61,9 @@ PepePostTemplate.innerHTML = `
   <dialog id="share-dialog">
     <h3>Share this post</h3>
     <form id="share-form" method="dialog" class="form">
+      <button id="share-dialog-facebook-button" type="submit" class="form-field">
+        share on facebook
+      </button>
       <button id="share-dialog-copy-button" type="submit" class="form-field">
         copy link
       </button>
@@ -120,6 +123,10 @@ class PepePost extends HTMLElement {
       shareButton.addEventListener('click', async () => this.nativeShare())
     } else {
       const shareDialog = this.shadowRoot.querySelector('#share-dialog')
+      const shareDialogFacebookButton = shareDialog
+        .querySelector('#share-dialog-facebook-button')
+      shareDialogFacebookButton
+        .addEventListener('click', () => this.facebookShare())
       const shareDialogCopyButton = shareDialog
         .querySelector('#share-dialog-copy-button')
       shareDialogCopyButton.addEventListener('click', () => this.copyShare())
@@ -261,6 +268,15 @@ class PepePost extends HTMLElement {
   // Copy link to clipboard
   copyShare() {
     navigator.clipboard.writeText(this.pictureSrc)
+  }
+
+  // Share post on Facebook
+  facebookShare() {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${this.pictureSrc}`,
+      'facebook-share-dialog',
+      'width=626,height=436'
+    )
   }
 
   // Update like and dislike counts

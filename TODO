@@ -1,16 +1,3 @@
---- TODO ---
-
-- Bonuses:
-  - thumb down [DONE]
-  - populate scripts [DONE]
-  - ajaxify exchanges with the server (example when uploading a picture) [DONE]
-  - infinite scroll [DONE]
-  - share button through the navigator.share API or fallback [DONE]
-  - gallery filters [DONE]
-
-- After this project is pushed, remove dumb subject-specific things like the 0
-  log policy in the back (remove or change ROCKET_LOG_LEVEL value)
-
 --- MAYBE ---
 
 GLOBAL:

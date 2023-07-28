@@ -56,10 +56,7 @@ footer {
 	width: 100%;
 	flex-grow: 0;
 	flex-shrink: 0;
-}
-
-footer:before {
-	content: "Deved by Me. All rights reserved ? How does it work really ?";
+	justify-content: space-around;
 }
 
 dialog {
@@ -149,10 +146,6 @@ button[disabled]:not(.icon), .button[disabled] {
 
 	footer {
 		padding: 1rem 0.75rem;
-	}
-
-	footer:before {
-		content: none;
 	}
 
 	.form {

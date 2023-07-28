@@ -10,6 +10,8 @@ posts. This is meant to be usable on desktop, phones and small resolutions.
 	<img src="https://github.com/Taiwing/pepecam/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
 </p>
 
+You can try the live application [here](http://pepecam.defoy.tech).
+
 ## Setup
 
 ```shell
@@ -31,7 +33,7 @@ mv .env.template .env
 > reasons. If you do not have the TRANSCRYPT\_PASSWORD you can simply remove
 > the encrypted .env file and replace it with the .env.template.
 
-Click [here](http://localhost:8080) to test it.
+Click [here](http://localhost:8080) to test it locally.
 
 ### Access this application through your local network
 

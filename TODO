@@ -8,11 +8,6 @@
   - share button through the navigator.share API or fallback [DONE]
   - gallery filters [DONE]
 
---- FIX ---
-
-FRONT:
-- icon buttons are buggy (one tap and it stays full on mobile)
-
 --- MAYBE ---
 
 GLOBAL:

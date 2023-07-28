@@ -12,52 +12,102 @@
 	background-color: transparent;
 }
 
-#thumbs-up, #thumbs-up[filled]:hover {
+#thumbs-up, #thumbs-up[filled]:active {
 	content: url('../icons/thumb-up-svgrepo-com.svg');
 }
 
-#thumbs-up[filled], #thumbs-up:hover {
+#thumbs-up[filled], #thumbs-up:active {
 	content: url('../icons/thumb-up-fill-svgrepo-com.svg');
 }
 
-#thumbs-down, #thumbs-down[filled]:hover {
+#thumbs-down, #thumbs-down[filled]:active {
 	content: url('../icons/thumb-down-svgrepo-com.svg');
 }
 
-#thumbs-down[filled], #thumbs-down:hover {
+#thumbs-down[filled], #thumbs-down:active {
 	content: url('../icons/thumb-down-fill-svgrepo-com.svg');
 }
 
-#comment, #comment[filled]:hover {
+#comment, #comment[filled]:active {
 	content: url('../icons/comment-text-svgrepo-com.svg');
 }
 
-#comment[filled], #comment:hover {
+#comment[filled], #comment:active {
 	content: url('../icons/comment-text-solid-svgrepo-com.svg');
 }
 
-#send, #send[filled]:hover {
+#send, #send[filled]:active {
 	content: url('../icons/send-svgrepo-com.svg');
 }
 
-#send[filled], #send:hover {
+#send[filled], #send:active {
 	content: url('../icons/send-solid-svgrepo-com.svg');
 }
 
-#trash, #trash[filled]:hover {
+#trash, #trash[filled]:active {
 	content: url('../icons/trash-svgrepo-com.svg');
 }
 
-#trash[filled], #trash:hover {
+#trash[filled], #trash:active {
 	content: url('../icons/trash-solid-svgrepo-com.svg');
 }
 
-#share, #share[filled]:hover {
+#share, #share[filled]:active {
 	content: url('../icons/share-svgrepo-com.svg');
 }
 
-#share[filled], #share:hover {
+#share[filled], #share:active {
 	content: url('../icons/share-fill-svgrepo-com.svg');
+}
+
+@media (hover: hover) {
+	#thumbs-up[filled]:hover {
+		content: url('../icons/thumb-up-svgrepo-com.svg');
+	}
+
+	#thumbs-up:hover {
+		content: url('../icons/thumb-up-fill-svgrepo-com.svg');
+	}
+
+	#thumbs-down[filled]:hover {
+		content: url('../icons/thumb-down-svgrepo-com.svg');
+	}
+
+	#thumbs-down:hover {
+		content: url('../icons/thumb-down-fill-svgrepo-com.svg');
+	}
+
+	#comment[filled]:hover {
+		content: url('../icons/comment-text-svgrepo-com.svg');
+	}
+
+	#comment:hover {
+		content: url('../icons/comment-text-solid-svgrepo-com.svg');
+	}
+
+	#send[filled]:hover {
+		content: url('../icons/send-svgrepo-com.svg');
+	}
+
+	#send:hover {
+		content: url('../icons/send-solid-svgrepo-com.svg');
+	}
+
+	#trash[filled]:hover {
+		content: url('../icons/trash-svgrepo-com.svg');
+	}
+
+	#trash:hover {
+		content: url('../icons/trash-solid-svgrepo-com.svg');
+	}
+
+	#share[filled]:hover {
+		content: url('../icons/share-svgrepo-com.svg');
+	}
+
+	#share:hover {
+		content: url('../icons/share-fill-svgrepo-com.svg');
+	}
 }
 
 @media only screen and (max-width: 800px) {

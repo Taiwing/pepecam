@@ -1,8 +1,17 @@
+--- TODO ---
+
+- setup HTTPS on VPS and make it so it is easy to switch back and forth between
+  a localhost setup and the live one (maybe an env variable)
+- find out why the api fails on VPS, or rather why the api does not wait for the
+  db setup to be finished before launching as it seems to do on a local machine
+- fix ugly scroll on chrome and macOS too (apparently) (maybe just remove every
+  'overflow-[xy]: scroll;' lmfao, or only on hover)
+- fix footer visibility/scroll on smartphone
+
 --- MAYBE ---
 
 GLOBAL:
 - make it possible to change the superposable's size (use resize in the back)
-- host this app on my domain
 
 API:
 - implement tests for every route and structure

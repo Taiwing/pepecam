@@ -1,5 +1,9 @@
 --- TODO ---
 
+- see how to handle the different FRONT_LINK values between the VPS and the
+  local versions of the app (maybe add a value without the PORT in the CORS
+  accept headers, maybe create a new LIVE variable, or simply create a third
+  env file for production like .env.prod and add instructions in the READEME)
 - setup HTTPS on VPS and make it so it is easy to switch back and forth between
   a localhost setup and the live one (maybe an env variable)
 - find out why the api fails on VPS, or rather why the api does not wait for the

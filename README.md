@@ -33,6 +33,15 @@ mv .env.template .env
 
 Click [here](http://localhost:8080) to test it.
 
+### Access this application through your local network
+
+If your firewall does not block the front port (8080), you will be able to
+access it on other devices connected to your local network. However the API
+requests will be blocked because of CORS rules since the only known host is
+localhost. To fix this, simply change the 'GLOBAL\_HOST' env variable to your
+machine's local address. Rebuild with 'run.bash' and you will be able to access
+this application on every other local device.
+
 ### Populate front with pictures
 
 When you have built the project a first time you can run the

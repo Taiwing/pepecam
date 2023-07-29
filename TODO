@@ -27,6 +27,7 @@ API:
 - implement tests for every route and structure
 
 FRONT:
+- beautify emails
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables
 - remove the share-dialog from pepe-posts and only use the web share API when

@@ -1,7 +1,24 @@
 FROM httpd:2.4
-COPY ./src/*.html /usr/local/apache2/htdocs/
-COPY ./src/*.js /usr/local/apache2/htdocs/
-COPY ./src/style/ /usr/local/apache2/htdocs/style/
-COPY ./favicon /usr/local/apache2/htdocs/favicon/
-COPY ./icons/ /usr/local/apache2/htdocs/icons/
-COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
+
+WORKDIR /usr/local/apache2/
+
+ARG API_PORT
+ARG SUPERPOSABLES_SIDE
+ARG PICTURES_DIR
+ARG SUPERPOSABLES_DIR
+
+COPY <<EOF ./htdocs/environment.js
+export default {
+	API_PORT: '$API_PORT',
+	SUPERPOSABLES_SIDE: '$SUPERPOSABLES_SIDE',
+	PICTURES_DIR: '$PICTURES_DIR',
+	SUPERPOSABLES_DIR: '$SUPERPOSABLES_DIR',
+}
+EOF
+
+COPY ./src/*.html ./htdocs/
+COPY ./src/*.js ./htdocs/
+COPY ./src/style ./htdocs/style
+COPY ./favicon ./htdocs/favicon
+COPY ./icons ./htdocs/icons
+COPY ./httpd.conf ./conf/httpd.conf

@@ -27,14 +27,15 @@ services:
     restart: on-failure
 
   front:
-    build: ./front/
+    build:
+      context: ./front/
+      args:
+        API_PORT: ${API_PORT}
+        SUPERPOSABLES_SIDE: ${SUPERPOSABLES_SIDE}
+        PICTURES_DIR: ${PICTURES_DIR}
+        SUPERPOSABLES_DIR: ${SUPERPOSABLES_DIR}
     ports:
       - "${FRONT_PORT}:80"
-    environment:
-      - API_PORT="${API_PORT}"
-      - SUPERPOSABLES_SIDE="${SUPERPOSABLES_SIDE}"
-      - PICTURES_DIR="${PICTURES_DIR}"
-      - SUPERPOSABLES_DIR="${SUPERPOSABLES_DIR}"
     volumes:
       - <<: *pictures-volume
         target: /usr/local/apache2/htdocs/pictures/

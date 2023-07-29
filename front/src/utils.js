@@ -1,9 +1,11 @@
+import environment from './environment.js'
+
 // This is the front's config object. It contains the front and backend's urls,
 // but also values that are set in the .env file. These values have sensible
 // default values but they are to be changed if the .env file is modified.
 export const info = {
   get _apiPort() {
-    return getCookie('API_PORT') || 3000
+    return environment.API_PORT || 3000
   },
   get _url() {
     const { protocol, hostname } = window.location
@@ -16,14 +18,13 @@ export const info = {
     return `${this._url}:${window.location.port}`
   },
   get superposables_side() {
-    return getCookie('SUPERPOSABLES_SIDE') || 512
+    return environment.SUPERPOSABLES_SIDE || 512
   },
   get pictures_dir() {
-    return getCookie('PICTURES_DIR') || 'pictures'
+    return environment.PICTURES_DIR || 'pictures'
   },
   get superposables_dir() {
-    return getCookie('SUPERPOSABLES_DIR')
-      || `${this.pictures_dir}/superposables`
+    return environment.SUPERPOSABLES_DIR || `${this.pictures_dir}/superposables`
   },
 }
 

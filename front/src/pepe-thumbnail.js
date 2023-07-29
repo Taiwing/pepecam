@@ -1,3 +1,5 @@
+import { info } from './utils.js'
+
 const PepeThumbnailTemplate = document.createElement('template')
 PepeThumbnailTemplate.innerHTML = `
   <style>
@@ -49,8 +51,7 @@ class PepeThumbnail extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data-picture-id') {
       const picture = this.shadowRoot.querySelector('#thumbnail-picture')
-      const { hostname, port } = window.location
-      picture.src = `http://${hostname}:${port}/pictures/${newValue}.jpg`
+      picture.src = `${info.front}/pictures/${newValue}.jpg`
       picture.alt = `Picture ${newValue}`
     }
   }

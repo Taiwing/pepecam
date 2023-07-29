@@ -1,4 +1,4 @@
-import { ApiError, capitalize, getSuperposables } from './utils.js'
+import { info, ApiError, capitalize, getSuperposables } from './utils.js'
 
 const PepeUploadTemplate = document.createElement('template')
 
@@ -113,9 +113,8 @@ class PepeUpload extends HTMLElement {
           this.superposableSelect.value = ''
           this.superposableImg.src = ''
         } else {
-          const { hostname, port } = window.location
-          const picture = `pictures/superposables/${newValue}.png`
-          this.superposableImg.src = `http://${hostname}:${port}/${picture}`
+          const picture = `${info.front}/pictures/superposables/${newValue}.png`
+          this.superposableImg.src = picture
         }
         break
       case 'camera':
@@ -182,8 +181,7 @@ class PepeUpload extends HTMLElement {
 
   async upload() {
     try {
-      const { hostname } = window.location
-      const url = `http://${hostname}:3000/picture/${this.superposable}`
+      const url = `${info.api}/picture/${this.superposable}`
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'image/jpeg' },

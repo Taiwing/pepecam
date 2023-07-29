@@ -1,4 +1,4 @@
-import { forbidUnconnected, submitForm, ApiError } from './utils.js'
+import { info, forbidUnconnected, submitForm, ApiError } from './utils.js'
 
 const form = document.querySelector('#profile-form')
 const passwordField = form.querySelector('input[name="password"]')
@@ -19,7 +19,7 @@ let user
 
 const profileSubmit = async (event) => {
   event.preventDefault()
-  const url = `http://${window.location.hostname}:3000/user`
+  const url = `${info.api}/user`
 
   try {
     if (!user || form.reportValidity() === false) return
@@ -43,7 +43,7 @@ const profileSubmit = async (event) => {
 }
 
 const getUser = async () => {
-  const url = `http://${window.location.hostname}:3000/user`
+  const url = `${info.api}/user`
   const response = await fetch(url, { credentials: 'include' })
   if (!response.ok) {
     const error = await response.json()

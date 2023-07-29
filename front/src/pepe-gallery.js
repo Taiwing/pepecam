@@ -1,4 +1,4 @@
-import { capitalize, createElement, getSuperposables } from './utils.js'
+import { info, capitalize, createElement, getSuperposables } from './utils.js'
 
 const PepeGalleryTemplate = document.createElement('template')
 PepeGalleryTemplate.innerHTML = `
@@ -235,9 +235,7 @@ class PepeGallery extends HTMLElement {
   async _getPepePosts() {
     try {
       this._index += 1
-      const { hostname } = window.location
-      let url =
-        `http://${hostname}:3000/pictures?index=${this._index}&count=${this.count}`
+      let url = `${info.api}/pictures?index=${this._index}&count=${this.count}`
       if (this.username) url += `&username=${this.username}`
       if (this.filters) url += this.filters
       const response = await fetch(url, { method: 'GET', credentials: 'include' })

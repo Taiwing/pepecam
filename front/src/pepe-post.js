@@ -1,4 +1,4 @@
-import { createElement, ApiError } from './utils.js'
+import { info, createElement, ApiError } from './utils.js'
 
 const PepePostTemplate = document.createElement('template')
 PepePostTemplate.innerHTML = `
@@ -149,8 +149,7 @@ class PepePost extends HTMLElement {
     switch (name) {
       case 'data-picture-id':
         const picture = this.shadowRoot.querySelector('#post-picture')
-        const { hostname, port } = window.location
-        picture.src = `http://${hostname}:${port}/pictures/${newValue}.jpg`
+        picture.src = `${info.front}/pictures/${newValue}.jpg`
         picture.alt = `Picture ${newValue}`
         this.full = false
         const comments = this.shadowRoot.querySelector('#post-comments-feed')
@@ -332,7 +331,7 @@ class PepePost extends HTMLElement {
     const picture_id = this.getAttribute('data-picture-id')
     const payload = { picture_id }
     if (!deleteLike) payload.like = value
-    const url = `http://${window.location.hostname}:3000/picture/like`
+    const url = `${info.api}/picture/like`
 
     try {
       const response = await fetch(url, {
@@ -356,8 +355,7 @@ class PepePost extends HTMLElement {
   // Get comments
   async getComments() {
     const picture_id = this.getAttribute('data-picture-id')
-    const { hostname } = window.location
-    const url = `http://${hostname}:3000/picture/comments?picture=${picture_id}`
+    const url = `${info.api}/picture/comments?picture=${picture_id}`
 
     try {
       const response = await fetch(url, { method: 'GET' })
@@ -375,7 +373,7 @@ class PepePost extends HTMLElement {
 
   // Send comment
   async sendComment() {
-    const url = `http://${window.location.hostname}:3000/picture/comment`
+    const url = `${info.api}/picture/comment`
     const picture_id = this.getAttribute('data-picture-id')
     const content = this.shadowRoot.querySelector('#post-comments-input').value
     const payload = { picture_id, comment: content }
@@ -408,7 +406,7 @@ class PepePost extends HTMLElement {
   // Delete post
   async deletePost() {
     const picture_id = this.getAttribute('data-picture-id')
-    const url = `http://${window.location.hostname}:3000/picture`
+    const url = `${info.api}/picture`
 
     try {
       const response = await fetch(url, {

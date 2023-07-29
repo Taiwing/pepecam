@@ -1,4 +1,4 @@
-import { submitForm, ApiError, asyncAlert } from './utils.js'
+import { info, submitForm, ApiError, asyncAlert } from './utils.js'
 
 const form = document.querySelector('#reset-form')
 const resetTokenField = form.querySelector('input[name="reset_token"]')
@@ -19,7 +19,7 @@ const validatePassword = () => {
 // Submit form
 const submitResetForm = async (event) => {
   event.preventDefault()
-  const url = `http://${window.location.hostname}:3000/user/reset`
+  const url = `${info.api}/user/reset`
 
   try {
     if (form.reportValidity() === false) return

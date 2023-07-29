@@ -1,3 +1,17 @@
+export const info = {
+  _apiPort: 3000,
+  get _url() {
+    const { protocol, hostname } = window.location
+    return `${protocol}//${hostname}`
+  },
+  get api() {
+    return `${this._url}:${this._apiPort}`
+  },
+  get front() {
+    return `${this._url}:${window.location.port}`
+  },
+}
+
 export const getCookies = () =>
   document
   .cookie
@@ -83,8 +97,7 @@ export class ApiError extends Error {
 
 export const getSuperposables = async () => {
   try {
-    const { hostname } = window.location
-    const url = `http://${hostname}:3000/pictures/superposable`
+    const url = `${info.api}/pictures/superposable`
     const response = await fetch(url)
     const superposables = await response.json()
 
@@ -109,7 +122,7 @@ export const sendToken = async (route) => {
     if (!token) {
       throw new Error('Token not found')
     }
-    const url = `http://${window.location.hostname}:3000/user/${route}`
+    const url = `${info.api}/user/${route}`
     const response = await fetch(url, {
       method: 'POST',
       credentials: 'include',

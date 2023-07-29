@@ -1,4 +1,5 @@
 import {
+  info,
   asyncAlert,
   getCookie,
   toggleConnectedEvent,
@@ -124,17 +125,17 @@ class PepeHeader extends HTMLElement {
     const loginDialog = this.shadowRoot.querySelector('#login-dialog')
     loginDialog.setAttribute(
       'url',
-      `http://${window.location.hostname}:3000/user/login`
+      `${info.api}/user/login`
     )
     const resetDialog = this.shadowRoot.querySelector('#reset-dialog')
     resetDialog.setAttribute(
       'url',
-      `http://${window.location.hostname}:3000/user/reset`
+      `${info.api}/user/reset`,
     )
     const signupDialog = this.shadowRoot.querySelector('#signup-dialog')
     signupDialog.setAttribute(
       'url',
-      `http://${window.location.hostname}:3000/user/register`
+      `${info.api}/user/register`
     )
 
     const passwordField = signupDialog.querySelector('input[name="password"]')
@@ -207,7 +208,7 @@ class PepeHeader extends HTMLElement {
 
   async logout() {
     try {
-      const url = `http://${window.location.hostname}:3000/user/logout`
+      const url = `${info.api}/user/logout`
       const response = await fetch(url, {
         method: 'POST',
         credentials: 'include',

@@ -16,9 +16,9 @@ services:
   api:
     build: ./api/
     expose:
-      - ${API_PORT}
+      - ${API_LOCAL_PORT}
     ports:
-      - "${API_PORT}:${API_PORT}"
+      - "${API_LOCAL_PORT}:${API_LOCAL_PORT}"
     env_file: .env
     volumes:
       - <<: *pictures-volume
@@ -30,12 +30,12 @@ services:
     build:
       context: ./front/
       args:
-        API_PORT: ${API_PORT}
+        API_PUBLIC_PORT: ${API_PUBLIC_PORT}
         SUPERPOSABLES_SIDE: ${SUPERPOSABLES_SIDE}
         PICTURES_DIR: ${PICTURES_DIR}
         SUPERPOSABLES_DIR: ${SUPERPOSABLES_DIR}
     ports:
-      - "${FRONT_PORT}:80"
+      - "${FRONT_LOCAL_PORT}:80"
     volumes:
       - <<: *pictures-volume
         target: /usr/local/apache2/htdocs/pictures/

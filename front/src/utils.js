@@ -3,7 +3,7 @@ import environment from './environment.js'
 // This is the front's config object. It contains the front and backend's urls,
 // and also values that are set in the .env file (and copied in environment.js).
 export const info = {
-  _apiPort: environment.API_PORT,
+  _apiPort: environment.API_PUBLIC_PORT,
   superposables_side: environment.SUPERPOSABLES_SIDE,
   pictures_dir: environment.PICTURES_DIR,
   superposables_dir: environment.SUPERPOSABLES_DIR,

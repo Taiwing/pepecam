@@ -11,7 +11,7 @@ services:
     ports:
       - "${DB_PORT}:${DB_PORT}"
     env_file: .env
-    restart: always
+    restart: on-failure
 
   api:
     build: ./api/
@@ -24,6 +24,7 @@ services:
       - <<: *pictures-volume
     depends_on:
       - db
+    restart: on-failure
 
   front:
     build: ./front/
@@ -34,3 +35,4 @@ services:
         target: /usr/local/apache2/htdocs/pictures/
     depends_on:
       - api
+    restart: on-failure

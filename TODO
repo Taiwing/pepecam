@@ -6,8 +6,6 @@
   env file for production like .env.prod and add instructions in the READEME)
 - setup HTTPS on VPS and make it so it is easy to switch back and forth between
   a localhost setup and the live one (maybe an env variable)
-- find out why the api fails on VPS, or rather why the api does not wait for the
-  db setup to be finished before launching as it seems to do on a local machine
 
 --- MAYBE ---
 

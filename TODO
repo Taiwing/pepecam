@@ -1,6 +1,5 @@
 --- TODO ---
 
-- find a way to access 'Constants' env variables in the front
 - handle the different API_PORTS and FRONT_PORTS (the LOCAL and the PUBLIC)
 - see how to handle the different FRONT_LINK values between the VPS and the
   local versions of the app (maybe simply create a third env file for

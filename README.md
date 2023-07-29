@@ -107,24 +107,16 @@ Of course this means that you will have to setup your own SMTP server or
 register to a third party service. You can use [Brevo's](https://www.brevo.com/)
 free plan which is more than enough for testing purposes.
 
-### Constants
-
-These values can be changed but they will require manual modifications in some
-places. This is mainly in the front because we cannot directly pass environment
-variables to the client context. There are some ways to deal with this like by
-using server-side rendering or setting up an endpoint dedicated to this.
-However that looks like too much work for four measly variables.
-
-> Be careful if changing the '\_DIR'-suffixed variables. They refer to actual
-> files in the front/ directory and are used for a shared volume in the compose
-> configuration. They should match the front/pictures/ layout.
-
 ### Global
 
 The Global variables can all be changed by the user. They will apply to the
 entire application. For example, if you change FRONT\_PORT the front will be
 served on a new port and the api will send its emails using the new FRONT\_LINK
 value instead of the default.
+
+> Be careful if changing the '\_DIR'-suffixed variables. They refer to actual
+> files in the front/ directory and are used for a shared volume in the compose
+> configuration. They should match the front/pictures/ layout.
 
 ### API
 

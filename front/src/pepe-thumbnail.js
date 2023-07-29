@@ -51,7 +51,7 @@ class PepeThumbnail extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'data-picture-id') {
       const picture = this.shadowRoot.querySelector('#thumbnail-picture')
-      picture.src = `${info.front}/pictures/${newValue}.jpg`
+      picture.src = `${info.front}/${info.pictures_dir}/${newValue}.jpg`
       picture.alt = `Picture ${newValue}`
     }
   }

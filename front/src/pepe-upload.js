@@ -113,7 +113,8 @@ class PepeUpload extends HTMLElement {
           this.superposableSelect.value = ''
           this.superposableImg.src = ''
         } else {
-          const picture = `${info.front}/pictures/superposables/${newValue}.png`
+          const { front, superposables_dir } = info
+          const picture = `${front}/${superposables_dir}/${newValue}.png`
           this.superposableImg.src = picture
         }
         break
@@ -137,7 +138,7 @@ class PepeUpload extends HTMLElement {
     if (this.camera) this.camera = 'off'
     const image = new Image()
     image.onload = () => {
-      if (image.width < 512 || image.height < 512) {
+      if (image.width < info.superposables_side || image.height < info.superposables_side) {
         this.hidePreview()
         alert('Image too small')
         return
@@ -211,10 +212,10 @@ class PepeUpload extends HTMLElement {
     const context = this.captureCanvas.getContext('2d')
     let width = this.video.videoWidth
     let height = this.video.videoHeight
-    const min = Math.min(width, height, 512)
-    if (min < 512) {
-      width *= 512 / min
-      height *= 512 / min
+    const min = Math.min(width, height, info.superposables_side)
+    if (min < info.superposables_side) {
+      width *= info.superposables_side / min
+      height *= info.superposables_side / min
     }
     this.captureCanvas.width = width
     this.captureCanvas.height = height

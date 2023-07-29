@@ -1,5 +1,10 @@
+// This is the front's config object. It contains the front and backend's urls,
+// but also values that are set in the .env file. These values have sensible
+// default values but they are to be changed if the .env file is modified.
 export const info = {
-  _apiPort: 3000,
+  get _apiPort() {
+    return getCookie('API_PORT') || 3000
+  },
   get _url() {
     const { protocol, hostname } = window.location
     return `${protocol}//${hostname}`
@@ -9,6 +14,16 @@ export const info = {
   },
   get front() {
     return `${this._url}:${window.location.port}`
+  },
+  get superposables_side() {
+    return getCookie('SUPERPOSABLES_SIDE') || 512
+  },
+  get pictures_dir() {
+    return getCookie('PICTURES_DIR') || 'pictures'
+  },
+  get superposables_dir() {
+    return getCookie('SUPERPOSABLES_DIR')
+      || `${this.pictures_dir}/superposables`
   },
 }
 

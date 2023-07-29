@@ -43,7 +43,7 @@ async fn create_picture(
 ) -> Result<Picture, ()> {
     let filename = &format!("{}.png", superposable.as_ref());
     let superposable_picture = match native::open_image(&format!(
-        "{}/{}",
+        "/{}/{}",
         *config::SUPERPOSABLES_DIR,
         filename
     )) {
@@ -62,7 +62,7 @@ async fn create_picture(
             Ok(new_picture) => new_picture,
         };
     let filename = format!(
-        "{}/{}.jpg",
+        "/{}/{}.jpg",
         *config::PICTURES_DIR,
         new_picture.picture_id.hyphenated()
     );
@@ -132,7 +132,7 @@ pub async fn delete(
 ) -> ApiResult<DefaultResponse> {
     let picture_id = picture.into_inner().picture_id;
     let filename =
-        format!("{}/{}.jpg", *config::PICTURES_DIR, picture_id.hyphenated());
+        format!("/{}/{}.jpg", *config::PICTURES_DIR, picture_id.hyphenated());
     match query::delete_picture(
         &mut db,
         &from_serde_to_sqlx(&picture_id),

@@ -258,6 +258,10 @@ class PepePost extends HTMLElement {
       const commentsFeed = this.shadowRoot.querySelector('#post-comments-feed')
       commentsFeed.innerHTML = ''
       for (const comment of comments) this.createComment(commentsFeed, comment)
+      if (comments.length !== Number(this.getAttribute('data-comment-count'))) {
+        this.setAttribute('data-comment-count', comments.length)
+        this.dispatchUpdate()
+      }
     }
     this.showComments = this.full
   }
@@ -301,6 +305,26 @@ class PepePost extends HTMLElement {
     )
   }
 
+  // Dispatch update event
+  dispatchUpdate() {
+    const detail = {}
+
+    if (!this.hasAttributes()) return
+    for (const attribute of this.attributes) {
+      if (attribute.name.startsWith('data-')) {
+        detail[attribute.name] = attribute.value
+      }
+    }
+
+    if (Object.keys(detail).length === 0) return
+    const event = new CustomEvent('pepe-post-update', {
+      bubbles: true,
+      composed: true,
+      detail,
+    })
+    this.dispatchEvent(event)
+  }
+
   // Update like and dislike counts
   updateLikeCounts(deleteLike, value) {
     const likeCount = this.getAttribute('data-like-count')
@@ -308,21 +332,23 @@ class PepePost extends HTMLElement {
 
     // Delete like or dislike
     if (this.liked && (deleteLike || !value)) {
-      this.liked = false
+      this.setAttribute('data-liked', false)
       this.setAttribute('data-like-count', Number(likeCount) - 1)
     } else if (this.disliked && (deleteLike || value)) {
-      this.disliked = false
+      this.setAttribute('data-disliked', false)
       this.setAttribute('data-dislike-count', Number(dislikeCount) - 1)
     }
 
     // Add like or dislike
     if (!deleteLike && value) {
-      this.liked = true
+      this.setAttribute('data-liked', true)
       this.setAttribute('data-like-count', Number(likeCount) + 1)
     } else if (!deleteLike && !value) {
-      this.disliked = true
+      this.setAttribute('data-disliked', true)
       this.setAttribute('data-dislike-count', Number(dislikeCount) + 1)
     }
+
+    this.dispatchUpdate()
   }
 
   // Like or dislike post
@@ -398,6 +424,7 @@ class PepePost extends HTMLElement {
       this.createComment(commentsFeed, comment)
       const commentCount = this.getAttribute('data-comment-count')
       this.setAttribute('data-comment-count', Number(commentCount) + 1)
+      this.dispatchUpdate()
     } catch (error) {
       alert(`${error.name}: ${error.message}`)
     }

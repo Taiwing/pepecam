@@ -1,8 +1,5 @@
 --- TODO ---
 
-- when liking or disliking a picture in the editor, changing picture and coming
-  back to the one that was (dis)liked the corresponding value/picture is not
-  updated (the page needs to be reloaded) -- to fix
 - see how to handle the different FRONT_LINK values between the VPS and the
   local versions of the app (maybe add a value without the PORT in the CORS
   accept headers, maybe create a new LIVE variable, or simply create a third

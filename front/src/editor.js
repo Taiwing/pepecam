@@ -70,6 +70,16 @@ const initEditor = async () => {
 
   // Register editor upload event
   window.addEventListener('pepe-upload', onPepeUpload)
+
+  // Register post update event
+  window.addEventListener('pepe-post-update', (event) => {
+    const picture_id = event.detail['data-picture-id']
+    const gallery = document.querySelector('pepe-gallery')
+    const picture = gallery.getPictureElement(picture_id)
+    for (const [key, value] of Object.entries(event.detail)) {
+      picture.setAttribute(key, value)
+    }
+  })
 }
 
 initEditor()

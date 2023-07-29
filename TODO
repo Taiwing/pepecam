@@ -8,8 +8,6 @@
   a localhost setup and the live one (maybe an env variable)
 - find out why the api fails on VPS, or rather why the api does not wait for the
   db setup to be finished before launching as it seems to do on a local machine
-- fix ugly scroll on chrome and macOS too (apparently) (maybe just remove every
-  'overflow-[xy]: scroll;' lmfao, or only on hover)
 
 --- MAYBE ---
 
@@ -25,6 +23,8 @@ FRONT:
 - fix picture loading so that the pepe-post informations do not appear before
   the picture (find a way to do it in sync, maybe use 'onload' on the picture
   if possible and possibly even add a spinner!)
+- fix ugly scroll on chrome and macOS too (apparently) (maybe just remove every
+  'overflow-[xy]: scroll;' lmfao, or only on hover)
 - add the superposable picture to camera feed
 - find a way to access 'Constants' env variables
 - remove the share-dialog from pepe-posts and only use the web share API when

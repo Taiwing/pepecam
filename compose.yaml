@@ -8,8 +8,6 @@ services:
     build: ./db/
     expose:
       - ${DB_PORT}
-    ports:
-      - "${DB_PORT}:${DB_PORT}"
     env_file: .env
     restart: on-failure
 

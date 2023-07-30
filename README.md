@@ -60,7 +60,7 @@ the case by default).
 
 > If you do not download random pictures but have the database populated anyway
 > you will still get random pictures in the front but without pepes. This is the
-> default behavior as DB\_POPULATE is set to true in the env template.
+> default behavior as POPULATE\_DB is set to true in the env template.
 
 ## How it works
 

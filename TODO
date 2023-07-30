@@ -1,15 +1,11 @@
---- TODO ---
-
-- see how to handle the different FRONT_LINK values between the VPS and the
-  local versions of the app (maybe simply create a third env file for
-  production like .env.prod and add instructions in the README)
-
 --- MAYBE ---
 
 GLOBAL:
 - make it possible to change the superposable's size (use resize in the back)
 
 API:
+- reply with an error when the API tries to send a mail and fails because the
+  SMTP credentials were not provided in the environment
 - implement tests for every route and structure
 
 FRONT:

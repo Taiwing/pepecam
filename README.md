@@ -10,7 +10,7 @@ posts. This is meant to be usable on desktop, phones and small resolutions.
 	<img src="https://github.com/Taiwing/pepecam/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
 </p>
 
-You can try the live application [here](https://pepecam.defoy.tech).
+You can click [here](https://pepecam.defoy.tech) to try the live application.
 
 ## Setup
 
@@ -18,22 +18,16 @@ You can try the live application [here](https://pepecam.defoy.tech).
 # clone it
 git clone https://github.com/Taiwing/pepecam
 
-# decrypt .env file if you have the password (see below for more info)
-transcrypt -c aes-256-cbc -p TRANSCRYPT_PASSWORD
-# OR replace encrypted .env file with default
-mv .env.template .env
-
 # build (the first time is reaaaally long, like 5 minutes)
 ./run.bash
 ```
 
-> The complete environment file (.env) is available in this repository. It
-> contains API credentials (only SMTP for now) and is encrypted with
-> [transcrypt](https://github.com/elasticdog/transcrypt) for obvious security
-> reasons. If you do not have the TRANSCRYPT\_PASSWORD you can simply remove
-> the encrypted .env file and replace it with the .env.template.
-
 Click [here](http://localhost:8080) to test it locally.
+
+> This will work fine although the mailing functions will be disabled by default
+> in the api. This is because the api needs SMTP credentials to send mails.
+> Checkout the relevant [environment](#secrets) section of this document to fix
+> this.
 
 ### Access this application through your local network
 
@@ -60,7 +54,7 @@ the case by default).
 
 > If you do not download random pictures but have the database populated anyway
 > you will still get random pictures in the front but without pepes. This is the
-> default behavior as POPULATE\_DB is set to true in the env template.
+> default behavior as POPULATE\_DB is set to true by default.
 
 ## How it works
 
@@ -85,18 +79,17 @@ by default and serving html/CSS/Javascript files.
 
 ## Environment
 
-Every environment variable defined in the .env file can be changed. However, the
-variables containing '$' substitutions should not be changed directly. Instead
-it is the variables they refer to that should be changed.
+Every environment variable defined in the [.env](.env) file can be changed.
+However, the variables containing '$' substitutions should not be modified
+directly. Instead it is the variables they refer to that should be changed.
 
 ### Secrets
 
-As mentioned in the Setup section, you must have transcrypt installed and
-configured to use the default .env file. If you do not have it you will have
-to use the [.env.template](.env.template) instead. The application will run with
-this environment but it will not be able to send emails because of the missing
-env values (the 'Secrets' section of the .env.template file). This means that
-you wont be able to register new users or to use the password reset functions.
+As mentioned in the [Setup](#setup) section, the SMTP credentials are not
+provided in the default environment file. The application will run with this
+environment but it will not be able to send emails because of the missing env
+values (the 'Secrets' section of the [.env](.env) file). This means that you
+wont be able to register new users or use the password reset functions.
 
 To fix this you will have to give a value to these missing variables:
 - SMTP\_SERVER

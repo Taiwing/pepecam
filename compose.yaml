@@ -13,8 +13,6 @@ services:
 
   api:
     build: ./api/
-    expose:
-      - ${API_LOCAL_PORT}
     ports:
       - "${API_LOCAL_PORT}:${API_LOCAL_PORT}"
     env_file: .env

@@ -50,14 +50,13 @@ Then it will put them in the `front/pictures/pepe/` directory.
 > relaunch it as much as necessary to complete the list.
 
 After you have successfully generated the appropiate number of pepes you should
-stop the application and remove the `db/pgdata/` directory which contains
-postgres' data:
+stop the application and remove the database volume containing postgres' data:
 
 ```bash
 # stop the application
 docker compose down # or follow the script instructions if you used run.bash
-# use sudo to delete the database because it is owned by root
-sudo rm -rf db/pgdata/
+# remove the pgdata volume
+docker volume rm pepecam_pgdata
 ```
 
 Once this is done you can relaunch the application to see the effect. Make sure

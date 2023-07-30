@@ -22,8 +22,9 @@ set +o allexport
 [ -n "${POPULATE_DB}" ] && ./scripts/link_pepes.bash
 
 # wait for input
+echo
 echo "Application is running on $FRONT_LINK !"
-echo -n "Press enter, Ctrl+D or Ctrl+C to stop it."
+echo "Press enter, Ctrl+D or Ctrl+C to stop it."
 read
 
 # stop application

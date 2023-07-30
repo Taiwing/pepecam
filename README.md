@@ -43,14 +43,29 @@ this application on every other local device.
 When you have built the project a first time you can run the
 [random\_pictures.bash](scripts/random_pictures.bash) script. It will download
 pictures from an online repository and generate random pepe posts from them.
+Then it will put them in the `front/pictures/pepe/` directory.
 
 > If there are some missing pictures after the first run of the script (there
 > should be 1084 pictures in the front/pictures/pepe directory), you can
 > relaunch it as much as necessary to complete the list.
 
+After you have successfully generated the appropiate number of pepes you should
+stop the application and remove the `db/pgdata/` directory which contains
+postgres' data:
+
+```bash
+# stop the application
+docker compose down # or follow the script instructions if you used run.bash
+# use sudo to delete the database because it is owned by root
+sudo rm -rf db/pgdata/
+```
+
 Once this is done you can relaunch the application to see the effect. Make sure
 you have the POPULATE\_DB environment variable set to "true" (which should be
-the case by default).
+the case by default). When you have successfully populated the database you
+should unset or remove the POPULATE\_DB variable from the [.env](.env) file.
+Otherwise the populate scripts are going to run each time you relaunch the
+project and fill the database with more random data every time.
 
 > If you do not download random pictures but have the database populated anyway
 > you will still get random pictures in the front but without pepes. This is the

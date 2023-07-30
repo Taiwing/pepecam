@@ -15,10 +15,15 @@ docker compose up --build --wait
 # set SIGINT handler
 trap 'stop' SIGINT
 
-# link pepe pictures
-./scripts/link_pepes.bash
+# link pepe pictures if POPULATE_DB is set
+set -o allexport
+source .env
+set +o allexport
+[ -n "${POPULATE_DB}" ] && ./scripts/link_pepes.bash
 
 # wait for input
+echo "Application is running on $FRONT_LINK !"
+echo -n "Press enter, Ctrl+D or Ctrl+C to stop it."
 read
 
 # stop application

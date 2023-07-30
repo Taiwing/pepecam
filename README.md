@@ -10,7 +10,7 @@ posts. This is meant to be usable on desktop, phones and small resolutions.
 	<img src="https://github.com/Taiwing/pepecam/blob/master/front/pictures/superposables/smirk.png?raw=true" alt="Smirking Pepe" style="width: 50%;" />
 </p>
 
-You can try the live application [here](http://pepecam.defoy.tech).
+You can try the live application [here](https://pepecam.defoy.tech).
 
 ## Setup
 
@@ -49,17 +49,18 @@ this application on every other local device.
 When you have built the project a first time you can run the
 [random\_pictures.bash](scripts/random_pictures.bash) script. It will download
 pictures from an online repository and generate random pepe posts from them.
-Once this is done you can relaunch the application to see the effect. Make sure
-you have the POPULATE\_DB environment variable set to "true" (which should be
-the case by default).
 
 > If there are some missing pictures after the first run of the script (there
 > should be 1084 pictures in the front/pictures/pepe directory), you can
 > relaunch it as much as necessary to complete the list.
 
-If you do not download random pictures but still have the database populated you
-will still get random pictures in the front but without pepes (which would be a
-shame).
+Once this is done you can relaunch the application to see the effect. Make sure
+you have the POPULATE\_DB environment variable set to "true" (which should be
+the case by default).
+
+> If you do not download random pictures but have the database populated anyway
+> you will still get random pictures in the front but without pepes. This is the
+> default behavior as DB\_POPULATE is set to true in the env template.
 
 ## How it works
 
@@ -71,7 +72,7 @@ front/pictures/ directory and are accessible to the api via a shared volume.
 
 This is the backend api which handles every user or data related requests. It is
 a simple HTTP server implemented in Rust, with the Rocket library, and it can be
-accessed on `localhost:3000`.
+accessed on `localhost:3000` by default.
 
 ### db
 
@@ -80,7 +81,7 @@ A Postgresql database storing user data and listing uploaded pictures.
 ### front
 
 This is the user interface. A simple apache server running on `localhost:8080`
-and serving html/CSS/Javascript files.
+by default and serving html/CSS/Javascript files.
 
 ## Environment
 
@@ -110,9 +111,9 @@ free plan which is more than enough for testing purposes.
 ### Global
 
 The Global variables can all be changed by the user. They will apply to the
-entire application. For example, if you change FRONT\_PORT the front will be
-served on a new port and the api will send its emails using the new FRONT\_LINK
-value instead of the default.
+entire application. For example, if you change FRONT\_PUBLIC\_PORT the front
+will be served on a new port and the api will send its emails using the new
+FRONT\_LINK value instead of the default.
 
 > Be careful if changing the '\_DIR'-suffixed variables. They refer to actual
 > files in the front/ directory and are used for a shared volume in the compose

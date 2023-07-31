@@ -6,8 +6,11 @@ SCRIPT=$(basename $0)
 # go to repo root
 cd $(git rev-parse --show-toplevel)
 
+# get the directory name
+DIRNAME=$(basename $(git rev-parse --show-toplevel))
+
 # Get every picture id from the database
-DB_PICTURES=$(docker exec pepecam-db-1 psql -U postgres postgres \
+DB_PICTURES=$(docker exec $DIRNAME-db-1 psql -U postgres postgres \
 	-c "SELECT picture_id FROM pictures" \
 	| grep -E '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
 
@@ -51,6 +54,6 @@ QUERY=""
 for i in "${!LINKED[@]}"; do
 	QUERY+="UPDATE pictures SET superposable = '${SUPERPOSABLES[$i]}'::superposable WHERE picture_id = '${LINKED[$i]}'::uuid;"
 done
-docker exec pepecam-db-1 psql -U postgres postgres -c "$QUERY"
+docker exec $DIRNAME-db-1 psql -U postgres postgres -c "$QUERY"
 
 echo "$SCRIPT: $INDEX pictures linked."

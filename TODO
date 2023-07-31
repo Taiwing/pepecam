@@ -1,3 +1,11 @@
+--- TODO ---
+
+- add documentation/comments on the environment variables (like how HOST_IP_BIND
+  is used to forbid outside connections)
+- update the documentation for the "local network part" because now the
+  HOST_IP_BIND must be changed too (set to an empty string or removed so that
+  containers can communicate with the outside network)
+
 --- MAYBE ---
 
 GLOBAL:

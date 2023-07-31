@@ -1,8 +1,3 @@
---- TODO ---
-
-- add documentation/comments on the environment variables (like how HOST_IP_BIND
-  is used to forbid outside connections)
-
 --- MAYBE ---
 
 GLOBAL:

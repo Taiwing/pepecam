@@ -10,7 +10,11 @@ function stop() {
 cd $(git rev-parse --show-toplevel)
 
 # build and run docker compose
-docker compose up --build --wait
+if ! docker compose up --build --wait; then
+	echo
+    echo "Failed to start application! Exiting..."
+    exit 1
+fi
 
 # set SIGINT handler
 trap 'stop' SIGINT

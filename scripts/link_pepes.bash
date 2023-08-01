@@ -20,27 +20,25 @@ cd front/pictures/
 find ./ -maxdepth 1 -type l -delete
 
 # Get the subset of picture id that do not match a file in front/pictures/
-MISSING_PICTURE=()
+MISSING=()
 for picture in $DB_PICTURES; do
-	if [ ! -f $picture.jpg ]; then
-		MISSING_PICTURE+=($picture)
-	fi
+	[ ! -f $picture.jpg ] && MISSING+=($picture)
 done
 
 # if no picture is missing, exit
-if [ ${#MISSING_PICTURE[@]} -eq 0 ]; then
+if [ ${#MISSING[@]} -eq 0 ]; then
 	echo "$SCRIPT: No picture missing."
 	exit 0
 fi
 
 # shuffle the array
-MISSING_PICTURE=($(shuf -e "${MISSING_PICTURE[@]}"))
+MISSING=($(shuf -e "${MISSING[@]}"))
 
 # symlinking missing pictures
 INDEX=0
 LINKED=()
 SUPERPOSABLES=()
-for picture in ${MISSING_PICTURE[@]}; do
+for picture in ${MISSING[@]}; do
 	[ ! -f pepe/$INDEX-*.jpg ] && continue
 	ln -s pepe/$INDEX-*.jpg $picture.jpg
 	SUPERPOSABLE=$(echo pepe/$INDEX-*.jpg | sed -n "s/pepe\/$INDEX-\(.*\)\.jpg/\1/p")

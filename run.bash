@@ -9,6 +9,9 @@ function stop() {
 # go to repo root
 cd $(git rev-parse --show-toplevel)
 
+# if arg is stop, stop application and exit
+[ "$1" == "stop" ] && stop
+
 # build and run docker compose
 if ! docker compose up --build --wait; then
 	echo
@@ -24,6 +27,9 @@ set -o allexport
 source .env
 set +o allexport
 [ -n "${POPULATE_DB}" ] && ./scripts/link_pepes.bash
+
+# if arg is nowait, exit
+[ "$1" == "nowait" ] && exit 0
 
 # wait for input
 echo
